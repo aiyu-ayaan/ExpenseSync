@@ -18,7 +18,16 @@ kotlin {
     
     sourceSets {
         commonMain.dependencies {
-            // put your Multiplatform dependencies here
+            //          Koin
+            api(libs.koin.core)
+            implementation(libs.koin.compose)
+
+            //            Ktor
+            implementation(libs.bundles.ktor)
+        }
+        androidMain.dependencies {
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
         }
     }
 }
