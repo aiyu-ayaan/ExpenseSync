@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.compose
+package com.atech.expensesync.component
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
