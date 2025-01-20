@@ -27,6 +27,7 @@ navigationCompose = "2.8.0-alpha10"
 ksp = "2.1.10-RC-1.0.29"
 sqlite = "2.5.0-SNAPSHOT"
 room = "2.7.0-alpha12"
+datastore = "1.1.2"
 
 
 [libraries]
@@ -74,6 +75,10 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-runtime-android = { module = "androidx.room:room-runtime-android", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

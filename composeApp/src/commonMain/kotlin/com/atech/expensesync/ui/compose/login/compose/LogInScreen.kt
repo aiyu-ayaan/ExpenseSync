@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.navigation.NavHostController
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.ButtonWithBorder
 import com.atech.expensesync.component.MainContainer
@@ -27,7 +28,8 @@ import org.jetbrains.compose.resources.painterResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogInScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController
 ) {
     MainContainer(
         modifier = modifier,
@@ -73,15 +75,17 @@ fun LogInScreen(
                 verticalArrangement = Arrangement.Bottom,
             ) {
                 Text(
-                    "Set Your Budget With\nExpense Sync",
+                    text = "Set Your Budget With Expense Sync",
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(modifier = Modifier.padding(MaterialTheme.spacing.medium))
                 Text(
-                    "Set your budget and track your expenses\nin one place",
+                    text = "Set your budget and track your expenses in one place",
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Normal
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }

@@ -1,12 +1,12 @@
-package com.atech.expensesync.room.split
+package com.atech.expensesync.database.room.split
 
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
-import com.atech.expensesync.room.split.SplitType.EQUAL
-import com.atech.expensesync.room.split.SplitType.PERCENTAGE
-import com.atech.expensesync.room.split.SplitType.UNEQUAL
+import com.atech.expensesync.database.room.split.SplitType.EQUAL
+import com.atech.expensesync.database.room.split.SplitType.PERCENTAGE
+import com.atech.expensesync.database.room.split.SplitType.UNEQUAL
 import com.atech.expensesync.utils.convertToDateFormat
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

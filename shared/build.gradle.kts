@@ -35,6 +35,11 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
         }
+        jvmMain.dependencies {
+            //            DataStore
+            implementation(libs.datastore)
+            implementation(libs.datastore.preferences)
+        }
     }
 }
 

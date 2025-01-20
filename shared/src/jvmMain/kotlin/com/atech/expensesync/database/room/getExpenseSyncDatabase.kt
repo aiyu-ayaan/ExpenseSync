@@ -1,7 +1,6 @@
-package com.atech.expensesync.database
+package com.atech.expensesync.database.room
 
 import androidx.room.Room
-import com.atech.expensesync.room.ExpenseSyncDatabase
 import java.io.File
 
 fun getExpenseSyncDatabase(): ExpenseSyncDatabase {

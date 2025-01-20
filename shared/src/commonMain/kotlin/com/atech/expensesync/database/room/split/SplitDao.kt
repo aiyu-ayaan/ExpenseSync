@@ -1,4 +1,4 @@
-package com.atech.expensesync.room.split
+package com.atech.expensesync.database.room.split
 
 import androidx.room.Dao
 import androidx.room.Delete
