@@ -13,7 +13,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             App(
-                pref = koinInject<PrefManager>()
             )
         }
     }

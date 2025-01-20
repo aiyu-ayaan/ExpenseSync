@@ -17,9 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
+import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.ButtonWithBorder
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.pref.PrefKeys
+import com.atech.expensesync.navigation.ExpanseSyncRoutes
 import com.atech.expensesync.ui.theme.spacing
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.login
@@ -31,6 +34,7 @@ fun LogInScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController
 ) {
+    val pref = LocalDataStore.current
     MainContainer(
         modifier = modifier,
         bottomBar = {
@@ -44,7 +48,18 @@ fun LogInScreen(
                         .padding(MaterialTheme.spacing.medium),
                     innerPadding = MaterialTheme.spacing.small,
                     text = "Skip",
-                    onClick = {}
+                    onClick = {
+                        navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
+                            pref.saveBoolean(
+                                PrefKeys.IS_LOG_IN_SKIP,
+                                true
+                            )
+                            launchSingleTop = true
+                            popUpTo(ExpanseSyncRoutes.LOGIN.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
                 )
                 AppButton(
                     modifier = Modifier.fillMaxWidth()

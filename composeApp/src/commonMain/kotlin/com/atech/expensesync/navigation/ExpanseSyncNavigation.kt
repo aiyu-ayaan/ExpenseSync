@@ -23,12 +23,14 @@ sealed class ExpanseSyncNavigation(
 fun ExpanseSyncNavigation(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
+    startDestination: String = ExpanseSyncNavigation.LogInScreen.route
 ) {
     NavHost(
         modifier = modifier,
         navController = navHostController,
-        startDestination = ExpanseSyncNavigation.LogInScreen.route
+        startDestination = startDestination
     ) {
         logInScreenNavigation(navHostController)
+        appNavigation(navHostController)
     }
 }

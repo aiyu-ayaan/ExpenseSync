@@ -9,10 +9,12 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.navigation.ExpanseSyncNavigation
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 
 val LocalDataStore = staticCompositionLocalOf<PrefManager> { error("No DataStore provided") }
 
@@ -20,16 +22,23 @@ val LocalDataStore = staticCompositionLocalOf<PrefManager> { error("No DataStore
 @Composable
 @Preview
 fun App(
-    pref: PrefManager,
     navHostController: NavHostController = rememberNavController()
 ) {
-    CompositionLocalProvider {
-        LocalDataStore provides pref
-        ExpenseSyncTheme {
+    ExpenseSyncTheme {
+        val pref = koinInject<PrefManager>()
+        CompositionLocalProvider(
+            LocalDataStore provides pref
+        ) {
+            val isLoggedIn = pref.getBoolean(PrefKeys.IS_LOG_IN_SKIP)
             Scaffold { contentPadding ->
                 ExpanseSyncNavigation(
                     modifier = Modifier.padding(contentPadding),
-                    navHostController = navHostController
+                    navHostController = navHostController,
+                    startDestination = if (isLoggedIn)
+                        ExpanseSyncNavigation.AppScreens.route
+                    else
+                        ExpanseSyncNavigation.LogInScreen.route
+
                 )
             }
         }
