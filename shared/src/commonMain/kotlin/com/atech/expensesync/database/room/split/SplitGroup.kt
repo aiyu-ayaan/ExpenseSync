@@ -85,6 +85,8 @@ data class SplitMoney(
 data class SplitGroup(
     val name: String,
     val description: String = "",
+    val defaultSplitType: SplitType = EQUAL,
+    val whiteBoard: String = "",
     val groupMembers: List<GroupMember> = emptyList(),
     val splitMoney: List<SplitMoney> = emptyList(),
     val created: Long = System.currentTimeMillis(),
