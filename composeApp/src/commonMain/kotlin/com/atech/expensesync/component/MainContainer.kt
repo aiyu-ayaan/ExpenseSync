@@ -101,6 +101,8 @@ fun MainContainer(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     state: PullToRefreshState = rememberPullToRefreshState(),
     isRefreshing: Boolean = false,
+    bottomNavigationBarColor: Color = MaterialTheme.colorScheme.background,
+    statusBarColor: Color = MaterialTheme.colorScheme.background,
     onRefresh: () -> Unit = {},
     onNavigationClick: (() -> Unit)? = null,
     floatingActionButton: @Composable () -> Unit = {},
@@ -126,6 +128,10 @@ fun MainContainer(
     } else {
         {}
     }
+    com.atech.expensesync.utils.systemUiController(
+        bottomNavigationBarColor = bottomNavigationBarColor,
+        statusBarColor = statusBarColor
+    )
     Scaffold(
         modifier = modifier, topBar = topAppBar,
         floatingActionButton = floatingActionButton,

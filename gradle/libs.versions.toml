@@ -21,6 +21,9 @@ logback = "1.5.16"
 koin = "3.6.0-alpha3"
 koinCompose = "3.6.0-alpha3"
 koinComposeMultiplatform = "1.2.0-alpha3"
+adaptive = "1.0.0"
+adaptiveLayout = "1.0.0-alpha03"
+adaptiveNavigation = "1.0.0-alpha03"
 kotlinxDatetime = "0.6.0"
 materialNavigation = "1.7.0-beta02"
 navigationCompose = "2.8.0-alpha10"
@@ -80,6 +83,11 @@ sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sql
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
+
+adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "adaptiveNavigation" }
+adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "adaptiveLayout" }
+adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -97,4 +105,9 @@ ktor = [
     "ktor-client-content-negotiation",
     "ktor-client-logging",
     "ktor-serialization-kotlinx-json",
+]
+adaptives = [
+    "adaptive-navigation",
+    "adaptive-layout",
+    "adaptive",
 ]

@@ -3,11 +3,11 @@ package com.atech.expensesync.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
-import com.atech.expensesync.ui.compose.home.compose.HomeScreen
+import com.atech.expensesync.ui.compose.app.AppScreen
 import com.atech.expensesync.utils.fadeThroughComposable
 
 sealed class AppNavigation(val route: String) {
-    object Home : AppNavigation("home")
+    object AppScreen : AppNavigation("app_screen")
 }
 
 fun NavGraphBuilder.appNavigation(
@@ -15,12 +15,12 @@ fun NavGraphBuilder.appNavigation(
 ) {
     navigation(
         route = ExpanseSyncNavigation.AppScreens.route,
-        startDestination = AppNavigation.Home.route
+        startDestination = AppNavigation.AppScreen.route
     ) {
         fadeThroughComposable(
-            route = AppNavigation.Home.route
+            route = AppNavigation.AppScreen.route
         ) {
-            HomeScreen(
+            AppScreen(
                 navHostController = navHostController
             )
         }

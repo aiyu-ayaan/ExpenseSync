@@ -13,16 +13,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val systemUiController = rememberSystemUiController()
-//            if (isSystemInDarkTheme()) {
-            systemUiController.setSystemBarsColor(
-                color = MaterialTheme.colorScheme.background,
-            )
-//            } else {
-//                systemUiController.setSystemBarsColor(
-//                    color = MaterialTheme.colorScheme.background,
-//                )
-//            }
+//            val systemUiController = rememberSystemUiController()
+//            systemUiController.setSystemBarsColor(
+//                color = MaterialTheme.colorScheme.primary,
+//            )
             ExpenseSyncTheme {
                 App()
             }

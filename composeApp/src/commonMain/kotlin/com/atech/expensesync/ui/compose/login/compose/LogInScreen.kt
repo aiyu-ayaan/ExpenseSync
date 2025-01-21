@@ -50,10 +50,10 @@ fun LogInScreen(
                     text = "Skip",
                     onClick = {
                         navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
-                            pref.saveBoolean(
-                                PrefKeys.IS_LOG_IN_SKIP,
-                                true
-                            )
+//                            pref.saveBoolean(
+//                                PrefKeys.IS_LOG_IN_SKIP,
+//                                true
+//                            )
                             launchSingleTop = true
                             popUpTo(ExpanseSyncRoutes.LOGIN.route) {
                                 inclusive = true
