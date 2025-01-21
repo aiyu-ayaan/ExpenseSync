@@ -4,7 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import com.atech.expensesync.ui.compose.login.compose.LogInScreen
-import com.atech.expensesync.utils.fadeThroughComposable
+import com.atech.expensesync.ui_utils.fadeThroughComposable
 
 
 sealed class LogInNavigation(val routes: String) {

@@ -5,7 +5,7 @@
  *
  */
 
-package com.atech.expensesync.utils
+package com.atech.expensesync.ui_utils
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.core.tween

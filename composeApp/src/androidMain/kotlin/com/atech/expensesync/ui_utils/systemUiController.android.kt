@@ -1,4 +1,4 @@
-package com.atech.expensesync.utils
+package com.atech.expensesync.ui_utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-actual fun systemUiController(
+actual fun SystemUiController(
     bottomNavigationBarColor: Color,
     statusBarColor: Color,
     isDarkIcon: Boolean

@@ -33,9 +33,9 @@ fun App(
             LocalDataStore provides pref
         ) {
             val isLoggedIn = pref.getBoolean(PrefKeys.IS_LOG_IN_SKIP)
-            Scaffold { paddingValues: PaddingValues ->
                 ExpanseSyncNavigation(
-                    modifier = Modifier.safeContentPadding(),
+                    modifier = Modifier.padding(
+                    ),
                     navHostController = navHostController,
                     startDestination = if (isLoggedIn)
                         ExpanseSyncNavigation.AppScreens.route
@@ -43,7 +43,6 @@ fun App(
                         ExpanseSyncNavigation.LogInScreen.route
 
                 )
-            }
         }
     }
 }

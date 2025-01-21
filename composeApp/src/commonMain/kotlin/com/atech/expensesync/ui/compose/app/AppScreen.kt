@@ -1,6 +1,5 @@
 package com.atech.expensesync.ui.compose.app
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.atech.expensesync.ui_utils.BackHandler
+import com.atech.expensesync.ui_utils.SystemUiController
 
 
 enum class BaseAppScreen(
@@ -63,7 +64,16 @@ fun AppScreen(
             else -> NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
         }
     }
-    com.atech.expensesync.utils.systemUiController(
+    com.atech.expensesync.utils.expanseSyncLogger(
+        " ${currentDestination == BaseAppScreen.Split}"
+    )
+    BackHandler(currentDestination != BaseAppScreen.Split) {
+        com.atech.expensesync.utils.expanseSyncLogger(
+            "back ${currentDestination == BaseAppScreen.Split}"
+        )
+        currentDestination = BaseAppScreen.Split
+    }
+    SystemUiController(
         bottomNavigationBarColor = BottomAppBarDefaults.containerColor,
         statusBarColor = BottomAppBarDefaults.containerColor,
     )

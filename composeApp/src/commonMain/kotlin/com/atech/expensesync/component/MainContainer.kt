@@ -19,6 +19,8 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.atech.expensesync.ui_utils.BackHandler
+import com.atech.expensesync.ui_utils.SystemUiController
 
 /**
  * Toolbar component
@@ -128,7 +130,7 @@ fun MainContainer(
     } else {
         {}
     }
-    com.atech.expensesync.utils.systemUiController(
+    SystemUiController(
         bottomNavigationBarColor = bottomNavigationBarColor,
         statusBarColor = statusBarColor
     )

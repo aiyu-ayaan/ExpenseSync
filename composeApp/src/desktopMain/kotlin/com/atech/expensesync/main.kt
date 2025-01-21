@@ -45,7 +45,6 @@ fun main() = application {
             /*icon = painterResource(Res.drawable.app_logo),*/
         ) {
             App(
-                pref = koinInject<PrefManager>()
             )
         }
     }

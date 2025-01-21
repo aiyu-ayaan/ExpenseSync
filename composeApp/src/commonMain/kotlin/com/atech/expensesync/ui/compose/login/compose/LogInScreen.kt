@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,35 +39,38 @@ fun LogInScreen(
     MainContainer(
         modifier = modifier,
         bottomBar = {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = MaterialTheme.spacing.large),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                ButtonWithBorder(
-                    modifier = Modifier.fillMaxWidth(.3f)
-                        .padding(MaterialTheme.spacing.medium),
-                    innerPadding = MaterialTheme.spacing.small,
-                    text = "Skip",
-                    onClick = {
-                        navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
-//                            pref.saveBoolean(
-//                                PrefKeys.IS_LOG_IN_SKIP,
-//                                true
-//                            )
-                            launchSingleTop = true
-                            popUpTo(ExpanseSyncRoutes.LOGIN.route) {
-                                inclusive = true
+            BottomAppBar(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ){
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(bottom = MaterialTheme.spacing.large),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    ButtonWithBorder(
+                        modifier = Modifier.fillMaxWidth(.3f)
+                            .padding(MaterialTheme.spacing.medium),
+                        innerPadding = MaterialTheme.spacing.small,
+                        text = "Skip",
+                        onClick = {
+                            navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
+                            pref.saveBoolean(
+                                PrefKeys.IS_LOG_IN_SKIP, true
+                            )
+                                launchSingleTop = true
+                                popUpTo(ExpanseSyncRoutes.LOGIN.route) {
+                                    inclusive = true
+                                }
                             }
                         }
-                    }
-                )
-                AppButton(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(MaterialTheme.spacing.medium),
-                    innerPadding = MaterialTheme.spacing.small,
-                    text = "Sign Up", onClick = {}
-                )
+                    )
+                    AppButton(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(MaterialTheme.spacing.medium),
+                        innerPadding = MaterialTheme.spacing.small,
+                        text = "Sign Up", onClick = {}
+                    )
+                }
             }
         }
     ) { contentPadding ->
