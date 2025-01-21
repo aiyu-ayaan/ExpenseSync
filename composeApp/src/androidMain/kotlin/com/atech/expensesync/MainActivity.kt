@@ -4,16 +4,28 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.atech.expensesync.database.pref.PrefManager
-import org.koin.compose.koinInject
+import androidx.compose.material3.MaterialTheme
+import com.atech.expensesync.ui.theme.ExpenseSyncTheme
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            App(
+            val systemUiController = rememberSystemUiController()
+//            if (isSystemInDarkTheme()) {
+            systemUiController.setSystemBarsColor(
+                color = MaterialTheme.colorScheme.background,
             )
+//            } else {
+//                systemUiController.setSystemBarsColor(
+//                    color = MaterialTheme.colorScheme.background,
+//                )
+//            }
+            ExpenseSyncTheme {
+                App()
+            }
         }
     }
 }
