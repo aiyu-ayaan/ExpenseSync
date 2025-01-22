@@ -1,4 +1,8 @@
 package com.atech.expensesync.ui.compose.split
 
-class SplitViewModel {
+import androidx.lifecycle.ViewModel
+
+class SplitViewModel(
+
+)  : ViewModel() {
 }

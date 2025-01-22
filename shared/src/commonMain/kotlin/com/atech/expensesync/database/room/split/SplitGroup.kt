@@ -84,7 +84,7 @@ data class SplitMoney(
 @Entity(tableName = "split_group")
 data class SplitGroup(
     val name: String,
-    val description: String = "",
+    val type : String,
     val defaultSplitType: SplitType = EQUAL,
     val whiteBoard: String = "",
     val groupMembers: List<GroupMember> = emptyList(),
