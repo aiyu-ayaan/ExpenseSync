@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AttachMoney
 import androidx.compose.material.icons.twotone.CalendarMonth
 import androidx.compose.material.icons.twotone.Fastfood
+import androidx.compose.material.icons.twotone.Payments
 import androidx.compose.material.icons.twotone.Splitscreen
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.atech.expensesync.ui.compose.split.compose.SplitScreen
 import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.SystemUiController
 
@@ -35,7 +37,7 @@ import com.atech.expensesync.ui_utils.SystemUiController
 enum class BaseAppScreen(
     val label: String, val icon: ImageVector
 ) {
-    Split("Split", Icons.TwoTone.Splitscreen),
+    Split("Split", Icons.TwoTone.Payments),
     Budget("Budget", Icons.TwoTone.AttachMoney),
     Settings("Mess Track", Icons.TwoTone.Fastfood),
     Calender("History", Icons.TwoTone.CalendarMonth)
@@ -96,13 +98,9 @@ fun AppScreen(
     ) {
         when (currentDestination) {
             BaseAppScreen.Split -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Split")
-                }
+                SplitScreen(
+                    navHostController = navHostController
+                )
             }
 
             BaseAppScreen.Budget -> {
