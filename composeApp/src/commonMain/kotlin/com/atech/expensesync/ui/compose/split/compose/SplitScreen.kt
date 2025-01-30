@@ -12,14 +12,30 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.ui.compose.split.SplitViewModel
+import com.atech.expensesync.ui.compose.split.compose.add_group.AddGroupScreen
 import com.atech.expensesync.ui.theme.spacing
+import com.atech.expensesync.ui_utils.koinViewModel
+
+
+private enum class DetailScreen {
+    NONE,
+    ADD_EXPENSE,
+    ADD_GROUP
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
@@ -28,30 +44,62 @@ fun SplitScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController
 ) {
+    var detailScreen by rememberSaveable { mutableStateOf(DetailScreen.NONE) }
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
+    val viewModel: SplitViewModel = koinViewModel()
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
         listPane = {
             MainContent(
-                modifier = Modifier
+                modifier = Modifier,
+                addNewGroupClick = {
+                    detailScreen = DetailScreen.ADD_GROUP
+                    navigator.navigateTo(
+                        pane = ListDetailPaneScaffoldRole.Detail
+                    )
+                }
             )
         },
-        detailPane = {
+        detailPane = when (detailScreen) {
+            DetailScreen.NONE -> {
+                {}
+            }
 
-        }
+            DetailScreen.ADD_EXPENSE -> {
+                {}
+            }
+
+            DetailScreen.ADD_GROUP -> {
+                {
+                    AnimatedPane {
+                        AddGroupScreen(
+                            state = viewModel.createGroupState.value,
+                            onEvent = viewModel::onAddGroupEvent,
+                            onNavigateBack = {
+                                navigator.navigateBack()
+                                detailScreen = DetailScreen.NONE
+                            }
+                        )
+                    }
+                }
+            }
+        },
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MainContent(modifier: Modifier) {
+private fun MainContent(
+    modifier: Modifier,
+    addNewGroupClick: () -> Unit
+) {
     MainContainer(
         modifier = modifier,
         title = "Split",
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { addNewGroupClick.invoke() }) {
                 Icon(
                     imageVector = Icons.TwoTone.GroupAdd,
                     contentDescription = null

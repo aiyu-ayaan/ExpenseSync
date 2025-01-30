@@ -10,7 +10,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.atech.expensesync.database.pref.PrefManager
-import com.atech.expensesync.modules.KoinInitializer
+import com.atech.expensesync.koin.KoinInitializer
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import org.koin.compose.koinInject
 import org.koin.core.context.stopKoin

@@ -6,6 +6,7 @@ import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.pref.PrefManager.Companion.PREF_NAME
 import com.atech.expensesync.database.pref.PrefManagerImp
 import com.atech.expensesync.database.pref.createDataStore
+import com.atech.expensesync.database.room.ExpenseSyncDatabase
 import com.atech.expensesync.database.room.getExpenseSyncDatabase
 import com.atech.expensesync.utils.getAppDataPath
 import org.koin.dsl.bind
@@ -13,7 +14,7 @@ import org.koin.dsl.module
 import java.nio.file.Paths
 
 val jvmModule = module {
-    single { getExpenseSyncDatabase() }
+    single { getExpenseSyncDatabase() }.bind(ExpenseSyncDatabase::class)
     single<DataStore<Preferences>> {
         createDataStore {
             val appDataPath = getAppDataPath()

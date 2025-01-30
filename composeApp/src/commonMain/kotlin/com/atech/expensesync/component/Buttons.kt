@@ -15,14 +15,16 @@ import androidx.compose.ui.unit.dp
 fun AppButton(
     modifier: Modifier = Modifier,
     text: String,
-    innerPadding : Dp = 0.dp,
+    enable: Boolean = true,
+    innerPadding: Dp = 0.dp,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     onClick: () -> Unit = {}
 ) {
     Button(
         modifier = modifier,
         onClick = onClick,
-        colors = colors
+        colors = colors,
+        enabled = enable
     ) {
         Text(
             text,
@@ -35,14 +37,16 @@ fun AppButton(
 fun ButtonWithBorder(
     modifier: Modifier = Modifier,
     text: String,
-    innerPadding : Dp = 0.dp,
+    enable: Boolean = true,
+    innerPadding: Dp = 0.dp,
     colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
     onClick: () -> Unit = {}
 ) {
     OutlinedButton(
         modifier = modifier,
         onClick = onClick,
-        colors = colors
+        colors = colors,
+        enabled = enable
     ) {
         Text(
             text,

@@ -1,5 +1,4 @@
-package com.atech.expensesync.modules
-
+package com.atech.expensesync.koin
 
 expect class KoinInitializer {
     fun init()

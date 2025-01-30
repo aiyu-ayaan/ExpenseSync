@@ -8,6 +8,7 @@ import com.atech.expensesync.database.room.split.SplitType.EQUAL
 import com.atech.expensesync.database.room.split.SplitType.PERCENTAGE
 import com.atech.expensesync.database.room.split.SplitType.UNEQUAL
 import com.atech.expensesync.utils.convertToDateFormat
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -20,6 +21,7 @@ import kotlinx.serialization.json.Json
  * @property pic The pic
  * @constructor Create empty Group member
  */
+@Serializable
 data class GroupMember(
     val uid: String,
     val name: String,
@@ -54,6 +56,7 @@ enum class SplitType {
  * @see SplitType
  * @see SplitGroup
  */
+@Serializable
 data class SplitMoney(
     val amount: Double,
     val paidBy: GroupMember,
@@ -82,9 +85,10 @@ data class SplitMoney(
  * @see SplitType
  */
 @Entity(tableName = "split_group")
+@Serializable
 data class SplitGroup(
     val name: String,
-    val type : String,
+    val type: String,
     val defaultSplitType: SplitType = EQUAL,
     val whiteBoard: String = "",
     val groupMembers: List<GroupMember> = emptyList(),

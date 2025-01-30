@@ -32,6 +32,8 @@ sqlite = "2.5.0-SNAPSHOT"
 room = "2.7.0-alpha12"
 datastore = "1.1.2"
 
+gson-version = "2.11.0"
+
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activityCompose" }
@@ -88,6 +90,8 @@ adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adapt
 adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "adaptiveLayout" }
 adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
 
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson-version" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -98,6 +102,8 @@ ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
 
 [bundles]
 ktor = [

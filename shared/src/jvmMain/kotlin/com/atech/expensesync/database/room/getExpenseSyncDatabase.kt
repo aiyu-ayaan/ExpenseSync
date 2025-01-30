@@ -1,6 +1,7 @@
 package com.atech.expensesync.database.room
 
 import androidx.room.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import java.io.File
 
 fun getExpenseSyncDatabase(): ExpenseSyncDatabase {
@@ -21,5 +22,6 @@ fun getExpenseSyncDatabase(): ExpenseSyncDatabase {
     val dbFile = File(appFolder, "expense_sync.db")
     return Room.databaseBuilder<ExpenseSyncDatabase>(
         name = dbFile.absolutePath,
-    ).build()
+    ).setDriver(BundledSQLiteDriver())
+        .build()
 }

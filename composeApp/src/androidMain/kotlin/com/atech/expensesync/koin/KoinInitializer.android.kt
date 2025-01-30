@@ -1,6 +1,8 @@
-package com.atech.expensesync.modules
+package com.atech.expensesync.koin
 
 import android.content.Context
+import com.atech.expensesync.modules.androidModules
+import com.atech.expensesync.modules.commonModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -12,7 +14,9 @@ actual class KoinInitializer(
             androidContext(context)
             modules(
                 androidModules,
-                commonModule
+                commonModule,
+                commonUIModules,
+                androidUIModule
             )
         }
     }

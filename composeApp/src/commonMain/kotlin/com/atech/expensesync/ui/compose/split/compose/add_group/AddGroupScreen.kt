@@ -21,15 +21,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.ui.compose.split.CreateGroupEvent
+import com.atech.expensesync.ui.compose.split.CreateGroupScreenState
 import com.atech.expensesync.ui.theme.spacing
 
 enum class Type(
@@ -47,24 +45,28 @@ enum class Type(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddGroupScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    state: CreateGroupScreenState,
+    onEvent: (CreateGroupEvent) -> Unit,
+    onNavigateBack: () -> Unit
 ) {
-    var selectedType by remember { mutableStateOf(Type.None) }
-//    TODO: Add State for the group name
+
     MainContainer(
         modifier = modifier,
         title = "Create a group",
         actions = {
             AppButton(
                 text = "Create",
+                enable = state.groupName.isNotBlank() && state.groupType != Type.None,
                 onClick = {
-//                    TODO: Create a group
+                    onEvent(
+                        CreateGroupEvent.SaveGroup
+                    )
+                    onNavigateBack()
                 }
             )
         },
-        onNavigationClick = {
-
-        }
+        onNavigationClick = onNavigateBack
     ) { contentPadding ->
         Column(
             modifier = Modifier
@@ -74,9 +76,13 @@ fun AddGroupScreen(
         ) {
             EditTextEnhance(
                 modifier = Modifier.fillMaxWidth(),
-                value = "Yoyo",
+                value = state.groupName,
                 onValueChange = {
-
+                    onEvent(
+                        CreateGroupEvent.OnStateChange(
+                            state.copy(groupName = it)
+                        )
+                    )
                 },
                 leadingIcon = {
                     Icon(
@@ -86,7 +92,11 @@ fun AddGroupScreen(
                 },
                 placeholder = "Group Name",
                 clearIconClick = {
-//                    TODO: Clear the group name
+                    onEvent(
+                        CreateGroupEvent.OnStateChange(
+                            state.copy(groupName = "")
+                        )
+                    )
                 }
             )
             Spacer(modifier = Modifier.padding(MaterialTheme.spacing.medium))
@@ -94,18 +104,23 @@ fun AddGroupScreen(
                 text = "Select a type",
                 style = MaterialTheme.typography.bodyMedium
             )
-            FlowRow (
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
-            ){
+            ) {
                 Type.entries.filter { it.label.isNotBlank() }.forEach { type ->
                     FilterChip(
-                        selected = type == selectedType,
+                        selected = type == state.groupType,
                         onClick = {
-                            selectedType = if(type != selectedType)
-                                type
-                            else
-                                Type.None
+                            onEvent(
+                                CreateGroupEvent.OnStateChange(
+                                    state.copy(
+                                        groupType =
+                                            if (state.groupType == type) Type.None
+                                            else type
+                                    )
+                                )
+                            )
                         },
                         label = {
                             Text(type.label)
