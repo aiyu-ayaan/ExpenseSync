@@ -74,7 +74,7 @@ data class SplitMoney(
  * Split group
  * This data class is used to represent the split group, which contains the group members and split money
  * @property name The name
- * @property description The description
+ * @property type The type of the group {Home, Couple, Trip, Other}
  * @property groupMembers The group members
  * @property splitMoney The split money
  * @property created The created

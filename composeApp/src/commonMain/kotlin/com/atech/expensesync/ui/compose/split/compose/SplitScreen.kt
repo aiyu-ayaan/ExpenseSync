@@ -2,6 +2,8 @@ package com.atech.expensesync.ui.compose.split.compose
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.GroupAdd
 import androidx.compose.material.icons.twotone.Payment
@@ -17,6 +19,7 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,11 +27,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.atech.expensesync.component.GroupItems
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.room.split.SplitGroup
 import com.atech.expensesync.ui.compose.split.SplitViewModel
 import com.atech.expensesync.ui.compose.split.compose.add_group.AddGroupScreen
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.koinViewModel
+import kotlinx.coroutines.flow.Flow
 
 
 private enum class DetailScreen {
@@ -54,6 +60,7 @@ fun SplitScreen(
         listPane = {
             MainContent(
                 modifier = Modifier,
+                share = viewModel.splitGroups,
                 addNewGroupClick = {
                     detailScreen = DetailScreen.ADD_GROUP
                     navigator.navigateTo(
@@ -93,8 +100,10 @@ fun SplitScreen(
 @Composable
 private fun MainContent(
     modifier: Modifier,
+    share: Flow<List<SplitGroup>>,
     addNewGroupClick: () -> Unit
 ) {
+    val itemState by share.collectAsState(initial = emptyList())
     MainContainer(
         modifier = modifier,
         title = "Split",
@@ -122,5 +131,15 @@ private fun MainContent(
             }
         }
     ) { paddingValue ->
+        LazyColumn(
+            modifier = Modifier.padding(MaterialTheme.spacing.medium),
+            contentPadding = paddingValue
+        ) {
+            items(itemState) { item ->
+                GroupItems(
+                    model = item
+                )
+            }
+        }
     }
 }
