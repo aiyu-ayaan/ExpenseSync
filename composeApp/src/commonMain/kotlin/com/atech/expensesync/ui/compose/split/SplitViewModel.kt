@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.room.split.SplitGroup
 import com.atech.expensesync.usecases.SplitUseCases
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class SplitViewModel(
     private val useCases: SplitUseCases
@@ -27,7 +28,7 @@ class SplitViewModel(
                     SplitGroup(
                         name = createGroupState.value.groupName,
                         type = createGroupState.value.groupType.label,
-                        path = ""
+                        path = UUID.randomUUID().toString()
                     )
                 )
                 _createGroupState.value = CreateGroupScreenState()

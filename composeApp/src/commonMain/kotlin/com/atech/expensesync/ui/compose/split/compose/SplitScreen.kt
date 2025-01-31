@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.compose.split.compose
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -142,7 +143,8 @@ private fun MainContent(
     ) { paddingValue ->
         LazyColumn(
             modifier = Modifier.padding(MaterialTheme.spacing.medium),
-            contentPadding = paddingValue
+            contentPadding = paddingValue,
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             items(itemState) { item ->
                 GroupItems(
