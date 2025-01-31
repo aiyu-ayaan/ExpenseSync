@@ -33,6 +33,7 @@ import com.atech.expensesync.database.room.split.SplitGroup
 import com.atech.expensesync.ui.compose.split.SplitViewModel
 import com.atech.expensesync.ui.compose.split.compose.add_group.AddGroupScreen
 import com.atech.expensesync.ui.theme.spacing
+import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.koinViewModel
 import kotlinx.coroutines.flow.Flow
 
@@ -48,26 +49,33 @@ private enum class DetailScreen {
 @Composable
 fun SplitScreen(
     modifier: Modifier = Modifier,
+    canShowAppBar: (Boolean) -> Unit,
     navHostController: NavHostController
 ) {
     var detailScreen by rememberSaveable { mutableStateOf(DetailScreen.NONE) }
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     val viewModel: SplitViewModel = koinViewModel()
+    BackHandler(navigator.canNavigateBack()) {
+        navigator.navigateBack()
+    }
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
         listPane = {
-            MainContent(
-                modifier = Modifier,
-                share = viewModel.splitGroups,
-                addNewGroupClick = {
-                    detailScreen = DetailScreen.ADD_GROUP
-                    navigator.navigateTo(
-                        pane = ListDetailPaneScaffoldRole.Detail
-                    )
-                }
-            )
+            AnimatedPane {
+                canShowAppBar.invoke(true)
+                MainContent(
+                    modifier = Modifier,
+                    share = viewModel.splitGroups,
+                    addNewGroupClick = {
+                        detailScreen = DetailScreen.ADD_GROUP
+                        navigator.navigateTo(
+                            pane = ListDetailPaneScaffoldRole.Detail
+                        )
+                    }
+                )
+            }
         },
         detailPane = when (detailScreen) {
             DetailScreen.NONE -> {
@@ -80,6 +88,7 @@ fun SplitScreen(
 
             DetailScreen.ADD_GROUP -> {
                 {
+                    canShowAppBar.invoke(false)
                     AnimatedPane {
                         AddGroupScreen(
                             state = viewModel.createGroupState.value,

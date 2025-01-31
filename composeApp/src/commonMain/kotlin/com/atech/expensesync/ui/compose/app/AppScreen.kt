@@ -8,7 +8,6 @@ import androidx.compose.material.icons.twotone.AttachMoney
 import androidx.compose.material.icons.twotone.CalendarMonth
 import androidx.compose.material.icons.twotone.Fastfood
 import androidx.compose.material.icons.twotone.Payments
-import androidx.compose.material.icons.twotone.Splitscreen
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -99,7 +98,10 @@ fun AppScreen(
         when (currentDestination) {
             BaseAppScreen.Split -> {
                 SplitScreen(
-                    navHostController = navHostController
+                    navHostController = navHostController,
+                    canShowAppBar = {
+                        showNavigation = it
+                    }
                 )
             }
 
