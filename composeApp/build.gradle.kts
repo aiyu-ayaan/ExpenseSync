@@ -68,6 +68,13 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+
+            implementation("com.google.api-client:google-api-client:2.2.0")
+            implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+            implementation("com.google.apis:google-api-services-oauth2:v2-rev20200213-2.0.0")
+
+            // Firebase Admin
+            implementation("com.google.firebase:firebase-admin:9.2.0")
         }
     }
 }

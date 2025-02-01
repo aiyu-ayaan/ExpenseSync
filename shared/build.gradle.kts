@@ -57,6 +57,9 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 room {

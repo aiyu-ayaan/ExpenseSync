@@ -49,8 +49,6 @@ fun LogInScreen(
                 return@InvokeLogInWithGoogle
             }
         }
-    } else {
-
     }
     MainContainer(
         modifier = modifier,

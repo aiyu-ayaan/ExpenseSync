@@ -9,10 +9,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.koin.KoinInitializer
+import com.atech.expensesync.login.InitFirebase
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
-import org.koin.compose.koinInject
 import org.koin.core.context.stopKoin
 import java.awt.Dimension
 import java.awt.Toolkit
@@ -32,6 +31,7 @@ fun main() = application {
     val windowState = rememberWindowState(
         size = calculateWindowSize(screenSize)
     )
+    InitFirebase().initFirebase()
     ExpenseSyncTheme {
         Window(
             state = windowState,
