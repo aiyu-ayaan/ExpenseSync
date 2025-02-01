@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    id("com.google.gms.google-services")
+    alias(libs.plugins.googleAndroidLibrariesMapsplatformSecretsGradlePlugin)
 }
 
 kotlin {
@@ -29,6 +31,12 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.accompanist.systemuicontroller)
+
+
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.bundles.firebase)
+
+            implementation(libs.bundles.credentials)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -88,6 +96,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 

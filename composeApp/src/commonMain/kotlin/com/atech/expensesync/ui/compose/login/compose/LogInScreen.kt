@@ -14,15 +14,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.AppButton
-import com.atech.expensesync.component.ButtonWithBorder
+import com.atech.expensesync.component.GoogleButton
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.navigation.ExpanseSyncRoutes
 import com.atech.expensesync.ui.theme.spacing
 import expensesync.composeapp.generated.resources.Res
@@ -36,27 +39,40 @@ fun LogInScreen(
     navHostController: NavHostController
 ) {
     val pref = LocalDataStore.current
+    var logInMessage by rememberSaveable { mutableStateOf("Creating ...") }
+    var hasClick by rememberSaveable { mutableStateOf(false) }
+
+    if (hasClick) {
+        com.atech.expensesync.login.InvokeLogInWithGoogle { logInState ->
+            if (logInState.errorMessage !=null){
+                hasClick = false
+                return@InvokeLogInWithGoogle
+            }
+        }
+    } else {
+
+    }
     MainContainer(
         modifier = modifier,
         bottomBar = {
             BottomAppBar(
                 containerColor = MaterialTheme.colorScheme.surface,
-            ){
+            ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(bottom = MaterialTheme.spacing.large),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
                 ) {
-                    ButtonWithBorder(
+                    AppButton(
                         modifier = Modifier.fillMaxWidth(.3f)
-                            .padding(MaterialTheme.spacing.medium),
+                            .padding(start = MaterialTheme.spacing.medium),
                         innerPadding = MaterialTheme.spacing.small,
                         text = "Skip",
                         onClick = {
                             navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
-                            pref.saveBoolean(
-                                PrefKeys.IS_LOG_IN_SKIP, true
-                            )
+//                                pref.saveBoolean(
+//                                    PrefKeys.IS_LOG_IN_SKIP, true
+//                                )
                                 launchSingleTop = true
                                 popUpTo(ExpanseSyncRoutes.LOGIN.route) {
                                     inclusive = true
@@ -64,12 +80,17 @@ fun LogInScreen(
                             }
                         }
                     )
-                    AppButton(
+                    GoogleButton(
                         modifier = Modifier.fillMaxWidth()
-                            .padding(MaterialTheme.spacing.medium),
+                            .padding(end = MaterialTheme.spacing.medium),
                         innerPadding = MaterialTheme.spacing.small,
-                        text = "Sign Up", onClick = {}
-                    )
+                        text = "Google",
+                        loadingText = logInMessage,
+                        hasClick = hasClick,
+                        hasClickChange = { hasClick = it }
+                    ) {
+
+                    }
                 }
             }
         }
