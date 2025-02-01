@@ -30,13 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.GroupItems
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.room.split.SplitGroup
+import com.atech.expensesync.database.room.split.ExpanseGroup
 import com.atech.expensesync.ui.compose.split.SplitViewModel
 import com.atech.expensesync.ui.compose.split.compose.add_group.AddGroupScreen
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.koinViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 
 private enum class DetailScreen {
@@ -68,7 +69,7 @@ fun SplitScreen(
                 canShowAppBar.invoke(true)
                 MainContent(
                     modifier = Modifier,
-                    share = viewModel.splitGroups,
+                    groupsFlow = viewModel.splitGroups,
                     addNewGroupClick = {
                         detailScreen = DetailScreen.ADD_GROUP
                         navigator.navigateTo(
@@ -110,10 +111,10 @@ fun SplitScreen(
 @Composable
 private fun MainContent(
     modifier: Modifier,
-    share: Flow<List<SplitGroup>>,
+    groupsFlow: Flow<List<ExpanseGroup>>,
     addNewGroupClick: () -> Unit
 ) {
-    val itemState by share.collectAsState(initial = emptyList())
+    val itemState by groupsFlow.collectAsState(initial = emptyList())
     MainContainer(
         modifier = modifier,
         title = "Split",

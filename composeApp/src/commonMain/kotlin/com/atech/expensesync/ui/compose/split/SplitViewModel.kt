@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.atech.expensesync.database.room.split.SplitGroup
+import com.atech.expensesync.database.room.split.ExpanseGroup
 import com.atech.expensesync.usecases.SplitUseCases
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -20,15 +20,15 @@ class SplitViewModel(
 
     fun onAddGroupEvent(event: CreateGroupEvent) {
         when (event) {
-            is CreateGroupEvent.OnStateChange ->
-                _createGroupState.value = event.state
+            is CreateGroupEvent.OnStateChange -> _createGroupState.value = event.state
 
             CreateGroupEvent.SaveGroup -> viewModelScope.launch {
                 useCases.createNewGroup(
-                    SplitGroup(
-                        name = createGroupState.value.groupName,
-                        type = createGroupState.value.groupType.label,
-                        path = UUID.randomUUID().toString()
+                    ExpanseGroup(
+                        groupId = UUID.randomUUID().toString(),
+                        groupName = _createGroupState.value.groupName,
+                        type = _createGroupState.value.groupType.label,
+                        createdByUid = UUID.randomUUID().toString(),
                     )
                 )
                 _createGroupState.value = CreateGroupScreenState()

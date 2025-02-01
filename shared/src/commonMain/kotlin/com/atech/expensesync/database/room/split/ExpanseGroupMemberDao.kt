@@ -5,21 +5,16 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface SplitDao {
+interface ExpanseGroupMemberDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(splitGroup: SplitGroup)
+    suspend fun insertMember(member: ExpanseGroupMembers)
 
-    @Update
-    suspend fun update(splitGroup: SplitGroup)
+    @Query("SELECT * FROM expanse_group_members WHERE groupId = :groupId")
+    fun getGroupMembers(groupId: String): Flow<List<ExpanseGroupMembers>>
 
     @Delete
-    suspend fun delete(splitGroup: SplitGroup)
-
-    @Query("SELECT * FROM split_group order by created desc")
-    fun getAll(): Flow<List<SplitGroup>>
-
+    suspend fun removeMember(member: ExpanseGroupMembers)
 }

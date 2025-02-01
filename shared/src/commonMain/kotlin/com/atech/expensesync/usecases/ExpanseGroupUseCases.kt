@@ -1,7 +1,7 @@
 package com.atech.expensesync.usecases
 
-import com.atech.expensesync.database.room.split.SplitDao
-import com.atech.expensesync.database.room.split.SplitGroup
+import com.atech.expensesync.database.room.split.ExpanseGroup
+import com.atech.expensesync.database.room.split.ExpanseGroupDao
 
 
 data class SplitUseCases(
@@ -12,39 +12,38 @@ data class SplitUseCases(
 )
 
 data class CreateNewGroupUseCase(
-    val dao: SplitDao
+    val dao: ExpanseGroupDao
 ) {
     suspend operator fun invoke(
-        data: SplitGroup
+        data: ExpanseGroup
     ) {
         dao.insert(data)
     }
 }
 
 data class GetGroupsUseCase(
-    val dao: SplitDao
+    val dao: ExpanseGroupDao
 ) {
-    operator fun invoke() =
-        dao.getAll()
+    operator fun invoke() = dao.getAllActiveGroups()
 }
 
 data class UpdateGroupUseCase(
-    val dao: SplitDao
+    val dao: ExpanseGroupDao
 ) {
     suspend operator fun invoke(
-        data: SplitGroup
+        data: ExpanseGroup
     ) {
-        dao.update(data)
+        dao.updateGroup(data)
     }
 }
 
 data class DeleteGroupUseCase(
-    val dao: SplitDao
+    val dao: ExpanseGroupDao
 ) {
     suspend operator fun invoke(
-        data: SplitGroup
+        data: ExpanseGroup
     ) {
-        dao.delete(data)
+        dao.deleteGroup(data)
     }
 }
 

@@ -11,5 +11,6 @@ fun getExpenseSyncDatabase(context: Context): ExpenseSyncDatabase {
         name = dbFile.absolutePath,
     ).setDriver(
         BundledSQLiteDriver()
-    ).build()
+    ).fallbackToDestructiveMigration(false)
+        .build()
 }

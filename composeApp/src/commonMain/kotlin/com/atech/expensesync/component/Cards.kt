@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.atech.expensesync.database.room.split.SplitGroup
+import com.atech.expensesync.database.room.split.ExpanseGroup
 import com.atech.expensesync.ui.compose.split.compose.add_group.Type
 import com.atech.expensesync.ui.theme.spacing
 
@@ -48,7 +48,7 @@ fun DefaultCard(
 @Composable
 fun GroupItems(
     modifier: Modifier = Modifier,
-    model: SplitGroup
+    model: ExpanseGroup
 ) {
     val enum = Type.entries.find { it.name == model.type } ?: Type.None
     DefaultCard(
@@ -80,7 +80,7 @@ fun GroupItems(
                         .padding(MaterialTheme.spacing.medium)
                 ) {
                     Text(
-                        text = model.name,
+                        text = model.groupName,
                         style = MaterialTheme.typography.titleMedium,
                         maxLines = 1
                     )
