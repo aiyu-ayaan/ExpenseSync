@@ -1,6 +1,6 @@
 package com.atech.expensesync.firebase
 
-import com.atech.expensesync.models.User
+import com.atech.expensesync.database.models.User
 import com.atech.expensesync.utils.FirebaseCollectionPath
 import com.google.cloud.firestore.Firestore
 import kotlinx.coroutines.Dispatchers

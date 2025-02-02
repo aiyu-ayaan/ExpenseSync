@@ -6,7 +6,7 @@ enum class LoggerType {
     ERROR
 }
 
-expect fun expanseSyncLogger(
+expect fun expenseSyncLogger(
     message: String,
     loggerType: LoggerType = LoggerType.DEBUG
 )

@@ -1,6 +1,6 @@
 package com.atech.expensesync.utils
 
-actual fun expanseSyncLogger(
+actual fun expenseSyncLogger(
     message: String,
     loggerType: LoggerType
 ) {

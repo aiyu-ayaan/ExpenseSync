@@ -3,8 +3,10 @@ package com.atech.expensesync.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
+import com.atech.expensesync.ui.compose.login.LogInViewModel
 import com.atech.expensesync.ui.compose.login.compose.LogInScreen
 import com.atech.expensesync.ui_utils.fadeThroughComposable
+import com.atech.expensesync.ui_utils.koinViewModel
 
 
 sealed class LogInNavigation(val routes: String) {
@@ -22,8 +24,11 @@ fun NavGraphBuilder.logInScreenNavigation(
         fadeThroughComposable(
             route = LogInNavigation.LogInScreen.routes
         ) {
+            val viewModel = koinViewModel<LogInViewModel>()
             LogInScreen(
-                navHostController = navHostController
+                navHostController = navHostController,
+                onEvent = viewModel::onEvent
+
             )
         }
     }

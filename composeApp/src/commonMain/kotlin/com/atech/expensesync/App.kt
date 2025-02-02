@@ -28,12 +28,13 @@ fun App(
         CompositionLocalProvider(
             LocalDataStore provides pref
         ) {
-            val isLoggedIn = pref.getBoolean(PrefKeys.IS_LOG_IN_SKIP)
+            val isLoggedInSkipped = pref.getBoolean(PrefKeys.IS_LOG_IN_SKIP)
+            val userId = pref.getString(PrefKeys.USER_ID)
             ExpanseSyncNavigation(
                 modifier = Modifier.padding(
                 ),
                 navHostController = navHostController,
-                startDestination = if (isLoggedIn)
+                startDestination = if (isLoggedInSkipped || userId.isNotEmpty())
                     ExpanseSyncNavigation.AppScreens.route
                 else
                     ExpanseSyncNavigation.LogInScreen.route

@@ -26,8 +26,14 @@ import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.GoogleButton
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.models.User
+import com.atech.expensesync.database.pref.PrefKeys
+import com.atech.expensesync.login.toUser
 import com.atech.expensesync.navigation.ExpanseSyncRoutes
+import com.atech.expensesync.ui.compose.login.LogInEvents
 import com.atech.expensesync.ui.theme.spacing
+import com.atech.expensesync.utils.ResponseDataState
+import com.atech.expensesync.utils.toJson
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.login
 import org.jetbrains.compose.resources.painterResource
@@ -36,25 +42,48 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun LogInScreen(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    onEvent: (LogInEvents) -> Unit,
 ) {
     val pref = LocalDataStore.current
     var logInMessage by rememberSaveable { mutableStateOf("Creating ...") }
     var hasClick by rememberSaveable { mutableStateOf(false) }
-
     if (hasClick) {
         com.atech.expensesync.login.InvokeLogInWithGoogle { logInState ->
-            if (logInState.errorMessage !=null){
+            if (logInState.errorMessage != null) {
+//                Todo: show error message
                 hasClick = false
                 return@InvokeLogInWithGoogle
             }
-        }
-    } else {
+            onEvent.invoke(LogInEvents.OnLogInClicked(logInState.toUser()) { model ->
+                when (model) {
+                    is ResponseDataState.Error -> {
+//                        Todo: show error message
+                        com.atech.expensesync.utils.expenseSyncLogger(
+                            "Error: ${model.error}"
+                        )
+                    }
 
+                    is ResponseDataState.Success<User> -> {
+                        pref.saveString(
+                            PrefKeys.USER_ID, model.data.uid
+                        )
+                        pref.saveString(
+                            PrefKeys.USER_MODEL, model.data.toJson()
+                        )
+                        navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
+                            launchSingleTop = true
+                            popUpTo(ExpanseSyncRoutes.LOGIN.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
+            })
+        }
     }
     MainContainer(
-        modifier = modifier,
-        bottomBar = {
+        modifier = modifier, bottomBar = {
             BottomAppBar(
                 containerColor = MaterialTheme.colorScheme.surface,
             ) {
@@ -70,16 +99,15 @@ fun LogInScreen(
                         text = "Skip",
                         onClick = {
                             navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
-//                                pref.saveBoolean(
-//                                    PrefKeys.IS_LOG_IN_SKIP, true
-//                                )
+                                pref.saveBoolean(
+                                    PrefKeys.IS_LOG_IN_SKIP, true
+                                )
                                 launchSingleTop = true
                                 popUpTo(ExpanseSyncRoutes.LOGIN.route) {
                                     inclusive = true
                                 }
                             }
-                        }
-                    )
+                        })
                     GoogleButton(
                         modifier = Modifier.fillMaxWidth()
                             .padding(end = MaterialTheme.spacing.medium),
@@ -87,30 +115,24 @@ fun LogInScreen(
                         text = "Google",
                         loadingText = logInMessage,
                         hasClick = hasClick,
-                        hasClickChange = { hasClick = it }
-                    ) {
+                        hasClickChange = { hasClick = it }) {
 
                     }
                 }
             }
-        }
-    ) { contentPadding ->
+        }) { contentPadding ->
         Column(
-            modifier = Modifier.fillMaxSize()
-                .padding(contentPadding),
+            modifier = Modifier.fillMaxSize().padding(contentPadding),
         ) {
             Image(
-                modifier = Modifier.fillMaxWidth()
-                    .fillMaxHeight(0.5f)
-                    .padding(
-                        horizontal = MaterialTheme.spacing.large
-                    ),
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f).padding(
+                    horizontal = MaterialTheme.spacing.large
+                ),
                 painter = painterResource(Res.drawable.login),
                 contentDescription = "Money",
             )
             Column(
-                modifier = Modifier.fillMaxWidth()
-                    .fillMaxHeight(0.7f)
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f)
                     .padding(MaterialTheme.spacing.medium),
                 verticalArrangement = Arrangement.Bottom,
             ) {

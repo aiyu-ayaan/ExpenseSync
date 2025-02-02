@@ -2,7 +2,7 @@ package com.atech.expensesync.utils
 
 import android.util.Log
 
-actual fun expanseSyncLogger(
+actual fun expenseSyncLogger(
     message: String, loggerType: LoggerType
 ) {
     Log.d("AAA","Called")

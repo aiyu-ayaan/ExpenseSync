@@ -39,11 +39,16 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+
+            implementation(libs.ktor.client.okhttp)
         }
         jvmMain.dependencies {
             //            DataStore
             implementation(libs.datastore)
             implementation(libs.datastore.preferences)
+
+
+            implementation(libs.ktor.client.okhttp)
         }
     }
 }

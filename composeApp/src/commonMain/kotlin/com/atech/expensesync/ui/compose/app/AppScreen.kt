@@ -65,11 +65,11 @@ fun AppScreen(
             else -> NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
         }
     }
-    com.atech.expensesync.utils.expanseSyncLogger(
+    com.atech.expensesync.utils.expenseSyncLogger(
         " ${currentDestination == BaseAppScreen.Split}"
     )
     BackHandler(currentDestination != BaseAppScreen.Split) {
-        com.atech.expensesync.utils.expanseSyncLogger(
+        com.atech.expensesync.utils.expenseSyncLogger(
             "back ${currentDestination == BaseAppScreen.Split}"
         )
         currentDestination = BaseAppScreen.Split

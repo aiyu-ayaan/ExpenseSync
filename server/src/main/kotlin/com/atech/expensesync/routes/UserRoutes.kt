@@ -1,7 +1,7 @@
 package com.atech.expensesync.routes
 
 import com.atech.expensesync.firebase.CreateUser
-import com.atech.expensesync.models.User
+import com.atech.expensesync.database.models.User
 import com.atech.expensesync.server_utils.handleException
 import com.atech.expensesync.utils.ApiPaths
 import com.atech.expensesync.utils.ResponseDataState

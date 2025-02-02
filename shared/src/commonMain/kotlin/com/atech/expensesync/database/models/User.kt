@@ -1,4 +1,4 @@
-package com.atech.expensesync.models
+package com.atech.expensesync.database.models
 
 import kotlinx.serialization.Serializable
 
