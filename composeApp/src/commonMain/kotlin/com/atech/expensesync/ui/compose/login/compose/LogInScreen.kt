@@ -85,61 +85,66 @@ fun LogInScreen(
                     })
                 }
             }
-        }
-    )
+        })
     MainContainer(
         modifier = modifier, bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.surface,
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
-                ) {
-                    AppButton(
-                        modifier = Modifier.fillMaxWidth(.3f)
-                            .padding(start = MaterialTheme.spacing.medium),
-                        innerPadding = MaterialTheme.spacing.small,
-                        text = "Skip",
-                        onClick = {
-                            navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
-                                pref.saveBoolean(
-                                    PrefKeys.IS_LOG_IN_SKIP, true
-                                )
-                                launchSingleTop = true
-                                popUpTo(ExpanseSyncRoutes.LOGIN.route) {
-                                    inclusive = true
-                                }
-                            }
-                        })
-                    GoogleButton(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(end = MaterialTheme.spacing.medium),
-                        innerPadding = MaterialTheme.spacing.small,
-                        text = "Google",
-                        loadingText = logInMessage,
-                        hasClick = hasClick,
-                        hasClickChange = { hasClick = it }) {
+            runWithDeviceCompose(
+                onAndroid = {
+                    BottomAppBar(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
+                        ) {
+                            AppButton(
+                                modifier = Modifier.fillMaxWidth(.3f)
+                                    .padding(start = MaterialTheme.spacing.medium),
+                                innerPadding = MaterialTheme.spacing.small,
+                                text = "Skip",
+                                onClick = {
+                                    navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
+                                        pref.saveBoolean(
+                                            PrefKeys.IS_LOG_IN_SKIP, true
+                                        )
+                                        launchSingleTop = true
+                                        popUpTo(ExpanseSyncRoutes.LOGIN.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                })
+                            GoogleButton(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(end = MaterialTheme.spacing.medium),
+                                innerPadding = MaterialTheme.spacing.small,
+                                text = "Google",
+                                loadingText = logInMessage,
+                                hasClick = hasClick,
+                                hasClickChange = { hasClick = it }) {
 
+                            }
+                        }
                     }
-                }
-            }
+                })
         }) { contentPadding ->
         Column(
             modifier = Modifier.fillMaxSize().padding(contentPadding),
         ) {
             Image(
-                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f).padding(
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(
+                    if (com.atech.expensesync.utils.isAndroid()) 0.5f else 0.25f
+                ).padding(
                     horizontal = MaterialTheme.spacing.large
                 ),
                 painter = painterResource(Res.drawable.login),
                 contentDescription = "Money",
             )
+            Spacer(modifier = Modifier.padding(MaterialTheme.spacing.medium))
             Column(
-                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f)
+                modifier = Modifier.fillMaxWidth().fillMaxHeight()
                     .padding(MaterialTheme.spacing.medium),
-                verticalArrangement = Arrangement.Bottom,
+                verticalArrangement = Arrangement.Top,
             ) {
                 Text(
                     text = "Set Your Budget With Expense Sync",
@@ -153,6 +158,11 @@ fun LogInScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier.fillMaxWidth(),
+                )
+                runWithDeviceCompose(
+                    onDesktop = {
+//                        todo: Implement QR code
+                    }
                 )
             }
         }
