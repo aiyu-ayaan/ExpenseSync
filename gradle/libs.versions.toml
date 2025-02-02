@@ -13,10 +13,12 @@ androidx-lifecycle = "2.8.4"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 compose-multiplatform = "1.7.0"
+firebaseAdmin = "9.2.0"
 junit = "4.13.2"
 kotlin = "2.1.0"
 kotlinx-coroutines = "1.10.1"
 ktor = "3.0.3"
+ktorServerContentNegotiation = "3.0.3"
 logback = "1.5.16"
 koin = "3.6.0-alpha3"
 koinCompose = "3.6.0-alpha3"
@@ -28,6 +30,8 @@ kotlinxDatetime = "0.6.0"
 materialNavigation = "1.7.0-beta02"
 navigationCompose = "2.8.0-alpha10"
 ksp = "2.1.10-RC-1.0.29"
+perfmarkApi = "0.27.0"
+perfmarkImpl = "0.27.0"
 sqlite = "2.5.0-SNAPSHOT"
 room = "2.7.0-alpha13"
 datastore = "1.1.2"
@@ -42,6 +46,7 @@ googleid = "1.1.1"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activityCompose" }
+firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebaseAdmin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -55,9 +60,14 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+ktor-serialization-kotlinx-json-jvm = { module = "io.ktor:ktor-serialization-kotlinx-json-jvm" }
+ktor-server-caching-headers-jvm = { module = "io.ktor:ktor-server-caching-headers-jvm" }
+ktor-server-call-logging-jvm = { module = "io.ktor:ktor-server-call-logging-jvm" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktorServerContentNegotiation" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-web-sockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -81,6 +91,8 @@ koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinComp
 
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 
+perfmark-impl = { module = "io.perfmark:perfmark-impl", version.ref = "perfmarkImpl" }
+perfmark-api = { module = "io.perfmark:perfmark-api", version.ref = "perfmarkApi" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-runtime-android = { module = "androidx.room:room-runtime-android", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }

@@ -34,6 +34,7 @@ kotlin {
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.ktor.serialization.kotlinx.json.jvm)
         }
         androidMain.dependencies {
             implementation(libs.koin.android)
@@ -56,6 +57,9 @@ android {
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 

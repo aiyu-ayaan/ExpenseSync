@@ -1,27 +1,18 @@
 package com.atech.expensesync
 
+import com.atech.expensesync.plugins.configureCaching
+import com.atech.expensesync.plugins.configureMonitoring
+import com.atech.expensesync.plugins.configureSerialization
+import com.atech.expensesync.plugins.configureWebSocket
+import com.atech.expensesync.routes.configureRouting
 import com.atech.expensesync.utils.SERVER_PORT
-import io.ktor.http.ContentType
+import com.atech.expensesync.websockets.entryWebSocket
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
-import io.ktor.server.routing.routing
-
-private const val hello = """
-    <html>
-        <head>
-            <title>Research Hub</title>
-        </head>
-        <body>
-            <h1>
-                <h1>Welcome to ExpenseSync</h1>
-                Created by Ayaan
-            </h1>
-        </body>
-    </html>
-"""
 
 
 fun main() {
@@ -30,9 +21,25 @@ fun main() {
 }
 
 fun Application.module() {
-    routing {
-        get("/") {
-            call.respondText(hello, contentType = ContentType.Text.Html)
-        }
+    initFirebase()
+    configureMonitoring()
+    configureCaching()
+    configureSerialization()
+    configureWebSocket()
+    configureRouting()
+    entryWebSocket()
+}
+
+private fun Application.initFirebase() {
+    try {
+        val clientSecreteStream = object {}.javaClass.getResourceAsStream("/web-client.json")
+            ?: throw Exception("web-client.json not found")
+        val option = FirebaseOptions.builder()
+            .setCredentials(GoogleCredentials.fromStream(clientSecreteStream))
+            .build()
+
+        FirebaseApp.initializeApp(option)
+    } catch (e: Exception) {
+        throw Exception("Failed to initialize Firebase Admin: ${e.message}")
     }
 }
