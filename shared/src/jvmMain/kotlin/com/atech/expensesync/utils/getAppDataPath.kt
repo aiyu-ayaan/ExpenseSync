@@ -6,13 +6,13 @@ internal fun getAppDataPath(): String {
     val userHome = System.getProperty("user.home")
     return when {
         System.getProperty("os.name").contains("Windows", ignoreCase = true) ->
-            Paths.get(System.getenv("APPDATA"), "ResearchHub").toString()
+            Paths.get(System.getenv("APPDATA"), "ExpenseSync").toString()
 
         System.getProperty("os.name").contains("Mac", ignoreCase = true) ->
-            Paths.get(userHome, "Library", "Application Support", "ResearchHub").toString()
+            Paths.get(userHome, "Library", "Application Support", "ExpenseSync").toString()
 
         else -> // Linux and other Unix-like systems
-            Paths.get(userHome, ".config", "ResearchHub").toString()
+            Paths.get(userHome, ".config", "ExpenseSync").toString()
     }
 }
 

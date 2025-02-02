@@ -32,6 +32,7 @@ import com.atech.expensesync.login.toUser
 import com.atech.expensesync.navigation.ExpanseSyncRoutes
 import com.atech.expensesync.ui.compose.login.LogInEvents
 import com.atech.expensesync.ui.theme.spacing
+import com.atech.expensesync.ui_utils.runWithDeviceCompose
 import com.atech.expensesync.utils.ResponseDataState
 import com.atech.expensesync.utils.toJson
 import expensesync.composeapp.generated.resources.Res
@@ -48,40 +49,44 @@ fun LogInScreen(
     val pref = LocalDataStore.current
     var logInMessage by rememberSaveable { mutableStateOf("Creating ...") }
     var hasClick by rememberSaveable { mutableStateOf(false) }
-    if (hasClick) {
-        com.atech.expensesync.login.InvokeLogInWithGoogle { logInState ->
-            if (logInState.errorMessage != null) {
+    runWithDeviceCompose(
+        onAndroid = {
+            if (hasClick) {
+                com.atech.expensesync.login.InvokeLogInWithGoogle { logInState ->
+                    if (logInState.errorMessage != null) {
 //                Todo: show error message
-                hasClick = false
-                return@InvokeLogInWithGoogle
-            }
-            onEvent.invoke(LogInEvents.OnLogInClicked(logInState.toUser()) { model ->
-                when (model) {
-                    is ResponseDataState.Error -> {
-//                        Todo: show error message
-                        com.atech.expensesync.utils.expenseSyncLogger(
-                            "Error: ${model.error}"
-                        )
+                        hasClick = false
+                        return@InvokeLogInWithGoogle
                     }
+                    onEvent.invoke(LogInEvents.OnLogInClicked(logInState.toUser()) { model ->
+                        when (model) {
+                            is ResponseDataState.Error -> {
+//                        Todo: show error message
+                                com.atech.expensesync.utils.expenseSyncLogger(
+                                    "Error: ${model.error}"
+                                )
+                            }
 
-                    is ResponseDataState.Success<User> -> {
-                        pref.saveString(
-                            PrefKeys.USER_ID, model.data.uid
-                        )
-                        pref.saveString(
-                            PrefKeys.USER_MODEL, model.data.toJson()
-                        )
-                        navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
-                            launchSingleTop = true
-                            popUpTo(ExpanseSyncRoutes.LOGIN.route) {
-                                inclusive = true
+                            is ResponseDataState.Success<User> -> {
+                                pref.saveString(
+                                    PrefKeys.USER_ID, model.data.uid
+                                )
+                                pref.saveString(
+                                    PrefKeys.USER_MODEL, model.data.toJson()
+                                )
+                                navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
+                                    launchSingleTop = true
+                                    popUpTo(ExpanseSyncRoutes.LOGIN.route) {
+                                        inclusive = true
+                                    }
+                                }
                             }
                         }
-                    }
+                    })
                 }
-            })
+            }
         }
-    }
+    )
     MainContainer(
         modifier = modifier, bottomBar = {
             BottomAppBar(
