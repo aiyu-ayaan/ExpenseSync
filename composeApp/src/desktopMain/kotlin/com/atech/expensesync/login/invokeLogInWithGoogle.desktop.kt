@@ -20,10 +20,17 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.oauth2.Oauth2
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.InputStreamReader
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 
 
 @Composable
@@ -106,12 +113,89 @@ private suspend fun performGoogleLogin(): LogInState = withContext(Dispatchers.I
         .build()
 
     val userInfo = oauth2.userinfo().get().execute()
-    print("userInfo: $userInfo")
-    return@withContext LogInState(
-        uid = userInfo.id,
-        displayName = userInfo.name,
-        email = userInfo.email,
-        photoUrl = userInfo.picture,
-        errorMessage = null
-    )
+
+
+//    val auth = Firebase.auth
+    try {
+        val auth = FirebaseAuth.getInstance()
+        val additionalClaims = hashMapOf<String, Any>(
+            "Identifier" to userInfo.email,
+            "name" to userInfo.name,
+            "picture" to (userInfo.picture ?: "")
+        )
+        val customToken = auth.createCustomToken(userInfo.id, additionalClaims)
+        val loginState = signInWithFirebaseCustomToken(customToken)
+        print("Login State: $loginState")
+        return@withContext loginState
+    } catch (e: Exception) {
+        return@withContext LogInState(
+            uid = null,
+            displayName = null,
+            email = null,
+            photoUrl = null,
+            errorMessage = e.message
+        )
+    }
+}
+
+fun signInWithFirebaseCustomToken(customToken: String): LogInState {
+    val firebaseApiUrl =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=AIzaSyDmiIObi3vVTa-pSjaS70gaxmjQdbRTFsA"
+
+    val requestBody = """
+        {
+            "token": "$customToken",
+            "returnSecureToken": true
+        }
+    """.trimIndent()
+
+    println("Called Firebase API with: $requestBody")
+
+    val request = HttpRequest.newBuilder()
+        .uri(URI.create(firebaseApiUrl))
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+        .build()
+
+    val client = HttpClient.newHttpClient()
+    val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+
+    println("Firebase Response: ${response.body()}")
+    val jsonResponse = parseFirebaseResponse(response.body())
+    println("Parsed Firebase Response: $jsonResponse")
+
+    // Check if we got a valid token and other information
+    return if (!jsonResponse.idToken.isNullOrBlank()) {
+        LogInState(
+            uid = jsonResponse.localId,
+            displayName = jsonResponse.displayName,
+            email = jsonResponse.email,
+            photoUrl = jsonResponse.photoUrl,
+            errorMessage = null
+        )
+    } else {
+        // If there's an error, try to provide a meaningful error message.
+        val errorMessage = jsonResponse.error ?: "Unknown error signing in with Firebase."
+        LogInState(
+            uid = null,
+            displayName = null,
+            email = null,
+            photoUrl = null,
+            errorMessage = errorMessage
+        )
+    }
+}
+
+@Serializable
+data class FirebaseAuthResponse(
+    val idToken: String? = null,
+    val localId: String? = null,
+    val email: String? = null,
+    val displayName: String? = null,
+    val photoUrl: String? = null,
+    val error: String? = null
+)
+
+fun parseFirebaseResponse(json: String): FirebaseAuthResponse {
+    return Json.decodeFromString(json)
 }

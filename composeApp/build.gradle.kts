@@ -75,6 +75,7 @@ kotlin {
 
             // Firebase Admin
             implementation("com.google.firebase:firebase-admin:9.2.0")
+//            implementation("dev.gitlive:firebase-auth:2.1.0")
         }
     }
 }
