@@ -177,7 +177,7 @@ fun LogInScreen(
                 runWithDeviceCompose(
                     onDesktop = {
                         QRComposable().generateContent(
-                            pref.getString(PrefKeys.DESKTOP_USER_UID)
+                            "${pref.getString(PrefKeys.DESKTOP_USER_UID)}$${com.atech.expensesync.utils.getOsName()}"
                         ).invoke()
                     }
                 )

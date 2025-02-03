@@ -11,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
@@ -42,59 +43,64 @@ fun ScanScreen(
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
         listPane = {
-            MainContainer(
-                modifier = modifier,
-                title = "Linked Devices",
-                onNavigationClick = {
-                    navHostController.popBackStack()
-                },
-            ) { paddingValue ->
-                Column(
-                    modifier = Modifier.padding(paddingValue).padding(MaterialTheme.spacing.medium),
-                ) {
+            AnimatedPane {
+                MainContainer(
+                    modifier = modifier,
+                    title = "Linked Devices",
+                    onNavigationClick = {
+                        navHostController.popBackStack()
+                    },
+                ) { paddingValue ->
                     Column(
-                        modifier = Modifier.fillMaxWidth().fillMaxHeight(.5f),
-                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(paddingValue)
+                            .padding(MaterialTheme.spacing.medium),
                     ) {
-                        Image(
-                            modifier = Modifier.fillMaxWidth().fillMaxHeight(.6f),
-                            painter = org.jetbrains.compose.resources.painterResource(Res.drawable.devices),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.padding(MaterialTheme.spacing.small))
-                        AppButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Link Device",
-                            onClick = {
-                                isScanning = true
-                                navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
-                            },
-                            innerPadding = MaterialTheme.spacing.small
-                        )
-                    }
-                    Column(
-                        modifier = Modifier.fillMaxWidth().fillMaxHeight()
-                    ) {
-                        Text(
-                            text = "Devices",
-                            style = MaterialTheme.typography.bodySmall,
-                        )
+                        Column(
+                            modifier = Modifier.fillMaxWidth().fillMaxHeight(.5f),
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Image(
+                                modifier = Modifier.fillMaxWidth().fillMaxHeight(.6f),
+                                painter = org.jetbrains.compose.resources.painterResource(Res.drawable.devices),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.padding(MaterialTheme.spacing.small))
+                            AppButton(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "Link Device",
+                                onClick = {
+                                    isScanning = true
+                                    navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
+                                },
+                                innerPadding = MaterialTheme.spacing.small
+                            )
+                        }
+                        Column(
+                            modifier = Modifier.fillMaxWidth().fillMaxHeight()
+                        ) {
+                            Text(
+                                text = "Devices",
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
                     }
                 }
             }
         },
         detailPane = {
-            CameraScreen(
-                isScanning = isScanning,
-                isScanningChanged = {
-                    isScanning = it
-                },
-                onNavigateUpClick = {
-                    navigator.navigateBack()
-                },
-                onLinkScanned = {
-                    com.atech.expensesync.utils.expenseSyncLogger("Scanned: $it")
-                }
-            )
+            AnimatedPane {
+                CameraScreen(
+                    isScanning = isScanning,
+                    isScanningChanged = {
+                        isScanning = it
+                    },
+                    onNavigateUpClick = {
+                        navigator.navigateBack()
+                    },
+                    onLinkScanned = {
+                        com.atech.expensesync.utils.expenseSyncLogger("Scanned: $it")
+                    }
+                )
+            }
         })
 }
