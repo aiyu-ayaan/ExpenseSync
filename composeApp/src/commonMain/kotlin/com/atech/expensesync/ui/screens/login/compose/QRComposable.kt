@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 
 interface QRHelper {
     @Composable
-    fun generateContent(): @Composable () -> Unit
+    fun generateContent(deviceUid: String): @Composable () -> Unit
 }
 
 @Composable

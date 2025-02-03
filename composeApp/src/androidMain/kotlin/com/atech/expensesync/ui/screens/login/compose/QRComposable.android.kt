@@ -5,5 +5,5 @@ import androidx.compose.runtime.Composable
 @Composable
 actual fun QRComposable(): QRHelper = object : QRHelper {
     @Composable
-    override fun generateContent(): @Composable (() -> Unit) = {}
+    override fun generateContent(deviceUid: String): @Composable (() -> Unit) = {}
 }

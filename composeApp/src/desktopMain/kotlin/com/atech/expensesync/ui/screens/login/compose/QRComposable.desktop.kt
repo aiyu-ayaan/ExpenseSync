@@ -24,19 +24,19 @@ import com.atech.expensesync.common.QRCodeImage
 
 class QRHelperImp : QRHelper {
     @Composable
-    override fun generateContent(): @Composable (() -> Unit) {
+    override fun generateContent(deviceUid: String): @Composable (() -> Unit) {
         return {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                , // Light Gray Background
+                    .fillMaxSize(), // Light Gray Background
                 contentAlignment = Alignment.Center
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    val qrCodeImage = QRCodeImage("https://www.youtube.com/watch?v=K4WvNAeKxbA&ab_channel=CaseyBonezSRT")
+                    val qrCodeImage =
+                        QRCodeImage(deviceUid)
 
                     Image(
                         bitmap = qrCodeImage,

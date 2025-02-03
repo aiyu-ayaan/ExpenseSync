@@ -87,4 +87,5 @@ enum class PrefKeys {
     IS_LOG_IN_SKIP,
     USER_ID,
     USER_MODEL,
+    DESKTOP_USER_UID,
 }

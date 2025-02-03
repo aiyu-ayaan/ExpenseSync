@@ -35,10 +35,12 @@ import com.atech.expensesync.ui.screens.login.LogInEvents
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.runWithDeviceCompose
 import com.atech.expensesync.utils.ResponseDataState
+import com.atech.expensesync.utils.runWithDevice
 import com.atech.expensesync.utils.toJson
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.login
 import org.jetbrains.compose.resources.painterResource
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +52,15 @@ fun LogInScreen(
     val pref = LocalDataStore.current
     var logInMessage by rememberSaveable { mutableStateOf("Creating ...") }
     var hasClick by rememberSaveable { mutableStateOf(false) }
+//    Set UID for desktop
+    runWithDevice(onDesktop = {
+        if (pref.getString(PrefKeys.DESKTOP_USER_UID).isBlank()) {
+            pref.saveString(
+                PrefKeys.DESKTOP_USER_UID,
+                UUID.fromString(com.atech.expensesync.utils.getMachineUUID()).toString()
+            )
+        }
+    })
     runWithDeviceCompose(
         onAndroid = {
             if (hasClick) {
@@ -165,7 +176,9 @@ fun LogInScreen(
                 )
                 runWithDeviceCompose(
                     onDesktop = {
-                        QRComposable().generateContent().invoke()
+                        QRComposable().generateContent(
+                            pref.getString(PrefKeys.DESKTOP_USER_UID)
+                        ).invoke()
                     }
                 )
             }
