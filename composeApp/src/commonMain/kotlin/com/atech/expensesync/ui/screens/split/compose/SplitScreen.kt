@@ -36,7 +36,7 @@ import com.atech.expensesync.navigation.AppNavigation
 import com.atech.expensesync.ui.screens.split.SplitViewModel
 import com.atech.expensesync.ui.screens.split.compose.add_group.AddGroupScreen
 import com.atech.expensesync.ui.theme.spacing
-import com.atech.expensesync.ui_utils.BackHandler
+import com.atech.expensesync.ui_utils.backHandlerThreePane
 import com.atech.expensesync.ui_utils.koinViewModel
 import kotlinx.coroutines.flow.Flow
 
@@ -57,10 +57,8 @@ fun SplitScreen(
 ) {
     var detailScreen by rememberSaveable { mutableStateOf(DetailScreen.NONE) }
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
+    navigator.backHandlerThreePane()
     val viewModel: SplitViewModel = koinViewModel()
-    BackHandler(navigator.canNavigateBack()) {
-        navigator.navigateBack()
-    }
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,

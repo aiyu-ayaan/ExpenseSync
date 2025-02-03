@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.AppButton
@@ -145,12 +146,14 @@ fun LogInScreen(
                 modifier = Modifier.fillMaxWidth().fillMaxHeight()
                     .padding(MaterialTheme.spacing.medium),
                 verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = "Set Your Budget With Expense Sync",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.fillMaxWidth(),
+                    textAlign = if (com.atech.expensesync.utils.isAndroid()) TextAlign.Start else TextAlign.Center,
                 )
                 Spacer(modifier = Modifier.padding(MaterialTheme.spacing.medium))
                 Text(
@@ -158,10 +161,11 @@ fun LogInScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier.fillMaxWidth(),
+                    textAlign = if (com.atech.expensesync.utils.isAndroid()) TextAlign.Start else TextAlign.Center,
                 )
                 runWithDeviceCompose(
                     onDesktop = {
-//                        todo: Implement QR code
+                        QRComposable().generateContent().invoke()
                     }
                 )
             }

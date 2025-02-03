@@ -19,7 +19,7 @@ class ExpenseSyncClientImp(
     override suspend fun logInUser(model: User): ResponseDataState<User> {
         try {
             val response: ApiResponse<User> = client.post {
-                url("$BASE_URL/${ApiPaths.User.path}/create")
+                url("$BASE_URL${ApiPaths.User.path}/create")
                 contentType(ContentType.Application.Json)
                 setBody(model)
             }.body()

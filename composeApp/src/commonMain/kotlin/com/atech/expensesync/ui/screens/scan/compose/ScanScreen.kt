@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.ui.theme.spacing
+import com.atech.expensesync.ui_utils.backHandlerThreePane
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.devices
 
@@ -33,6 +34,7 @@ fun ScanScreen(
     modifier: Modifier = Modifier, navHostController: NavHostController
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
+    navigator.backHandlerThreePane()
     // Add state to control scanning
     var isScanning by remember { mutableStateOf(true) }
     ListDetailPaneScaffold(
