@@ -71,7 +71,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
 
-            implementation("com.google.zxing:core:3.5.1")
+            implementation(libs.core)
         }
     }
 }

@@ -23,5 +23,6 @@ fun Application.entryWebSocket() {
                 }
             }
         }
+        userWebSocket()
     }
 }

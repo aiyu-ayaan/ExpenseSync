@@ -11,8 +11,10 @@ import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
+import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -99,6 +101,10 @@ fun createHttpClient(
         }
         install(DefaultRequest) {
             header(HttpHeaders.CacheControl, "no-cache")
+        }
+        install(WebSockets) {
+            contentConverter = KotlinxWebsocketSerializationConverter(Json)
+            maxFrameSize = Long.MAX_VALUE
         }
 
     }

@@ -18,4 +18,5 @@ data class User(
     val photoUrl: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     val desktopLogInDetails: DesktopLogInDetails? = null,
+    val systemUid: String? = null,
 )
