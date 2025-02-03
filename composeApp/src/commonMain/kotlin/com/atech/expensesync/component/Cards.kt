@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.atech.expensesync.database.room.split.ExpanseGroup
-import com.atech.expensesync.ui.compose.split.compose.add_group.Type
+import com.atech.expensesync.ui.screens.split.compose.add_group.Type
 import com.atech.expensesync.ui.theme.spacing
 
 @Composable

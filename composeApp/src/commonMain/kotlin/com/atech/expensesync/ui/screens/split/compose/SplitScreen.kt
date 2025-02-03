@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.compose.split.compose
+package com.atech.expensesync.ui.screens.split.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Camera
 import androidx.compose.material.icons.twotone.GroupAdd
 import androidx.compose.material.icons.twotone.Payment
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,13 +32,13 @@ import androidx.navigation.NavHostController
 import com.atech.expensesync.component.GroupItems
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.split.ExpanseGroup
-import com.atech.expensesync.ui.compose.split.SplitViewModel
-import com.atech.expensesync.ui.compose.split.compose.add_group.AddGroupScreen
+import com.atech.expensesync.navigation.AppNavigation
+import com.atech.expensesync.ui.screens.split.SplitViewModel
+import com.atech.expensesync.ui.screens.split.compose.add_group.AddGroupScreen
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.koinViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
 
 private enum class DetailScreen {
@@ -75,6 +76,9 @@ fun SplitScreen(
                         navigator.navigateTo(
                             pane = ListDetailPaneScaffoldRole.Detail
                         )
+                    },
+                    linkedDeviceScreenClick = {
+                        navHostController.navigate(AppNavigation.ScanScreen.route)
                     }
                 )
             }
@@ -112,13 +116,20 @@ fun SplitScreen(
 private fun MainContent(
     modifier: Modifier,
     groupsFlow: Flow<List<ExpanseGroup>>,
-    addNewGroupClick: () -> Unit
+    addNewGroupClick: () -> Unit,
+    linkedDeviceScreenClick: () -> Unit
 ) {
     val itemState by groupsFlow.collectAsState(initial = emptyList())
     MainContainer(
         modifier = modifier,
         title = "Split",
         actions = {
+            IconButton(onClick = { linkedDeviceScreenClick.invoke() }) {
+                Icon(
+                    imageVector = Icons.TwoTone.Camera,
+                    contentDescription = null
+                )
+            }
             IconButton(onClick = { addNewGroupClick.invoke() }) {
                 Icon(
                     imageVector = Icons.TwoTone.GroupAdd,

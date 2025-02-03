@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.compose.app
+package com.atech.expensesync.ui.screens.app
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.atech.expensesync.ui.compose.split.compose.SplitScreen
+import com.atech.expensesync.ui.screens.split.compose.SplitScreen
 import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.SystemUiController
 
@@ -38,7 +38,7 @@ enum class BaseAppScreen(
 ) {
     Split("Split", Icons.TwoTone.Payments),
     Budget("Budget", Icons.TwoTone.AttachMoney),
-    Settings("Mess Track", Icons.TwoTone.Fastfood),
+    MessTrack("Mess Track", Icons.TwoTone.Fastfood),
     Calender("History", Icons.TwoTone.CalendarMonth)
 }
 
@@ -115,7 +115,7 @@ fun AppScreen(
                 }
             }
 
-            BaseAppScreen.Settings -> {
+            BaseAppScreen.MessTrack -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,

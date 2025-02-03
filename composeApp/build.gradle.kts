@@ -64,6 +64,8 @@ kotlin {
 
             //          Adaptive
             implementation(libs.bundles.adaptives)
+
+            implementation(libs.scanner)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

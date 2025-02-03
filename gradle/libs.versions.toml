@@ -32,6 +32,7 @@ navigationCompose = "2.8.0-alpha10"
 ksp = "2.1.10-RC-1.0.29"
 perfmarkApi = "0.27.0"
 perfmarkImpl = "0.27.0"
+scanner = "0.2.0"
 sqlite = "2.5.0-SNAPSHOT"
 room = "2.7.0-alpha13"
 datastore = "1.1.2"
@@ -96,6 +97,7 @@ perfmark-api = { module = "io.perfmark:perfmark-api", version.ref = "perfmarkApi
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-runtime-android = { module = "androidx.room:room-runtime-android", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+scanner = { module = "io.github.kalinjul.easyqrscan:scanner", version.ref = "scanner" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 

@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.compose.split.compose.add_group
+package com.atech.expensesync.ui.screens.split.compose.add_group
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,8 +26,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.ui.compose.split.CreateGroupEvent
-import com.atech.expensesync.ui.compose.split.CreateGroupScreenState
+import com.atech.expensesync.ui.screens.split.CreateGroupEvent
+import com.atech.expensesync.ui.screens.split.CreateGroupScreenState
 import com.atech.expensesync.ui.theme.spacing
 
 enum class Type(

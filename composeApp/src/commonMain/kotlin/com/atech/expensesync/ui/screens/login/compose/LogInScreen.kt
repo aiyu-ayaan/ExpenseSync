@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.compose.login.compose
+package com.atech.expensesync.ui.screens.login.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +30,7 @@ import com.atech.expensesync.database.models.User
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.login.toUser
 import com.atech.expensesync.navigation.ExpanseSyncRoutes
-import com.atech.expensesync.ui.compose.login.LogInEvents
+import com.atech.expensesync.ui.screens.login.LogInEvents
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.runWithDeviceCompose
 import com.atech.expensesync.utils.ResponseDataState

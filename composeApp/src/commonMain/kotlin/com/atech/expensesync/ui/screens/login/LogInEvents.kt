@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.compose.login
+package com.atech.expensesync.ui.screens.login
 
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.utils.ResponseDataState

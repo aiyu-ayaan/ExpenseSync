@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.compose.login
+package com.atech.expensesync.ui.screens.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

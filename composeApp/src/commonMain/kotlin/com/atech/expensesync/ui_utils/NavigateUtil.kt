@@ -12,6 +12,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
@@ -98,3 +100,31 @@ inline fun <reified T : Any> NavGraphBuilder.fadeThroughComposableEnh(
         }
     )
 }
+
+fun NavGraphBuilder.animatedComposable(
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
+    deepLinks: List<NavDeepLink> = emptyList(),
+    content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
+) = composable(
+    route = route,
+    arguments = arguments,
+    deepLinks = deepLinks,
+    enterTransition = {
+        slideInHorizontally(
+            initialOffsetX = { (it * initialOffset).toInt() }) + fadeIn()
+    },
+    exitTransition = {
+        slideOutHorizontally(
+            targetOffsetX = { -(it * initialOffset).toInt() }) + fadeOut()
+    },
+    popEnterTransition = {
+        slideInHorizontally(
+            initialOffsetX = { -(it * initialOffset).toInt() }) + fadeIn()
+    },
+    popExitTransition = {
+        slideOutHorizontally(
+            targetOffsetX = { (it * initialOffset).toInt() }) + fadeOut()
+    },
+    content = content
+)

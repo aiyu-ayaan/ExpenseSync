@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.compose.split
+package com.atech.expensesync.ui.screens.split
 
 sealed interface CreateGroupEvent {
     data class OnStateChange(val state: CreateGroupScreenState) : CreateGroupEvent

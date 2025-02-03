@@ -3,8 +3,8 @@ package com.atech.expensesync.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
-import com.atech.expensesync.ui.compose.login.LogInViewModel
-import com.atech.expensesync.ui.compose.login.compose.LogInScreen
+import com.atech.expensesync.ui.screens.login.LogInViewModel
+import com.atech.expensesync.ui.screens.login.compose.LogInScreen
 import com.atech.expensesync.ui_utils.fadeThroughComposable
 import com.atech.expensesync.ui_utils.koinViewModel
 

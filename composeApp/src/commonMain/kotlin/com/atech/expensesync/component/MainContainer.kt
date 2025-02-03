@@ -1,5 +1,6 @@
 package com.atech.expensesync.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
@@ -19,8 +20,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.atech.expensesync.ui_utils.BackHandler
-import com.atech.expensesync.ui_utils.SystemUiController
 
 /**
  * Toolbar component
@@ -135,7 +134,8 @@ fun MainContainer(
 //        statusBarColor = statusBarColor
 //    )
     Scaffold(
-        modifier = modifier, topBar = topAppBar,
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background), topBar = topAppBar,
         floatingActionButton = floatingActionButton,
         bottomBar = bottomBar,
         snackbarHost = snackBarHost
