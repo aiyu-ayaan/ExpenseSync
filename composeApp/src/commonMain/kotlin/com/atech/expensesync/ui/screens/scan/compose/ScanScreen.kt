@@ -24,8 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.ui.screens.scan.ScanEvents
+import com.atech.expensesync.ui.screens.scan.ScanViewModel
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
+import com.atech.expensesync.ui_utils.koinViewModel
+import com.atech.expensesync.utils.ResponseDataState
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.devices
 
@@ -35,6 +39,7 @@ fun ScanScreen(
     modifier: Modifier = Modifier, navHostController: NavHostController
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
+    val viewModel = koinViewModel<ScanViewModel>()
     navigator.backHandlerThreePane()
     // Add state to control scanning
     var isScanning by remember { mutableStateOf(true) }
@@ -97,8 +102,18 @@ fun ScanScreen(
                     onNavigateUpClick = {
                         navigator.navigateBack()
                     },
-                    onLinkScanned = {
-                        com.atech.expensesync.utils.expenseSyncLogger("Scanned: $it")
+                    onLinkScanned = { data ->
+                        viewModel.onEvent(ScanEvents.OnScanSuccess(data) { state ->
+                            when (state) {
+                                is ResponseDataState.Error -> {
+                                    //TODO Handle error
+                                }
+
+                                is ResponseDataState.Success<String> -> {
+
+                                }
+                            }
+                        })
                     }
                 )
             }

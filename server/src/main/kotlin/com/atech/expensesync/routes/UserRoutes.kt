@@ -1,7 +1,9 @@
 package com.atech.expensesync.routes
 
+import com.atech.expensesync.database.models.DesktopLogInDetails
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.firebase.CreateUser
+import com.atech.expensesync.firebase.LogInToDesktop
 import com.atech.expensesync.server_utils.handleException
 import com.atech.expensesync.utils.ApiPaths
 import com.atech.expensesync.utils.ResponseDataState
@@ -28,6 +30,28 @@ fun Application.userRoutes() {
                 call.respond(
                     HttpStatusCode.Created, ResponseDataState.Success(
                         data = CreateUser().invoke(model)
+                    )
+                )
+            }
+        }
+        post("${ApiPaths.User.path}/desktopLogIn/{userId}") {
+            handleException {
+                val userId = call.parameters["userId"]
+                val model = call.receive<DesktopLogInDetails>()
+                if (userId.isNullOrEmpty()) {
+                    call.respond(
+                        HttpStatusCode.BadRequest, ResponseDataState.Error(
+                            error = "User id is required"
+                        )
+                    )
+                    return@handleException
+                }
+                call.respond(
+                    HttpStatusCode.OK, ResponseDataState.Success(
+                        data = LogInToDesktop().invoke(
+                            uid = userId,
+                            model = model
+                        )
                     )
                 )
             }

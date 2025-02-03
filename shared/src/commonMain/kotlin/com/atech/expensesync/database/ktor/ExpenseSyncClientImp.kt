@@ -1,6 +1,7 @@
 package com.atech.expensesync.database.ktor
 
 import com.atech.expensesync.database.ktor.ExpenseSyncClient.Companion.BASE_URL
+import com.atech.expensesync.database.models.DesktopLogInDetails
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.utils.ApiPaths
 import com.atech.expensesync.utils.ApiResponse
@@ -20,6 +21,22 @@ class ExpenseSyncClientImp(
         try {
             val response: ApiResponse<User> = client.post {
                 url("$BASE_URL${ApiPaths.User.path}/create")
+                contentType(ContentType.Application.Json)
+                setBody(model)
+            }.body()
+            return ResponseDataState.wrapResponse(response.data)
+        } catch (e: Exception) {
+            return ResponseDataState.Error(e.message ?: "Unknown error")
+        }
+    }
+
+    override suspend fun logInToDesktop(
+        uid: String,
+        model: DesktopLogInDetails
+    ): ResponseDataState<String> {
+        try {
+            val response: ApiResponse<String> = client.post {
+                url("$BASE_URL${ApiPaths.User.path}/desktopLogIn/$uid")
                 contentType(ContentType.Application.Json)
                 setBody(model)
             }.body()
