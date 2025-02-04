@@ -13,5 +13,5 @@ sealed interface LogInEvents {
         val desktopUid: String,
     ) : LogInEvents
 
-    data class StopWebSocket(val action: () -> Unit) : LogInEvents
+    data object StopWebSocket : LogInEvents
 }

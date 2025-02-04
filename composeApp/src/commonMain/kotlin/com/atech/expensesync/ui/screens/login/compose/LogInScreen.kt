@@ -178,6 +178,26 @@ fun LogInScreen(
                 runWithDeviceCompose(
                     onDesktop = {
                         com.atech.expensesync.utils.expenseSyncLogger("$userState")
+                        if (userState != null && userState.uid.isNotEmpty()
+                            && userState.systemUid != null
+                            && userState.systemUid == pref.getString(PrefKeys.DESKTOP_USER_UID)
+                        ) {
+                            pref.saveString(
+                                PrefKeys.USER_ID, userState.uid
+                            )
+                            pref.saveString(
+                                PrefKeys.USER_MODEL, userState.toJson()
+                            )
+                            onEvent.invoke(
+                                LogInEvents.StopWebSocket
+                            )
+                            navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
+                                launchSingleTop = true
+                                popUpTo(ExpanseSyncRoutes.LOGIN.route) {
+                                    inclusive = true
+                                }
+                            }
+                        }
                         onEvent.invoke(
                             LogInEvents.StartWebSocket(
                                 pref.getString(PrefKeys.DESKTOP_USER_UID)

@@ -6,6 +6,7 @@ import io.ktor.client.plugins.websocket.webSocketSession
 import io.ktor.client.request.url
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
+import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -36,4 +37,10 @@ class UserDataWebSocket(
             // Consider adding reconnection logic or error handling
         }
     }
+
+    suspend fun closeSession() {
+        session?.close()
+        session = null
+    }
+
 }

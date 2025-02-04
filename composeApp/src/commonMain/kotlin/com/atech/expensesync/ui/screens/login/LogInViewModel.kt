@@ -7,13 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.ktor.websocket.UserDataWebSocket
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.usecases.UserUseCases
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LogInViewModel(
-    private val userUseCases: UserUseCases,
-    private val userDataWebSocket: UserDataWebSocket
+    private val userUseCases: UserUseCases, private val userDataWebSocket: UserDataWebSocket
 ) : ViewModel() {
 
     private val _user = mutableStateOf<User?>(User())
@@ -27,17 +27,15 @@ class LogInViewModel(
 
             is LogInEvents.StartWebSocket -> viewModelScope.launch {
                 userDataWebSocket.getStateStream(events.desktopUid)
-                    .onEach {
+                    .filter { it?.uid?.isNotEmpty() == true }.onEach {
                         _user.value = it
-                    }
-                    .launchIn(viewModelScope)
+                    }.launchIn(viewModelScope)
             }
 
 
-            is LogInEvents.StopWebSocket ->
-                viewModelScope.launch {
-                    events.action()
-                }
+            LogInEvents.StopWebSocket -> viewModelScope.launch {
+                userDataWebSocket.closeSession()
+            }
 
         }
     }
