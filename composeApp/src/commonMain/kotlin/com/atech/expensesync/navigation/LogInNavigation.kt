@@ -27,8 +27,8 @@ fun NavGraphBuilder.logInScreenNavigation(
             val viewModel = koinViewModel<LogInViewModel>()
             LogInScreen(
                 navHostController = navHostController,
-                onEvent = viewModel::onEvent
-
+                onEvent = viewModel::onEvent,
+                userState =  viewModel.user.value
             )
         }
     }

@@ -103,8 +103,10 @@ fun createHttpClient(
             header(HttpHeaders.CacheControl, "no-cache")
         }
         install(WebSockets) {
-            contentConverter = KotlinxWebsocketSerializationConverter(Json)
-            maxFrameSize = Long.MAX_VALUE
+            contentConverter = KotlinxWebsocketSerializationConverter(Json {
+                ignoreUnknownKeys = true
+                isLenient = true
+            })
         }
 
     }

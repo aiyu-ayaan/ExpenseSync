@@ -46,6 +46,7 @@ fun Application.userRoutes() {
                     )
                     return@handleException
                 }
+                print("userId: $userId")
                 call.respond(
                     HttpStatusCode.OK, ResponseDataState.Success(
                         data = LogInToDesktop().invoke(

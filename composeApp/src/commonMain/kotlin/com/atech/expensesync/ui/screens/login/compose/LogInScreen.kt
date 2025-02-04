@@ -47,6 +47,7 @@ import java.util.UUID
 fun LogInScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
+    userState: User? = null,
     onEvent: (LogInEvents) -> Unit,
 ) {
     val pref = LocalDataStore.current
@@ -176,11 +177,16 @@ fun LogInScreen(
                 )
                 runWithDeviceCompose(
                     onDesktop = {
+                        com.atech.expensesync.utils.expenseSyncLogger("$userState")
+                        onEvent.invoke(
+                            LogInEvents.StartWebSocket(
+                                pref.getString(PrefKeys.DESKTOP_USER_UID)
+                            )
+                        )
                         QRComposable().generateContent(
                             "${pref.getString(PrefKeys.DESKTOP_USER_UID)}$${com.atech.expensesync.utils.getOsName()}"
                         ).invoke()
-                    }
-                )
+                    })
             }
         }
     }

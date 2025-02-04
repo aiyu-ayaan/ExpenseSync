@@ -1,6 +1,6 @@
 package com.atech.expensesync.usecases
 
-import com.atech.expensesync.database.ktor.ExpenseSyncClient
+import com.atech.expensesync.database.ktor.http.ExpenseSyncClient
 import com.atech.expensesync.database.models.DesktopLogInDetails
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.utils.ResponseDataState

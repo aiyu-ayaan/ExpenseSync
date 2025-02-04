@@ -1,7 +1,9 @@
 package com.atech.expensesync.modules
 
-import com.atech.expensesync.database.ktor.ExpenseSyncClient
-import com.atech.expensesync.database.ktor.ExpenseSyncClientImp
+import com.atech.expensesync.database.ktor.http.ExpenseSyncClient
+import com.atech.expensesync.database.ktor.http.ExpenseSyncClientImp
+import com.atech.expensesync.database.ktor.httpClientEngineFactory
+import com.atech.expensesync.database.ktor.websocket.UserDataWebSocket
 import com.atech.expensesync.database.room.ExpenseSyncDatabase
 import com.atech.expensesync.usecases.CreateNewGroupUseCase
 import com.atech.expensesync.usecases.CreateUserUseCase
@@ -11,6 +13,7 @@ import com.atech.expensesync.usecases.LogInToDesktopUseCase
 import com.atech.expensesync.usecases.SplitUseCases
 import com.atech.expensesync.usecases.UpdateGroupUseCase
 import com.atech.expensesync.usecases.UserUseCases
+import io.ktor.client.HttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -26,13 +29,15 @@ val commonModule = module {
     single { DeleteGroupUseCase(get()) }
 
     single { SplitUseCases(get(), get(), get(), get()) }
+    single<HttpClient> { httpClientEngineFactory().createEngine() }
     single {
         ExpenseSyncClientImp(
-            com.atech.expensesync.database.ktor.httpClientEngineFactory().createEngine()
+            get()
         )
     }.bind(ExpenseSyncClient::class)
 
     single { CreateUserUseCase(get()) }
     single { LogInToDesktopUseCase(get()) }
     single { UserUseCases(get(), get()) }
+    single { UserDataWebSocket(get()) }
 }

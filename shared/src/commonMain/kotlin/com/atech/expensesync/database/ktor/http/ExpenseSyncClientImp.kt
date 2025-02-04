@@ -1,6 +1,6 @@
-package com.atech.expensesync.database.ktor
+package com.atech.expensesync.database.ktor.http
 
-import com.atech.expensesync.database.ktor.ExpenseSyncClient.Companion.BASE_URL
+import com.atech.expensesync.database.ktor.http.ExpenseSyncClient.Companion.BASE_URL
 import com.atech.expensesync.database.models.DesktopLogInDetails
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.utils.ApiPaths

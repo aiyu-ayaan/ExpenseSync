@@ -8,4 +8,10 @@ sealed interface LogInEvents {
         val model: User,
         val onSuccess: (ResponseDataState<User>) -> Unit,
     ) : LogInEvents
+
+    data class StartWebSocket(
+        val desktopUid: String,
+    ) : LogInEvents
+
+    data class StopWebSocket(val action: () -> Unit) : LogInEvents
 }

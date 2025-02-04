@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 val androidUIModule = module {
     viewModel { SplitViewModel(get()) }
-    viewModel { LogInViewModel(get()) }
+    viewModel { LogInViewModel(get(),get()) }
     viewModel { ScanViewModel(get(), get()) }
 
 }

@@ -48,6 +48,7 @@ kotlin {
             implementation(libs.datastore.preferences)
 
 
+            implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.okhttp)
         }
     }

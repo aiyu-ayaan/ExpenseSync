@@ -1,4 +1,4 @@
-package com.atech.expensesync.database.ktor
+package com.atech.expensesync.database.ktor.http
 
 import com.atech.expensesync.database.models.DesktopLogInDetails
 import com.atech.expensesync.database.models.User
