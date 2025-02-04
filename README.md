@@ -1,3 +1,5 @@
+![Code](https://tokei.rs/b1/github/aiyu-ayaan/ExpenseSync?category=code)
+
 This is a Kotlin Multiplatform project targeting Android, Desktop, Server.
 
 * `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
