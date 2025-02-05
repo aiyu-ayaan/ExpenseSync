@@ -4,13 +4,16 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.atech.expensesync.database.pref.PrefKeys
+import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.room.split.ExpanseGroup
 import com.atech.expensesync.usecases.SplitUseCases
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 class SplitViewModel(
-    private val useCases: SplitUseCases
+    private val useCases: SplitUseCases,
+    private val pref: PrefManager
 ) : ViewModel() {
 
     val splitGroups = useCases.getAllGroups.invoke()
@@ -28,7 +31,7 @@ class SplitViewModel(
                         groupId = UUID.randomUUID().toString(),
                         groupName = _createGroupState.value.groupName,
                         type = _createGroupState.value.groupType.label,
-                        createdByUid = UUID.randomUUID().toString(),
+                        createdByUid = pref.getString(PrefKeys.USER_ID),
                     )
                 )
                 _createGroupState.value = CreateGroupScreenState()
