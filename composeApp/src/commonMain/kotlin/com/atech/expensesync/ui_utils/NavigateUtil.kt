@@ -128,3 +128,27 @@ fun NavGraphBuilder.animatedComposable(
     },
     content = content
 )
+
+inline fun <reified T : Any> NavGraphBuilder.animatedComposableEnh(
+    noinline content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
+){
+    composable<T>(
+        content = content,
+        enterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { (it * initialOffset).toInt() }) + fadeIn()
+        },
+        exitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { -(it * initialOffset).toInt() }) + fadeOut()
+        },
+        popEnterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { -(it * initialOffset).toInt() }) + fadeIn()
+        },
+        popExitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { (it * initialOffset).toInt() }) + fadeOut()
+        }
+    )
+}

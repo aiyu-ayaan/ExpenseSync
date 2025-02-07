@@ -1,6 +1,7 @@
 package com.atech.expensesync.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -22,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.atech.expensesync.database.room.split.ExpanseGroup
-import com.atech.expensesync.ui.screens.split.compose.add_group.Type
+import com.atech.expensesync.ui.screens.split.root.compose.add_group.Type
 import com.atech.expensesync.ui.theme.spacing
 
 @Composable
@@ -48,11 +49,13 @@ fun DefaultCard(
 @Composable
 fun GroupItems(
     modifier: Modifier = Modifier,
-    model: ExpanseGroup
+    model: ExpanseGroup,
+    onClick: () -> Unit
 ) {
     val enum = Type.entries.find { it.name == model.type } ?: Type.None
     DefaultCard(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth()
+            .clickable { onClick() },
         content = {
             Row(
                 modifier = Modifier

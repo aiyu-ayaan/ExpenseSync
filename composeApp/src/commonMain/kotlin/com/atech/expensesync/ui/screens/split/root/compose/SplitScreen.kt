@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.screens.split.compose
+package com.atech.expensesync.ui.screens.split.root.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -33,11 +33,13 @@ import com.atech.expensesync.component.GroupItems
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.split.ExpanseGroup
 import com.atech.expensesync.navigation.AppNavigation
-import com.atech.expensesync.ui.screens.split.SplitViewModel
-import com.atech.expensesync.ui.screens.split.compose.add_group.AddGroupScreen
+import com.atech.expensesync.navigation.ViewExpanseBook
+import com.atech.expensesync.ui.screens.split.root.SplitViewModel
+import com.atech.expensesync.ui.screens.split.root.compose.add_group.AddGroupScreen
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 import com.atech.expensesync.ui_utils.koinViewModel
+import com.atech.expensesync.ui_utils.runWithDeviceCompose
 import kotlinx.coroutines.flow.Flow
 
 
@@ -72,16 +74,17 @@ fun SplitScreen(
                     addNewGroupClick = {
                         detailScreen = DetailScreen.ADD_GROUP
                         navigator.navigateTo(
-                            pane = ListDetailPaneScaffoldRole.Detail
+                            pane = ListDetailPaneScaffoldRole.Extra
                         )
                     },
                     linkedDeviceScreenClick = {
                         navHostController.navigate(AppNavigation.ScanScreen.route)
-                    }
+                    },
+                    navHostController = navHostController
                 )
             }
         },
-        detailPane = when (detailScreen) {
+        detailPane = {}/*when (detailScreen) {
             DetailScreen.NONE -> {
                 {}
             }
@@ -92,20 +95,22 @@ fun SplitScreen(
 
             DetailScreen.ADD_GROUP -> {
                 {
-                    canShowAppBar.invoke(false)
-                    AnimatedPane {
-                        AddGroupScreen(
-                            state = viewModel.createGroupState.value,
-                            onEvent = viewModel::onAddGroupEvent,
-                            onNavigateBack = {
-                                navigator.navigateBack()
-                                detailScreen = DetailScreen.NONE
-                            }
-                        )
-                    }
+
                 }
             }
-        },
+        }*/,
+        extraPane = {
+            AnimatedPane {
+                AddGroupScreen(
+                    state = viewModel.createGroupState.value,
+                    onEvent = viewModel::onAddGroupEvent,
+                    onNavigateBack = {
+                        navigator.navigateBack()
+                        detailScreen = DetailScreen.NONE
+                    }
+                )
+            }
+        }
     )
 }
 
@@ -115,19 +120,24 @@ private fun MainContent(
     modifier: Modifier,
     groupsFlow: Flow<List<ExpanseGroup>>,
     addNewGroupClick: () -> Unit,
-    linkedDeviceScreenClick: () -> Unit
+    linkedDeviceScreenClick: () -> Unit,
+    navHostController: NavHostController
 ) {
     val itemState by groupsFlow.collectAsState(initial = emptyList())
     MainContainer(
         modifier = modifier,
         title = "Split",
         actions = {
-            IconButton(onClick = { linkedDeviceScreenClick.invoke() }) {
-                Icon(
-                    imageVector = Icons.TwoTone.Camera,
-                    contentDescription = null
-                )
-            }
+            runWithDeviceCompose(
+                onAndroid = {
+                    IconButton(onClick = { linkedDeviceScreenClick.invoke() }) {
+                        Icon(
+                            imageVector = Icons.TwoTone.Camera,
+                            contentDescription = null
+                        )
+                    }
+                }
+            )
             IconButton(onClick = { addNewGroupClick.invoke() }) {
                 Icon(
                     imageVector = Icons.TwoTone.GroupAdd,
@@ -158,7 +168,10 @@ private fun MainContent(
         ) {
             items(itemState) { item ->
                 GroupItems(
-                    model = item
+                    model = item,
+                    onClick = {
+                        navHostController.navigate(ViewExpanseBook(item.groupName))
+                    }
                 )
             }
         }

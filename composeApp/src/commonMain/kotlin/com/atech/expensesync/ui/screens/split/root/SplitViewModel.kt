@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.screens.split
+package com.atech.expensesync.ui.screens.split.root
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

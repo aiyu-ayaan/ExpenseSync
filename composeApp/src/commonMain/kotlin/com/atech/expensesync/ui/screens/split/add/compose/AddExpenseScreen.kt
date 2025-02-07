@@ -1,0 +1,160 @@
+package com.atech.expensesync.ui.screens.split.add.compose
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.CameraAlt
+import androidx.compose.material.icons.twotone.DateRange
+import androidx.compose.material.icons.twotone.Description
+import androidx.compose.material.icons.twotone.NoteAlt
+import androidx.compose.material.icons.twotone.Payment
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import com.atech.expensesync.component.EditTextEnhance
+import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.ui.theme.spacing
+
+private enum class ExpanseBottomBar(
+    val icon: ImageVector,
+    val contentDescription: String
+) {
+    DATE_RANGE(Icons.TwoTone.DateRange, "date"),
+    CAMERA_ALT(Icons.TwoTone.CameraAlt, "camera"),
+    NOTE_ALT(Icons.TwoTone.NoteAlt, "note"),
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddExpenseScreen(
+    modifier: Modifier = Modifier,
+    grpName: String = "",
+    onNavigationClick: () -> Unit
+) {
+    MainContainer(
+        modifier = modifier,
+        title = "Add Expense",
+        onNavigationClick = onNavigationClick,
+        bottomBar = {
+            BottomAppBar {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = "Date : 12/01/2025",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
+                    ExpanseBottomBar.entries.forEach { item ->
+                        IconButton(onClick = { }) {
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = item.contentDescription
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    ) { paddingValue ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValue)
+                .padding(MaterialTheme.spacing.medium),
+        ) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth(),
+                text = "With you and : $grpName",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+            EditTextEnhance(
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = "Description",
+                value = "",
+                onValueChange = { },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.TwoTone.Description,
+                        contentDescription = "Amount"
+                    )
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences
+                ),
+            )
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+            EditTextEnhance(
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = "Amount",
+                value = "",
+                onValueChange = { },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.TwoTone.Payment,
+                        contentDescription = "Amount"
+                    )
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal
+                )
+            )
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+
+            ) {
+                Text("Paid By")
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
+                TextButton(
+                    onClick = {},
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                    )
+                ) {
+                    Text("You")
+                }
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
+                Text("and split")
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
+                TextButton(
+                    onClick = {},
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                    )
+                ) {
+                    Text("Equally")
+                }
+            }
+        }
+    }
+}

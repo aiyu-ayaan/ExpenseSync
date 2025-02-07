@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.atech.expensesync.ui.screens.split.compose.SplitScreen
+import com.atech.expensesync.ui.screens.split.root.compose.SplitScreen
 import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.SystemUiController
 
