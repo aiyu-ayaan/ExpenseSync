@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.screens.split.add.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -41,7 +43,7 @@ fun ViewExpanseBookScreen(
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     navigator.backHandlerThreePane()
     ListDetailPaneScaffold(
-        modifier = modifier,
+        modifier = modifier.background(MaterialTheme.colorScheme.surface),
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
         listPane = {
@@ -114,16 +116,14 @@ private fun Screen(
         Column(
             modifier = Modifier.padding(paddingValue),
         ) {
-            ScrollableTabRow(
-                modifier = Modifier.fillMaxWidth(),
-                selectedTabIndex = state,
+            SetTabLayout(
+                state = state,
             ) {
-                titles.forEachIndexed { index, title ->
-                    Tab(
-                        selected = state == index,
-                        onClick = { state = index },
-                        text = { Text(title) })
-                }
+                createTabs(
+                    state = state,
+                    stateChange = { state = it },
+                    list = titles
+                )
             }
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -131,6 +131,45 @@ private fun Screen(
                 style = MaterialTheme.typography.bodyLarge
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SetTabLayout(
+    modifier: Modifier = Modifier,
+    state: Int,
+    tabs: @Composable (() -> Unit),
+) {
+    if (com.atech.expensesync.ui_utils.getDisplayType() ==
+        com.atech.expensesync.ui_utils.DeviceType.MOBILE
+    ) {
+        ScrollableTabRow(
+            modifier = modifier.fillMaxWidth(),
+            selectedTabIndex = state,
+        ) {
+            tabs()
+        }
+    } else {
+        PrimaryTabRow(
+            selectedTabIndex = state,
+        ) {
+            tabs()
+        }
+    }
+}
+
+@Composable
+private fun createTabs(
+    state: Int,
+    stateChange: (Int) -> Unit,
+    list: List<String>
+) {
+    list.forEachIndexed { index, title ->
+        Tab(
+            selected = state == index,
+            onClick = { stateChange(index) },
+            text = { Text(title) })
     }
 }
 
