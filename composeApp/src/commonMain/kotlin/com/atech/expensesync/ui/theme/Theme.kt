@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 fun ExpenseSyncTheme(
     content: @Composable () -> Unit
 ) {
-    val theme = getColorScheme(false)
+    val theme = getColorScheme(true)
     val colorScheme = if (isSystemInDarkTheme())
         theme.darkColorScheme
     else
