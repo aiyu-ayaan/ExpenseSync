@@ -7,13 +7,15 @@ import androidx.compose.runtime.Composable
 @Composable
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 fun <T> ThreePaneScaffoldNavigator<T>.backHandlerThreePane(
-    action: () -> Unit = { }
+    backAction: () -> Unit = { },
+    onEmptyBackStack: () -> Unit = { },
 ) {
     if (canNavigateBack()) {
         BackHandler(canNavigateBack()) {
+            backAction()
             navigateBack()
         }
     } else {
-        action()
+        onEmptyBackStack()
     }
 }

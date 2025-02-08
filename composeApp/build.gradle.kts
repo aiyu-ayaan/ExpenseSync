@@ -67,6 +67,11 @@ kotlin {
             implementation(libs.bundles.adaptives)
 
             implementation(libs.scanner)
+
+//            image
+//            api(libs.image.loader)
+//            api(libs.image.loader.extension.compose.resources)
+            implementation("com.github.skydoves:landscapist-coil3:2.4.6")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
