@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -13,6 +14,10 @@ import kotlinx.coroutines.flow.Flow
 interface ExpanseGroupDao {
     @Insert(onConflict = REPLACE)
     suspend fun insert(data: ExpanseGroup)
+
+    @Insert
+    suspend fun insertMembers(data: List<ExpanseGroupMembers>)
+
 
     @Query("SELECT * FROM expanse_group WHERE isActive = 1 ORDER BY createdAt DESC")
     fun getAllActiveGroups(): Flow<List<ExpanseGroup>>
@@ -25,4 +30,14 @@ interface ExpanseGroupDao {
 
     @Delete
     suspend fun deleteGroup(group: ExpanseGroup)
+
+
+    @Transaction
+    suspend fun insertGroupWithMembers(
+        groupName: ExpanseGroup,
+        members: List<ExpanseGroupMembers>
+    ) {
+        insert(groupName)
+        insertMembers(members)
+    }
 }

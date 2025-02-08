@@ -33,7 +33,7 @@ import com.atech.expensesync.component.GroupItems
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.split.ExpanseGroup
 import com.atech.expensesync.navigation.AppNavigation
-import com.atech.expensesync.navigation.ViewExpanseBook
+import com.atech.expensesync.navigation.ViewExpanseBookArgs
 import com.atech.expensesync.ui.screens.split.root.SplitViewModel
 import com.atech.expensesync.ui.screens.split.root.compose.add_group.AddGroupScreen
 import com.atech.expensesync.ui.theme.spacing
@@ -170,7 +170,12 @@ private fun MainContent(
                 GroupItems(
                     model = item,
                     onClick = {
-                        navHostController.navigate(ViewExpanseBook(item.groupName))
+                        navHostController.navigate(
+                            ViewExpanseBookArgs(
+                                grpId = item.groupId,
+                                grpName = item.groupName
+                            )
+                        )
                     }
                 )
             }

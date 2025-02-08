@@ -18,8 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.LoadImageFromUrl
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.room.split.ExpanseGroupMembers
 import com.atech.expensesync.ui.theme.spacing
 
@@ -30,7 +32,7 @@ fun GroupMembersScreen(
     state: List<ExpanseGroupMembers> = emptyList(),
     onNavigationClick: () -> Unit = {}
 ) {
-//    val uid = LocalDataStore.current.getString(PrefKeys.USER_ID)
+    val uid = LocalDataStore.current.getString(PrefKeys.USER_ID)
     MainContainer(
         title = "Group Members",
         modifier = modifier,
@@ -58,7 +60,7 @@ fun GroupMembersScreen(
             items(state) {
                 UserItem(
                     groupMembers = it,
-                    isOwner = it.name == "Ayaan"/*it.uid == uid*/
+                    isOwner = it.uid == uid
                 )
             }
         }

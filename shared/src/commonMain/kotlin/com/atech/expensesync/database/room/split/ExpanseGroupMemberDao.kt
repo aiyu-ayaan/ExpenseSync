@@ -12,6 +12,9 @@ interface ExpanseGroupMemberDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMember(member: ExpanseGroupMembers)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMembers(data: List<ExpanseGroupMembers>)
+
     @Query("SELECT * FROM expanse_group_members WHERE groupId = :groupId")
     fun getGroupMembers(groupId: String): Flow<List<ExpanseGroupMembers>>
 

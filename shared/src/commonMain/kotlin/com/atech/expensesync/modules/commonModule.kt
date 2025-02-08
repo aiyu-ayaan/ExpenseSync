@@ -8,8 +8,12 @@ import com.atech.expensesync.database.room.ExpenseSyncDatabase
 import com.atech.expensesync.usecases.CreateNewGroupUseCase
 import com.atech.expensesync.usecases.CreateUserUseCase
 import com.atech.expensesync.usecases.DeleteGroupUseCase
+import com.atech.expensesync.usecases.ExpanseGroupMemberUseCases
+import com.atech.expensesync.usecases.GetGroupMembers
 import com.atech.expensesync.usecases.GetGroupsUseCase
+import com.atech.expensesync.usecases.InsertMember
 import com.atech.expensesync.usecases.LogInToDesktopUseCase
+import com.atech.expensesync.usecases.RemoveMember
 import com.atech.expensesync.usecases.SplitUseCases
 import com.atech.expensesync.usecases.UpdateGroupUseCase
 import com.atech.expensesync.usecases.UserUseCases
@@ -40,4 +44,9 @@ val commonModule = module {
     single { LogInToDesktopUseCase(get()) }
     single { UserUseCases(get(), get()) }
     single { UserDataWebSocket(get()) }
+
+    single { InsertMember(get()) }
+    single { GetGroupMembers(get()) }
+    single { RemoveMember(get()) }
+    single { ExpanseGroupMemberUseCases(get(), get(), get()) }
 }

@@ -177,7 +177,6 @@ fun LogInScreen(
                 )
                 runWithDeviceCompose(
                     onDesktop = {
-                        com.atech.expensesync.utils.expenseSyncLogger("$userState")
                         if (userState != null && userState.uid.isNotEmpty()
                             && userState.systemUid != null
                             && userState.systemUid == pref.getString(PrefKeys.DESKTOP_USER_UID)

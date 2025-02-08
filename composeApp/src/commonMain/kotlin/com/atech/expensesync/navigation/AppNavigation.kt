@@ -6,9 +6,12 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.atech.expensesync.ui.screens.app.AppScreen
 import com.atech.expensesync.ui.screens.scan.compose.ScanScreen
+import com.atech.expensesync.ui.screens.split.add.AddExpanseEvents
+import com.atech.expensesync.ui.screens.split.add.AddExpanseViewModel
 import com.atech.expensesync.ui.screens.split.add.compose.ViewExpanseBookScreen
 import com.atech.expensesync.ui_utils.animatedComposable
 import com.atech.expensesync.ui_utils.animatedComposableEnh
+import com.atech.expensesync.ui_utils.koinViewModel
 import kotlinx.serialization.Serializable
 
 sealed class AppNavigation(val route: String) {
@@ -17,7 +20,8 @@ sealed class AppNavigation(val route: String) {
 }
 
 @Serializable
-data class ViewExpanseBook(
+data class ViewExpanseBookArgs(
+    val grpId: String,
     val grpName: String,
 )
 
@@ -42,11 +46,15 @@ fun NavGraphBuilder.appNavigation(
                 navHostController = navHostController
             )
         }
-        animatedComposableEnh<ViewExpanseBook> {
-            val state = it.toRoute<ViewExpanseBook>()
+        animatedComposableEnh<ViewExpanseBookArgs> {
+            val args = it.toRoute<ViewExpanseBookArgs>()
+            val viewModel = koinViewModel<AddExpanseViewModel>()
+            viewModel.onEvent(AddExpanseEvents.SetViewExpanseBookArgs(args))
             ViewExpanseBookScreen(
-                grpName = state.grpName,
-                navHostController = navHostController
+                state = viewModel.addExpenseState.value,
+                members = viewModel.grpMembers.value,
+                navHostController = navHostController,
+                onEvent = viewModel::onEvent
             )
         }
     }

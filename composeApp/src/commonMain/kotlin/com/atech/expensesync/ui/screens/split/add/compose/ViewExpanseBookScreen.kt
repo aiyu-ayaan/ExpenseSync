@@ -33,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.ui.screens.split.add.AddExpanseEvents
+import com.atech.expensesync.ui.screens.split.add.AddExpenseState
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 
@@ -47,7 +49,9 @@ private enum class ExtraPane {
 fun ViewExpanseBookScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    grpName: String,
+    state: AddExpenseState,
+    members: List<ExpanseGroupMembers>,
+    onEvent: (AddExpanseEvents) -> Unit
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     var extraPane by remember { mutableStateOf(ExtraPane.None) }
@@ -63,7 +67,7 @@ fun ViewExpanseBookScreen(
         listPane = {
             AnimatedPane {
                 Screen(
-                    grpName = grpName,
+                    grpName = state.groupName,
                     onNavigationClick = {
                         navHostController.navigateUp()
                     },
@@ -75,6 +79,7 @@ fun ViewExpanseBookScreen(
                     },
                     onGroupMembersClick = {
                         extraPane = ExtraPane.GroupMembers
+                        onEvent(AddExpanseEvents.GetExpanseGroupMembers)
                         navigator.navigateTo(
                             ListDetailPaneScaffoldRole.Extra,
                         )
@@ -94,7 +99,7 @@ fun ViewExpanseBookScreen(
                 {
                     AnimatedPane {
                         AddExpenseScreen(
-                            grpName = grpName,
+                            grpName = state.groupName,
                             onNavigationClick = {
                                 navigator.navigateBack()
                             }
@@ -110,22 +115,7 @@ fun ViewExpanseBookScreen(
                             onNavigationClick = {
                                 navigator.navigateBack()
                             },
-                            state = listOf(
-                                ExpanseGroupMembers(
-                                    name = "Ayaan",
-                                    email = "ayaan@gmail.com",
-                                    pic = "https://picsum.photos/200",
-                                    uid = "1",
-                                    groupId = "1"
-                                ),
-                                ExpanseGroupMembers(
-                                    name = "Anshu",
-                                    email = "anshu@gmail.com",
-                                    pic = "https://picsum.photos/200",
-                                    uid = "2",
-                                    groupId = "3"
-                                )
-                            )
+                            state = members,
                         )
                     }
                 }
