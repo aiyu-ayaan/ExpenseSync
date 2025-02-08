@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.screens.split.add.compose
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,12 +25,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.atech.expensesync.component.DatePickerModal
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.split.ExpanseGroupMembers
@@ -43,8 +49,7 @@ private enum class ExpanseBottomBar(
     val icon: ImageVector, val contentDescription: String
 ) {
     DATE_RANGE(Icons.TwoTone.DateRange, "date"), CAMERA_ALT(
-        Icons.TwoTone.CameraAlt,
-        "camera"
+        Icons.TwoTone.CameraAlt, "camera"
     ),
     NOTE_ALT(Icons.TwoTone.NoteAlt, "note"),
 }
@@ -60,6 +65,19 @@ fun AddExpenseScreen(
     onNavigationClick: () -> Unit,
     onEvent: (AddExpenseEvents) -> Unit
 ) {
+
+    var isDatePickerVisible by remember { mutableStateOf(false) }
+    AnimatedVisibility(isDatePickerVisible) {
+        DatePickerModal(onDateSelected = {
+            onEvent(
+                AddExpenseEvents.OnCreateExpenseStateChange(
+                    state.copy(
+                        date = it ?: System.currentTimeMillis()
+                    )
+                )
+            )
+        }, onDismiss = { isDatePickerVisible = false })
+    }
     MainContainer(
         modifier = modifier,
         title = "Add Expense",
@@ -78,7 +96,15 @@ fun AddExpenseScreen(
                     )
                     Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                     ExpanseBottomBar.entries.forEach { item ->
-                        IconButton(onClick = { }) {
+                        IconButton(onClick = {
+                            when (item) {
+                                ExpanseBottomBar.DATE_RANGE -> isDatePickerVisible =
+                                    !isDatePickerVisible
+
+                                ExpanseBottomBar.CAMERA_ALT -> {}
+                                ExpanseBottomBar.NOTE_ALT -> {}
+                            }
+                        }) {
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = item.contentDescription
@@ -102,7 +128,7 @@ fun AddExpenseScreen(
                 placeholder = "Description",
                 value = state.description,
                 onValueChange = {
-                    onEvent(AddExpenseEvents.OnExpanseGroupMembers(state.copy(description = it)))
+                    onEvent(AddExpenseEvents.OnCreateExpenseStateChange(state.copy(description = it)))
                 },
                 leadingIcon = {
                     Icon(
@@ -121,8 +147,7 @@ fun AddExpenseScreen(
                 value = state.amount.formatAmount(),
                 onValueChange = {
                     onEvent(
-                        AddExpenseEvents.OnExpanseGroupMembers(
-                            state.copy(amount = it.takeIf { it.isNotEmpty() }
+                        AddExpenseEvents.OnCreateExpenseStateChange(state.copy(amount = it.takeIf { it.isNotEmpty() }
                             ?.toDoubleOrNull() ?: 0.0)))
                 },
                 leadingIcon = {

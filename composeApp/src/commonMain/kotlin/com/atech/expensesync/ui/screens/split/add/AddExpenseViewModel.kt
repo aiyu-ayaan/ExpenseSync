@@ -51,7 +51,6 @@ class AddExpenseViewModel(
 
             is AddExpenseEvents.SetViewExpenseBookArgs -> {
                 if (event.args != null && viewExpanseBookArgs == null) {
-                    expenseSyncLogger("ViewExpanseBookArgs: called")
                     viewExpanseBookArgs = event.args
                     _viewExpenseBookState.value = _viewExpenseBookState.value.copy(
                         groupName = viewExpanseBookArgs?.grpName ?: "",
@@ -59,20 +58,25 @@ class AddExpenseViewModel(
                     )
                     onEvent(AddExpenseEvents.GetExpenseGroupMembers)
 //                    re-assign default value
-                    _createExpenseState.value = CreateExpenseState.default(
-                        prefManager.getString(PrefKeys.USER_MODEL).fromJson()
-                            ?: error("User model not found"),
-                        viewExpanseBookArgs!!.grpId
-                    )
+                    populateCreateExpenseState()
 //                    TODO: Remove me after testing
 //                    insertDummyGroupMember(viewExpanseBookArgs!!.grpId)
                 }
             }
 
-            is AddExpenseEvents.OnExpanseGroupMembers ->
+            is AddExpenseEvents.OnCreateExpenseStateChange ->
                 _createExpenseState.value = event.state
 
+            AddExpenseEvents.OnCreateExpenseStateReset -> populateCreateExpenseState()
         }
+    }
+
+    private fun populateCreateExpenseState() {
+        _createExpenseState.value = CreateExpenseState.default(
+            prefManager.getString(PrefKeys.USER_MODEL).fromJson()
+                ?: error("User model not found"),
+            viewExpanseBookArgs!!.grpId
+        )
     }
 
 

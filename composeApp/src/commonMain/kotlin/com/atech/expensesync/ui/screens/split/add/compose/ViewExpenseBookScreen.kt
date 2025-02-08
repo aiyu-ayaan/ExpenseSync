@@ -75,6 +75,7 @@ fun ViewExpanseBookScreen(
                     },
                     onAddExpenseClick = {
                         extraPane = ExtraPane.AddExpense
+                        onEvent(AddExpenseEvents.OnCreateExpenseStateReset)
                         navigator.navigateTo(
                             ListDetailPaneScaffoldRole.Extra,
                         )
