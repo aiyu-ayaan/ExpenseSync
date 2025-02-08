@@ -32,14 +32,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
+import com.atech.expensesync.ui.screens.split.add.CreateExpenseState
+import com.atech.expensesync.ui.screens.split.add.ViewExpenseBookState
 import com.atech.expensesync.ui.theme.spacing
+import com.atech.expensesync.ui_utils.formatAmount
 
 private enum class ExpanseBottomBar(
-    val icon: ImageVector,
-    val contentDescription: String
+    val icon: ImageVector, val contentDescription: String
 ) {
-    DATE_RANGE(Icons.TwoTone.DateRange, "date"),
-    CAMERA_ALT(Icons.TwoTone.CameraAlt, "camera"),
+    DATE_RANGE(Icons.TwoTone.DateRange, "date"), CAMERA_ALT(
+        Icons.TwoTone.CameraAlt,
+        "camera"
+    ),
     NOTE_ALT(Icons.TwoTone.NoteAlt, "note"),
 }
 
@@ -48,8 +54,11 @@ private enum class ExpanseBottomBar(
 @Composable
 fun AddExpenseScreen(
     modifier: Modifier = Modifier,
-    grpName: String = "",
-    onNavigationClick: () -> Unit
+    viewExpenseBookState: ViewExpenseBookState,
+    state: CreateExpenseState,
+    groupMembers: List<ExpanseGroupMembers>,
+    onNavigationClick: () -> Unit,
+    onEvent: (AddExpenseEvents) -> Unit
 ) {
     MainContainer(
         modifier = modifier,
@@ -64,7 +73,7 @@ fun AddExpenseScreen(
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = "Date : 12/01/2025",
+                        text = "Date : ${state.formatedDate}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
@@ -78,30 +87,26 @@ fun AddExpenseScreen(
                     }
                 }
             }
-        }
-    ) { paddingValue ->
+        }) { paddingValue ->
         Column(
-            modifier = Modifier
-                .padding(paddingValue)
-                .padding(MaterialTheme.spacing.medium),
+            modifier = Modifier.padding(paddingValue).padding(MaterialTheme.spacing.medium),
         ) {
             Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .fillMaxWidth(),
-                text = "With you and : $grpName",
+                modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth(),
+                text = "With you and : ${viewExpenseBookState.groupName}",
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             EditTextEnhance(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = "Description",
-                value = "",
-                onValueChange = { },
+                value = state.description,
+                onValueChange = {
+                    onEvent(AddExpenseEvents.OnExpanseGroupMembers(state.copy(description = it)))
+                },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.TwoTone.Description,
-                        contentDescription = "Amount"
+                        imageVector = Icons.TwoTone.Description, contentDescription = "Amount"
                     )
                 },
                 keyboardOptions = KeyboardOptions(
@@ -113,12 +118,16 @@ fun AddExpenseScreen(
             EditTextEnhance(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = "Amount",
-                value = "",
-                onValueChange = { },
+                value = state.amount.formatAmount(),
+                onValueChange = {
+                    onEvent(
+                        AddExpenseEvents.OnExpanseGroupMembers(
+                            state.copy(amount = it.takeIf { it.isNotEmpty() }
+                            ?.toDoubleOrNull() ?: 0.0)))
+                },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.TwoTone.Payment,
-                        contentDescription = "Amount"
+                        imageVector = Icons.TwoTone.Payment, contentDescription = "Amount"
                     )
                 },
                 keyboardOptions = KeyboardOptions(
@@ -127,32 +136,27 @@ fun AddExpenseScreen(
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
 
             ) {
                 Text("Paid By")
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                 TextButton(
-                    onClick = {},
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                    onClick = {}, border = BorderStroke(
+                        1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
                     )
                 ) {
-                    Text("You")
+                    Text(state.paidBy.name)
                 }
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                 Text("and split")
                 Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                 TextButton(
-                    onClick = {},
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                    onClick = {}, border = BorderStroke(
+                        1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
                     )
                 ) {
-                    Text("Equally")
+                    Text(state.splitType.name)
                 }
             }
         }

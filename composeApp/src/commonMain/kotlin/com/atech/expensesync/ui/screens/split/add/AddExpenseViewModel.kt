@@ -4,28 +4,42 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.atech.expensesync.database.pref.PrefKeys
+import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.room.split.ExpanseGroupMembers
 import com.atech.expensesync.navigation.ViewExpanseBookArgs
 import com.atech.expensesync.usecases.ExpanseGroupMemberUseCases
+import com.atech.expensesync.utils.expenseSyncLogger
+import com.atech.expensesync.utils.fromJson
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class AddExpanseViewModel(
-    private val expanseGroupMemberUseCases: ExpanseGroupMemberUseCases
+class AddExpenseViewModel(
+    private val expanseGroupMemberUseCases: ExpanseGroupMemberUseCases,
+    private val prefManager: PrefManager
 ) : ViewModel() {
     var viewExpanseBookArgs: ViewExpanseBookArgs? = null
 
-    private val _addExpenseState = mutableStateOf<AddExpenseState>(AddExpenseState())
-    val addExpenseState: State<AddExpenseState> get() = _addExpenseState
+    private val _viewExpenseBookState = mutableStateOf<ViewExpenseBookState>(ViewExpenseBookState())
+    val viewExpenseBookState: State<ViewExpenseBookState> get() = _viewExpenseBookState
 
     private val _grpMembers = mutableStateOf<List<ExpanseGroupMembers>>(emptyList())
     val grpMembers: State<List<ExpanseGroupMembers>> get() = _grpMembers
 
-    fun onEvent(event: AddExpanseEvents) {
+    private val _createExpenseState =
+        mutableStateOf<CreateExpenseState>(
+            CreateExpenseState.default(
+                prefManager.getString(PrefKeys.USER_MODEL).fromJson()
+                    ?: error("User model not found")
+            )
+        )
+    val createExpenseState: State<CreateExpenseState> get() = _createExpenseState
+
+    fun onEvent(event: AddExpenseEvents) {
         when (event) {
-            AddExpanseEvents.GetExpanseGroupMembers -> {
+            AddExpenseEvents.GetExpenseGroupMembers ->
                 if (viewExpanseBookArgs != null) {
                     expanseGroupMemberUseCases
                         .getAll(viewExpanseBookArgs!!.grpId)
@@ -33,20 +47,31 @@ class AddExpanseViewModel(
                             _grpMembers.value = it
                         }.launchIn(viewModelScope)
                 }
-            }
 
-            is AddExpanseEvents.SetViewExpanseBookArgs -> {
+
+            is AddExpenseEvents.SetViewExpenseBookArgs -> {
                 if (event.args != null && viewExpanseBookArgs == null) {
-                    com.atech.expensesync.utils.expenseSyncLogger("ViewExpanseBookArgs: called")
+                    expenseSyncLogger("ViewExpanseBookArgs: called")
                     viewExpanseBookArgs = event.args
-                    _addExpenseState.value = _addExpenseState.value.copy(
+                    _viewExpenseBookState.value = _viewExpenseBookState.value.copy(
                         groupName = viewExpanseBookArgs?.grpName ?: "",
                         groupId = viewExpanseBookArgs?.grpId ?: ""
+                    )
+                    onEvent(AddExpenseEvents.GetExpenseGroupMembers)
+//                    re-assign default value
+                    _createExpenseState.value = CreateExpenseState.default(
+                        prefManager.getString(PrefKeys.USER_MODEL).fromJson()
+                            ?: error("User model not found"),
+                        viewExpanseBookArgs!!.grpId
                     )
 //                    TODO: Remove me after testing
 //                    insertDummyGroupMember(viewExpanseBookArgs!!.grpId)
                 }
             }
+
+            is AddExpenseEvents.OnExpanseGroupMembers ->
+                _createExpenseState.value = event.state
+
         }
     }
 

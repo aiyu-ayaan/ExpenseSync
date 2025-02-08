@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ListAlt
 import androidx.compose.material.icons.twotone.AirplanemodeActive
@@ -23,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
@@ -97,7 +100,11 @@ fun AddGroupScreen(
                             state.copy(groupName = "")
                         )
                     )
-                }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences
+                )
             )
             Spacer(modifier = Modifier.padding(MaterialTheme.spacing.medium))
             Text(

@@ -33,8 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.split.ExpanseGroupMembers
-import com.atech.expensesync.ui.screens.split.add.AddExpanseEvents
-import com.atech.expensesync.ui.screens.split.add.AddExpenseState
+import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
+import com.atech.expensesync.ui.screens.split.add.CreateExpenseState
+import com.atech.expensesync.ui.screens.split.add.ViewExpenseBookState
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 
@@ -49,9 +50,10 @@ private enum class ExtraPane {
 fun ViewExpanseBookScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    state: AddExpenseState,
+    state: ViewExpenseBookState,
+    addExpenseBookState: CreateExpenseState,
     members: List<ExpanseGroupMembers>,
-    onEvent: (AddExpanseEvents) -> Unit
+    onEvent: (AddExpenseEvents) -> Unit
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     var extraPane by remember { mutableStateOf(ExtraPane.None) }
@@ -79,7 +81,7 @@ fun ViewExpanseBookScreen(
                     },
                     onGroupMembersClick = {
                         extraPane = ExtraPane.GroupMembers
-                        onEvent(AddExpanseEvents.GetExpanseGroupMembers)
+                        onEvent(AddExpenseEvents.GetExpenseGroupMembers)
                         navigator.navigateTo(
                             ListDetailPaneScaffoldRole.Extra,
                         )
@@ -99,7 +101,10 @@ fun ViewExpanseBookScreen(
                 {
                     AnimatedPane {
                         AddExpenseScreen(
-                            grpName = state.groupName,
+                            viewExpenseBookState = state,
+                            state = addExpenseBookState,
+                            groupMembers = members,
+                            onEvent = onEvent,
                             onNavigationClick = {
                                 navigator.navigateBack()
                             }
