@@ -20,6 +20,7 @@ kotlin = "2.1.0"
 kotlinx-coroutines = "1.10.1"
 ktor = "3.0.3"
 ktorServerContentNegotiation = "3.0.3"
+landscapistCoil3 = "2.4.6"
 logback = "1.5.16"
 koin = "3.6.0-alpha3"
 koinCompose = "3.6.0-alpha3"
@@ -69,6 +70,7 @@ ktor-serialization-kotlinx-json-jvm = { module = "io.ktor:ktor-serialization-kot
 ktor-server-caching-headers-jvm = { module = "io.ktor:ktor-server-caching-headers-jvm" }
 ktor-server-call-logging-jvm = { module = "io.ktor:ktor-server-call-logging-jvm" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktorServerContentNegotiation" }
+landscapist-coil3 = { module = "com.github.skydoves:landscapist-coil3", version.ref = "landscapistCoil3" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
@@ -131,8 +133,6 @@ androidx-credentials-play-services-auth = { module = "androidx.credentials:crede
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 
 
-image-loader-extension-compose-resources = { module = "io.github.qdsfdhvh:image-loader-extension-compose-resources", version.ref = "imageLoader" }
-image-loader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "imageLoader" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
