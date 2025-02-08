@@ -21,8 +21,9 @@ enum class SplitType {
 @Entity(
     tableName = "expanse_group_members",
     indices = [
-        Index(value = ["email"], unique = true),
-        Index(value = ["groupId"], unique = true),
+        Index(value = ["email"]),
+        Index(value = ["groupId"]),
+        Index(value = ["key"]),
     ],
     foreignKeys = [
         ForeignKey(
@@ -34,13 +35,18 @@ enum class SplitType {
     ]
 )
 data class ExpanseGroupMembers(
-    @PrimaryKey
     val uid: String,
     val name: String,
     val email: String,
     val pic: String,
     val groupId: String,
-)
+    val addedAt: Long = System.currentTimeMillis(),
+    @PrimaryKey
+    val key: String = "$uid$$groupId",
+) {
+    val formatedDate: String
+        get() = addedAt.convertToDateFormat()
+}
 
 
 @Entity(
@@ -59,7 +65,7 @@ data class ExpanseGroupMembers(
         ),
         ForeignKey(
             entity = ExpanseGroupMembers::class,
-            parentColumns = ["uid"],
+            parentColumns = ["key"],
             childColumns = ["paidBy"],
             onDelete = CASCADE
         )
@@ -93,7 +99,7 @@ data class ExpanseTransactions(
         ),
         ForeignKey(
             entity = ExpanseGroupMembers::class,
-            parentColumns = ["uid"],
+            parentColumns = ["key"],
             childColumns = ["memberUId"],
             onDelete = CASCADE
         )

@@ -19,7 +19,7 @@ import com.atech.expensesync.database.room.split.TransactionSplitDao
         TransactionSplit::class,
         ExpanseGroup::class
     ],
-    version = 1
+    version = 3
 )
 abstract class ExpenseSyncDatabase : RoomDatabase() {
     abstract val expanseGroupDao: ExpanseGroupDao
