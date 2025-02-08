@@ -9,6 +9,8 @@ import com.atech.expensesync.navigation.ViewExpanseBookArgs
 import com.atech.expensesync.usecases.ExpanseGroupMemberUseCases
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 class AddExpanseViewModel(
     private val expanseGroupMemberUseCases: ExpanseGroupMemberUseCases
@@ -41,8 +43,26 @@ class AddExpanseViewModel(
                         groupName = viewExpanseBookArgs?.grpName ?: "",
                         groupId = viewExpanseBookArgs?.grpId ?: ""
                     )
+//                    TODO: Remove me after testing
+//                    insertDummyGroupMember(viewExpanseBookArgs!!.grpId)
                 }
             }
         }
+    }
+
+
+    //    Todo: Remove me after testing
+    private fun insertDummyGroupMember(
+        groupId: String,
+    ) = viewModelScope.launch {
+        expanseGroupMemberUseCases.insert(
+            data = ExpanseGroupMembers(
+                groupId = groupId,
+                uid = UUID.randomUUID().toString(),
+                name = "Aiyu",
+                email = "test@expensesync.com",
+                pic = "https://picsum.photos/200"
+            )
+        )
     }
 }
