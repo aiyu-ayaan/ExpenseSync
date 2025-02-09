@@ -7,7 +7,7 @@ RUN ls -la /home/gradle/src/server/src/main/resources
 RUN echo /home/gradle/src/server/src/main/resources/web-client.json
 
 WORKDIR /home/gradle/src
-RUN gradle server:buildFatJar --stacktrace --info
+RUN gradle buildFatJar --stacktrace --info --no-daemon
 
 FROM openjdk:11
 EXPOSE 8080:8080
