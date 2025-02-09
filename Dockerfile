@@ -1,4 +1,4 @@
-FROM gradle:8.10.2-jdk11 AS build
+FROM gradle:8.10.2-jdk17 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 
 ARG WEB_CLIENT_JSON
@@ -7,7 +7,7 @@ RUN ls -la /home/gradle/src/server/src/main/resources
 RUN echo /home/gradle/src/server/src/main/resources/web-client.json
 
 WORKDIR /home/gradle/src
-RUN gradle buildFatJar --stacktrace --info --no-daemon
+RUN gradle server:buildFatJar --stacktrace --info --no-daemon
 
 FROM openjdk:11
 EXPOSE 8080:8080
