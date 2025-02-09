@@ -1,8 +1,9 @@
 package com.atech.expensesync.database.models
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
-
+@Keep
 @Serializable
 data class DesktopLogInDetails(
     val systemUid: String = "",
@@ -10,6 +11,7 @@ data class DesktopLogInDetails(
     val longInAt: Long = System.currentTimeMillis(),
 )
 
+@Keep
 @Serializable
 data class User(
     val uid: String = "",

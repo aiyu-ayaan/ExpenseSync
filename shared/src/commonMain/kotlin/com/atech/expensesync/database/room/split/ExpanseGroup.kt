@@ -1,5 +1,6 @@
 package com.atech.expensesync.database.room.split
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
@@ -8,7 +9,7 @@ import androidx.room.PrimaryKey
 import com.atech.expensesync.utils.convertToDateFormat
 import java.util.UUID
 
-
+@Keep
 enum class SplitType {
     EQUAL,          // Split equally among all members
     UNEQUAL,        // Different amounts for different members
@@ -34,6 +35,7 @@ enum class SplitType {
         )
     ]
 )
+@Keep
 data class ExpanseGroupMembers(
     val uid: String,
     val name: String,
@@ -49,6 +51,7 @@ data class ExpanseGroupMembers(
 }
 
 
+@Keep
 @Entity(
     tableName = "expanse_transactions",
     indices = [
@@ -84,6 +87,7 @@ data class ExpanseTransactions(
     val isSettled: Boolean = false,
 )
 
+@Keep
 @Entity(
     tableName = "expanse_transaction_split",
     indices = [
@@ -118,6 +122,7 @@ data class TransactionSplit(
 }
 
 
+@Keep
 @Entity(
     tableName = "expanse_group",
     indices = [

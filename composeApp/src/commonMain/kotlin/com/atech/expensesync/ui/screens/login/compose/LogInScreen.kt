@@ -39,6 +39,7 @@ import com.atech.expensesync.utils.runWithDevice
 import com.atech.expensesync.utils.toJson
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.login
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import java.util.UUID
 
@@ -53,6 +54,7 @@ fun LogInScreen(
     val pref = LocalDataStore.current
     var logInMessage by rememberSaveable { mutableStateOf("Creating ...") }
     var hasClick by rememberSaveable { mutableStateOf(false) }
+    var canShowSnackBar by rememberSaveable { mutableStateOf(Pair<Boolean, String?>(false, null)) }
 //    Set UID for desktop
     runWithDevice(onDesktop = {
         if (pref.getString(PrefKeys.DESKTOP_USER_UID).isBlank()) {
@@ -68,6 +70,10 @@ fun LogInScreen(
                 com.atech.expensesync.login.InvokeLogInWithGoogle { logInState ->
                     if (logInState.errorMessage != null) {
 //                Todo: show error message
+                        com.atech.expensesync.utils.expenseSyncLogger(
+                            "Error: ${logInState.errorMessage}"
+                        )
+                        canShowSnackBar = true to logInState.errorMessage
                         hasClick = false
                         return@InvokeLogInWithGoogle
                     }
@@ -75,6 +81,7 @@ fun LogInScreen(
                         when (model) {
                             is ResponseDataState.Error -> {
 //                        Todo: show error message
+                                canShowSnackBar = true to model.error
                                 com.atech.expensesync.utils.expenseSyncLogger(
                                     "Error: ${model.error}"
                                 )
@@ -100,7 +107,18 @@ fun LogInScreen(
             }
         })
     MainContainer(
-        modifier = modifier, bottomBar = {
+        modifier = modifier,
+        invokeSnackBar = {
+            if (canShowSnackBar.first) {
+                this.launch {
+                    it.showSnackbar(
+                        message = canShowSnackBar.second ?: "Error",
+                        actionLabel = "Ok",
+                    )
+                }
+            }
+        },
+        bottomBar = {
             runWithDeviceCompose(
                 onAndroid = {
                     BottomAppBar(
