@@ -9,7 +9,7 @@ RUN echo /home/gradle/src/server/src/main/resources/web-client.json
 WORKDIR /home/gradle/src
 RUN gradle server:buildFatJar --stacktrace --info --no-daemon
 
-FROM openjdk:11
+FROM openjdk:17
 EXPOSE 8080:8080
 RUN mkdir /app
 COPY --from=build /home/gradle/src/server/build/libs/*.jar /app/server-all.jar
