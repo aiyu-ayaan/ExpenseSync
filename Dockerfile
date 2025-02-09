@@ -7,5 +7,5 @@ RUN gradle server:buildFatJar --no-daemon
 FROM openjdk:11
 EXPOSE 8080:8080
 RUN mkdir /app
-COPY --from=build /home/gradle/src/build/libs/*.jar /app/fcm-service-all.jar
-ENTRYPOINT ["java","-jar", "/app/fcm-service-all.jar"]
+COPY --from=build /home/gradle/src/build/libs/*.jar /app/server-all.jar.jar
+ENTRYPOINT ["java","-jar", "/app/server-all.jar.jar"]
