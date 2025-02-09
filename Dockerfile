@@ -1,4 +1,4 @@
-FROM gradle:7-jdk11 AS build
+FROM gradle:8.10.2-jdk11 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 
 ARG WEB_CLIENT_JSON
