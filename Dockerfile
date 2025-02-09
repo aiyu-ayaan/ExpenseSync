@@ -9,7 +9,7 @@ ARG WEB_CLIENT_JSON
 RUN echo "$WEB_CLIENT_JSON" > /home/gradle/src/server/src/main/resources/web-client.json
 
 WORKDIR /home/gradle/src
-RUN gradle server:buildFatJar
+RUN gradle buildFatJar
 
 FROM openjdk:11
 EXPOSE 8080:8080
