@@ -5,6 +5,7 @@ COPY --chown=gradle:gradle . /home/gradle/src
 RUN mkdir -p /home/gradle/src/server/src/main/resources
 
 # Write the secret from an environment variable
+RUN echo "$WEB_CLIENT_JSON"
 ARG WEB_CLIENT_JSON
 RUN echo "$WEB_CLIENT_JSON" > /home/gradle/src/server/src/main/resources/web-client.json
 
