@@ -4,6 +4,7 @@ COPY --chown=gradle:gradle . /home/gradle/src
 ARG WEB_CLIENT_JSON
 RUN echo "$WEB_CLIENT_JSON" > /home/gradle/src/server/src/main/resources/web-client.json
 RUN ls -la /home/gradle/src/server/src/main/resources
+RUN echo /home/gradle/src/server/src/main/resources/web-client.json
 
 WORKDIR /home/gradle/src
 RUN gradle server:buildFatJar --stacktrace --info
