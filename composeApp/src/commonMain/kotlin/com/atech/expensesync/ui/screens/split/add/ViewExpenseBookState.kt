@@ -2,7 +2,9 @@ package com.atech.expensesync.ui.screens.split.add
 
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.database.room.split.ExpanseTransactions
 import com.atech.expensesync.database.room.split.SplitType
+import com.atech.expensesync.utils.EntityMapper
 import com.atech.expensesync.utils.convertToDateFormat
 
 data class ViewExpenseBookState(
@@ -40,4 +42,20 @@ data class CreateExpenseState(
             splitTo = emptyList()
         )
     }
+}
+
+class CreateExpenseStateToExpanseTransactionsMapper :
+    EntityMapper<CreateExpenseState?, ExpanseTransactions> {
+    override fun mapFromEntity(entity: CreateExpenseState?): ExpanseTransactions =
+        ExpanseTransactions(
+            groupId = entity!!.paidBy.groupId,
+            amount = entity.amount,
+            description = entity.description,
+            paidBy = entity.paidBy.key,
+            splitType = entity.splitType,
+        )
+
+
+    override fun mapToEntity(domainModel: ExpanseTransactions): CreateExpenseState? = null
+
 }

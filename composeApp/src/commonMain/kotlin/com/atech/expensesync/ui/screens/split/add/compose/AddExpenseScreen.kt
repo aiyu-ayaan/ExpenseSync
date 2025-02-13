@@ -19,6 +19,7 @@ import androidx.compose.material.icons.twotone.NoteAlt
 import androidx.compose.material.icons.twotone.Payment
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -82,6 +83,23 @@ fun AddExpenseScreen(
         modifier = modifier,
         title = "Add Expense",
         onNavigationClick = onNavigationClick,
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    onEvent.invoke(AddExpenseEvents.AddExpenseToGroup(onComplete = onNavigationClick))
+                },
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(imageVector = Icons.TwoTone.Payment, contentDescription = "Add")
+                    Text(
+                        modifier = Modifier.padding(start = MaterialTheme.spacing.medium),
+                        text = "Add"
+                    )
+                }
+            }
+        },
         bottomBar = {
             BottomAppBar {
                 Row(
@@ -146,9 +164,8 @@ fun AddExpenseScreen(
                 placeholder = "Amount",
                 value = state.amount.formatAmount(),
                 onValueChange = {
-                    onEvent(
-                        AddExpenseEvents.OnCreateExpenseStateChange(state.copy(amount = it.takeIf { it.isNotEmpty() }
-                            ?.toDoubleOrNull() ?: 0.0)))
+                    onEvent(AddExpenseEvents.OnCreateExpenseStateChange(state.copy(amount = it.takeIf { it.isNotEmpty() }
+                        ?.toDoubleOrNull() ?: 0.0)))
                 },
                 leadingIcon = {
                     Icon(

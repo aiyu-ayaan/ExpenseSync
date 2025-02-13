@@ -6,16 +6,21 @@ import com.atech.expensesync.database.ktor.httpClientEngineFactory
 import com.atech.expensesync.database.ktor.websocket.UserDataWebSocket
 import com.atech.expensesync.database.room.ExpenseSyncDatabase
 import com.atech.expensesync.usecases.CreateNewGroupUseCase
+import com.atech.expensesync.usecases.CreateNewTransactionUseCase
 import com.atech.expensesync.usecases.CreateUserUseCase
 import com.atech.expensesync.usecases.DeleteGroupUseCase
+import com.atech.expensesync.usecases.DeleteTransactionUseCase
 import com.atech.expensesync.usecases.ExpanseGroupMemberUseCases
+import com.atech.expensesync.usecases.ExpenseTransactionUseCases
 import com.atech.expensesync.usecases.GetGroupMembers
 import com.atech.expensesync.usecases.GetGroupsUseCase
+import com.atech.expensesync.usecases.GetTransactionsUseCase
 import com.atech.expensesync.usecases.InsertMember
 import com.atech.expensesync.usecases.LogInToDesktopUseCase
 import com.atech.expensesync.usecases.RemoveMember
 import com.atech.expensesync.usecases.SplitUseCases
 import com.atech.expensesync.usecases.UpdateGroupUseCase
+import com.atech.expensesync.usecases.UpdateTransactionUseCase
 import com.atech.expensesync.usecases.UserUseCases
 import io.ktor.client.HttpClient
 import org.koin.dsl.bind
@@ -49,4 +54,10 @@ val commonModule = module {
     single { GetGroupMembers(get()) }
     single { RemoveMember(get()) }
     single { ExpanseGroupMemberUseCases(get(), get(), get()) }
+
+    single { CreateNewTransactionUseCase(get()) }
+    single { GetTransactionsUseCase(get()) }
+    single { UpdateTransactionUseCase(get()) }
+    single { DeleteTransactionUseCase(get()) }
+    single { ExpenseTransactionUseCases(get(), get(), get(), get()) }
 }

@@ -9,7 +9,7 @@ import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.room.split.ExpanseGroupMembers
 import com.atech.expensesync.navigation.ViewExpanseBookArgs
 import com.atech.expensesync.usecases.ExpanseGroupMemberUseCases
-import com.atech.expensesync.utils.expenseSyncLogger
+import com.atech.expensesync.usecases.ExpenseTransactionUseCases
 import com.atech.expensesync.utils.fromJson
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -18,6 +18,7 @@ import java.util.UUID
 
 class AddExpenseViewModel(
     private val expanseGroupMemberUseCases: ExpanseGroupMemberUseCases,
+    private val expenseTransactionUseCases: ExpenseTransactionUseCases,
     private val prefManager: PrefManager
 ) : ViewModel() {
     var viewExpanseBookArgs: ViewExpanseBookArgs? = null
@@ -68,6 +69,17 @@ class AddExpenseViewModel(
                 _createExpenseState.value = event.state
 
             AddExpenseEvents.OnCreateExpenseStateReset -> populateCreateExpenseState()
+            is AddExpenseEvents.AddExpenseToGroup -> viewModelScope.launch {
+                val model =
+                    CreateExpenseStateToExpanseTransactionsMapper().mapFromEntity(createExpenseState.value)
+                expenseTransactionUseCases.createNewTransaction(model)
+                _createExpenseState.value = CreateExpenseState.default(
+                    prefManager.getString(PrefKeys.USER_MODEL).fromJson()
+                        ?: error("User model not found"),
+                    viewExpanseBookArgs!!.grpId
+                )
+                event.onComplete()
+            }
         }
     }
 
