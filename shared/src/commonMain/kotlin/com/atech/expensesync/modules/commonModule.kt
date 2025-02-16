@@ -17,6 +17,7 @@ import com.atech.expensesync.usecases.GetGroupsUseCase
 import com.atech.expensesync.usecases.GetTransactionsUseCase
 import com.atech.expensesync.usecases.InsertMember
 import com.atech.expensesync.usecases.LogInToDesktopUseCase
+import com.atech.expensesync.usecases.MapTransactionWithSplitAndThenUser
 import com.atech.expensesync.usecases.RemoveMember
 import com.atech.expensesync.usecases.SplitUseCases
 import com.atech.expensesync.usecases.UpdateGroupUseCase
@@ -59,5 +60,6 @@ val commonModule = module {
     single { GetTransactionsUseCase(get()) }
     single { UpdateTransactionUseCase(get()) }
     single { DeleteTransactionUseCase(get()) }
-    single { ExpenseTransactionUseCases(get(), get(), get(), get()) }
+    single { MapTransactionWithSplitAndThenUser(get()) }
+    single { ExpenseTransactionUseCases(get(), get(), get(), get(),get()) }
 }

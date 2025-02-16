@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.database.room.split.ExpanseTransactions
+import com.atech.expensesync.database.room.split.TransactionSplit
 import com.atech.expensesync.navigation.ViewExpanseBookArgs
 import com.atech.expensesync.usecases.ExpanseGroupMemberUseCases
 import com.atech.expensesync.usecases.ExpenseTransactionUseCases
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.UUID
+import kotlin.random.Random
 
 class AddExpenseViewModel(
     private val expanseGroupMemberUseCases: ExpanseGroupMemberUseCases,
@@ -29,25 +32,27 @@ class AddExpenseViewModel(
     private val _grpMembers = mutableStateOf<List<ExpanseGroupMembers>>(emptyList())
     val grpMembers: State<List<ExpanseGroupMembers>> get() = _grpMembers
 
-    private val _createExpenseState =
-        mutableStateOf<CreateExpenseState>(
-            CreateExpenseState.default(
-                prefManager.getString(PrefKeys.USER_MODEL).fromJson()
-                    ?: error("User model not found")
-            )
+    private val _getTransactionWithUser =
+        mutableStateOf<Map<ExpanseTransactions, List<Pair<TransactionSplit, ExpanseGroupMembers>>>>(
+            emptyMap()
         )
+    val getTransactionWithUser: State<Map<ExpanseTransactions, List<Pair<TransactionSplit, ExpanseGroupMembers>>>>
+        get() = _getTransactionWithUser
+
+    private val _createExpenseState = mutableStateOf<CreateExpenseState>(
+        CreateExpenseState.default(
+            prefManager.getString(PrefKeys.USER_MODEL).fromJson() ?: error("User model not found")
+        )
+    )
     val createExpenseState: State<CreateExpenseState> get() = _createExpenseState
 
     fun onEvent(event: AddExpenseEvents) {
         when (event) {
-            AddExpenseEvents.GetExpenseGroupMembers ->
-                if (viewExpanseBookArgs != null) {
-                    expanseGroupMemberUseCases
-                        .getAll(viewExpanseBookArgs!!.grpId)
-                        .onEach {
-                            _grpMembers.value = it
-                        }.launchIn(viewModelScope)
-                }
+            AddExpenseEvents.GetExpenseGroupMembers -> if (viewExpanseBookArgs != null) {
+                expanseGroupMemberUseCases.getAll(viewExpanseBookArgs!!.grpId).onEach {
+                    _grpMembers.value = it
+                }.launchIn(viewModelScope)
+            }
 
 
             is AddExpenseEvents.SetViewExpenseBookArgs -> {
@@ -65,8 +70,8 @@ class AddExpenseViewModel(
                 }
             }
 
-            is AddExpenseEvents.OnCreateExpenseStateChange ->
-                _createExpenseState.value = event.state
+            is AddExpenseEvents.OnCreateExpenseStateChange -> _createExpenseState.value =
+                event.state
 
             AddExpenseEvents.OnCreateExpenseStateReset -> populateCreateExpenseState()
             is AddExpenseEvents.AddExpenseToGroup -> viewModelScope.launch {
@@ -75,18 +80,24 @@ class AddExpenseViewModel(
                 expenseTransactionUseCases.createNewTransaction(model)
                 _createExpenseState.value = CreateExpenseState.default(
                     prefManager.getString(PrefKeys.USER_MODEL).fromJson()
-                        ?: error("User model not found"),
-                    viewExpanseBookArgs!!.grpId
+                        ?: error("User model not found"), viewExpanseBookArgs!!.grpId
                 )
                 event.onComplete()
+            }
+
+            AddExpenseEvents.LoadSettleUpScreen -> viewModelScope.launch {
+                expenseTransactionUseCases.mapTransactionWithSplitAndThenUser(
+                    viewExpanseBookArgs?.grpId ?: ""
+                ).onEach {
+                        _getTransactionWithUser.value = it
+                    }.launchIn(viewModelScope)
             }
         }
     }
 
     private fun populateCreateExpenseState() {
         _createExpenseState.value = CreateExpenseState.default(
-            prefManager.getString(PrefKeys.USER_MODEL).fromJson()
-                ?: error("User model not found"),
+            prefManager.getString(PrefKeys.USER_MODEL).fromJson() ?: error("User model not found"),
             viewExpanseBookArgs!!.grpId
         )
     }
@@ -96,12 +107,13 @@ class AddExpenseViewModel(
     private fun insertDummyGroupMember(
         groupId: String,
     ) = viewModelScope.launch {
+        val number = Random(10).nextInt()
         expanseGroupMemberUseCases.insert(
             data = ExpanseGroupMembers(
                 groupId = groupId,
                 uid = UUID.randomUUID().toString(),
-                name = "Aiyu",
-                email = "test@expensesync.com",
+                name = "Test User $number",
+                email = "test$number@expensesync.com",
                 pic = "https://picsum.photos/200"
             )
         )

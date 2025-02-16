@@ -1,6 +1,6 @@
 [versions]
 accompanistSystemuicontroller = "0.27.0"
-agp = "8.8.0"
+agp = "8.8.1"
 android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"

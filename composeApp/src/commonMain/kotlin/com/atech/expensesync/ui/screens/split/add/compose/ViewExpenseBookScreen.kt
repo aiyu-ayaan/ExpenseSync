@@ -23,8 +23,8 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.database.room.split.ExpanseTransactions
+import com.atech.expensesync.database.room.split.TransactionSplit
 import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
 import com.atech.expensesync.ui.screens.split.add.CreateExpenseState
 import com.atech.expensesync.ui.screens.split.add.ViewExpenseBookState
@@ -53,6 +55,7 @@ fun ViewExpanseBookScreen(
     state: ViewExpenseBookState,
     addExpenseBookState: CreateExpenseState,
     members: List<ExpanseGroupMembers>,
+    transactionWithUser: State<Map<ExpanseTransactions, List<Pair<TransactionSplit, ExpanseGroupMembers>>>>,
     onEvent: (AddExpenseEvents) -> Unit
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
@@ -73,6 +76,7 @@ fun ViewExpanseBookScreen(
                     onNavigationClick = {
                         navHostController.navigateUp()
                     },
+                    transactionWithUser = transactionWithUser,
                     onAddExpenseClick = {
                         extraPane = ExtraPane.AddExpense
                         onEvent(AddExpenseEvents.OnCreateExpenseStateReset)
@@ -86,7 +90,9 @@ fun ViewExpanseBookScreen(
                         navigator.navigateTo(
                             ListDetailPaneScaffoldRole.Extra,
                         )
-                    }
+                    },
+                    onEvent = onEvent,
+                    members = members
                 )
             }
         },
@@ -131,14 +137,25 @@ fun ViewExpanseBookScreen(
 }
 
 
+private enum class TabState {
+    SettleUp,
+    Balance,
+    Whiteboard,
+    Export
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Screen(
     modifier: Modifier = Modifier,
     grpName: String,
+    transactionWithUser: State<Map<ExpanseTransactions,
+            List<Pair<TransactionSplit, ExpanseGroupMembers>>>>,
+    members: List<ExpanseGroupMembers>,
     onNavigationClick: () -> Unit = {},
     onAddExpenseClick: () -> Unit = {},
-    onGroupMembersClick: () -> Unit = {}
+    onGroupMembersClick: () -> Unit = {},
+    onEvent: (AddExpenseEvents) -> Unit
 ) {
     MainContainer(
         modifier = modifier,
@@ -165,13 +182,7 @@ private fun Screen(
             }
         }
     ) { paddingValue ->
-        var state by remember { mutableIntStateOf(0) }
-        val titles = listOf(
-            "Settle Up",
-            "Balance",
-            "Whiteboard",
-            "Export"
-        )
+        var state by remember { mutableStateOf(0) }
         Column(
             modifier = Modifier.padding(paddingValue),
         ) {
@@ -181,14 +192,30 @@ private fun Screen(
                 createTabs(
                     state = state,
                     stateChange = { state = it },
-                    list = titles
+                    list = TabState.entries.map { it.name }
                 )
             }
-            Text(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = "Fancy indicator tab ${state + 1} selected",
-                style = MaterialTheme.typography.bodyLarge
-            )
+            when (TabState.entries[state]) {
+                TabState.SettleUp -> {
+                    onEvent(AddExpenseEvents.LoadSettleUpScreen)
+                    SettleUpScreen(
+                        state = transactionWithUser.value,
+                        groupMembers = members
+                    )
+                }
+
+                TabState.Balance -> {
+                    Text(text = "Balance")
+                }
+
+                TabState.Whiteboard -> {
+                    Text(text = "Whiteboard")
+                }
+
+                TabState.Export -> {
+                    Text(text = "Export")
+                }
+            }
         }
     }
 }

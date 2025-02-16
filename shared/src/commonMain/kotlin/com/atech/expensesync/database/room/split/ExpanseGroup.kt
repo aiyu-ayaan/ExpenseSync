@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
+import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.atech.expensesync.utils.convertToDateFormat
@@ -46,6 +47,7 @@ data class ExpanseGroupMembers(
     @PrimaryKey
     val key: String = "$uid$$groupId",
 ) {
+    @get:Ignore
     val formatedDate: String
         get() = addedAt.convertToDateFormat()
 }
@@ -85,7 +87,11 @@ data class ExpanseTransactions(
     val category: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     val isSettled: Boolean = false,
-)
+) {
+    @get:Ignore
+    val formatedDate: String
+        get() = createdAt.convertToDateFormat()
+}
 
 @Keep
 @Entity(
@@ -114,9 +120,11 @@ data class TransactionSplit(
     val memberUId: String,
     val amount: Double,
     val createdAt: Long = System.currentTimeMillis(),
+    val isSettled: Boolean = false,
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 ) {
+    @get:Ignore
     val formatedDate: String
         get() = createdAt.convertToDateFormat()
 }
@@ -141,6 +149,7 @@ data class ExpanseGroup(
     val isActive: Boolean = true,
     val defaultCurrency: String = "INR",
 ) {
+    @get:Ignore
     val formatedDate: String
         get() = createdAt.convertToDateFormat()
 }

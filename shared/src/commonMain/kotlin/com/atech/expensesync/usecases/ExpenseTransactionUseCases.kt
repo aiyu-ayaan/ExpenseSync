@@ -9,6 +9,7 @@ data class ExpenseTransactionUseCases(
     val getAllTransactions: GetTransactionsUseCase,
     val update: UpdateTransactionUseCase,
     val delete: DeleteTransactionUseCase,
+    val mapTransactionWithSplitAndThenUser: MapTransactionWithSplitAndThenUser
 )
 
 data class CreateNewTransactionUseCase(
@@ -45,4 +46,15 @@ data class DeleteTransactionUseCase(
     ) {
         dao.deleteTransaction(data)
     }
+}
+
+
+data class MapTransactionWithSplitAndThenUser(
+    val dao: ExpanseTransactionDao
+) {
+    suspend operator fun invoke(
+        groupId: String
+    ) =
+        dao.mapTransactionWithSplitAndThenUser(groupId)
+
 }

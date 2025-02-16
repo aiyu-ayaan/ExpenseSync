@@ -7,5 +7,6 @@ sealed interface AddExpenseEvents {
     object GetExpenseGroupMembers : AddExpenseEvents
     data class OnCreateExpenseStateChange(val state: CreateExpenseState) : AddExpenseEvents
     data object OnCreateExpenseStateReset : AddExpenseEvents
-    data class AddExpenseToGroup(val onComplete : () -> Unit) : AddExpenseEvents
+    data class AddExpenseToGroup(val onComplete: () -> Unit) : AddExpenseEvents
+    data object LoadSettleUpScreen : AddExpenseEvents
 }

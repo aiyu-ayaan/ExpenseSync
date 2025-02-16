@@ -51,10 +51,11 @@ fun NavGraphBuilder.appNavigation(
             val viewModel = koinViewModel<AddExpenseViewModel>()
             viewModel.onEvent(AddExpenseEvents.SetViewExpenseBookArgs(args))
             ViewExpanseBookScreen(
-                state = viewModel.viewExpenseBookState.value,
-                members = viewModel.grpMembers.value,
-                addExpenseBookState = viewModel.createExpenseState.value,
                 navHostController = navHostController,
+                state = viewModel.viewExpenseBookState.value,
+                addExpenseBookState = viewModel.createExpenseState.value,
+                members = viewModel.grpMembers.value,
+                transactionWithUser = viewModel.getTransactionWithUser,
                 onEvent = viewModel::onEvent
             )
         }
