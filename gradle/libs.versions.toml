@@ -12,6 +12,7 @@ androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.4"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
+chart = "Beta-0.0.5"
 compose-multiplatform = "1.7.0"
 core = "3.5.1"
 firebaseAdmin = "9.2.0"
@@ -51,6 +52,7 @@ imageLoader = "1.8.3"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activityCompose" }
+chart = { module = "io.github.thechance101:chart", version.ref = "chart" }
 core = { module = "com.google.zxing:core", version.ref = "core" }
 firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebaseAdmin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

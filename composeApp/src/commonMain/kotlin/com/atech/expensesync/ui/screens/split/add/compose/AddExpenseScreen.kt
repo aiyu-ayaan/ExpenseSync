@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.AddAPhoto
 import androidx.compose.material.icons.twotone.CameraAlt
 import androidx.compose.material.icons.twotone.DateRange
 import androidx.compose.material.icons.twotone.Description
@@ -50,7 +51,7 @@ private enum class ExpanseBottomBar(
     val icon: ImageVector, val contentDescription: String
 ) {
     DATE_RANGE(Icons.TwoTone.DateRange, "date"), CAMERA_ALT(
-        Icons.TwoTone.CameraAlt, "camera"
+        Icons.TwoTone.AddAPhoto, "camera"
     ),
     NOTE_ALT(Icons.TwoTone.NoteAlt, "note"),
 }

@@ -17,6 +17,6 @@ interface TransactionSplitDao {
     @Query("SELECT * FROM expanse_transaction_split WHERE transactionId = :transactionId")
     fun getTransactionSplits(transactionId: String): Flow<List<TransactionSplit>>
 
-    @Query("SELECT * FROM expanse_transaction_split WHERE memberUid = :memberUid")
+    @Query("SELECT * FROM expanse_transaction_split WHERE memberKey = :memberUid")
     fun getMemberSplits(memberUid: String): Flow<List<TransactionSplit>>
 }

@@ -8,6 +8,7 @@ import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.atech.expensesync.utils.convertToDateFormat
+import com.atech.expensesync.utils.removeDecimalIfZero
 import java.util.UUID
 
 @Keep
@@ -27,14 +28,12 @@ enum class SplitType {
         Index(value = ["groupId"]),
         Index(value = ["key"]),
     ],
-    foreignKeys = [
-        ForeignKey(
-            entity = ExpanseGroup::class,
-            parentColumns = ["groupId"],
-            childColumns = ["groupId"],
-            onDelete = CASCADE
-        )
-    ]
+    foreignKeys = [ForeignKey(
+        entity = ExpanseGroup::class,
+        parentColumns = ["groupId"],
+        childColumns = ["groupId"],
+        onDelete = CASCADE
+    )]
 )
 @Keep
 data class ExpanseGroupMembers(
@@ -44,8 +43,7 @@ data class ExpanseGroupMembers(
     val pic: String,
     val groupId: String,
     val addedAt: Long = System.currentTimeMillis(),
-    @PrimaryKey
-    val key: String = "$uid$$groupId",
+    @PrimaryKey val key: String = "$uid$$groupId",
 ) {
     @get:Ignore
     val formatedDate: String
@@ -59,30 +57,26 @@ data class ExpanseGroupMembers(
     indices = [
         Index(value = ["transactionId"], unique = true),
         Index(value = ["groupId"]),
-        Index(value = ["paidBy"]),
+        Index(value = ["paidByKey"]),
     ],
-    foreignKeys = [
-        ForeignKey(
-            entity = ExpanseGroup::class,
-            parentColumns = ["groupId"],
-            childColumns = ["groupId"],
-            onDelete = CASCADE
-        ),
-        ForeignKey(
-            entity = ExpanseGroupMembers::class,
-            parentColumns = ["key"],
-            childColumns = ["paidBy"],
-            onDelete = CASCADE
-        )
-    ]
+    foreignKeys = [ForeignKey(
+        entity = ExpanseGroup::class,
+        parentColumns = ["groupId"],
+        childColumns = ["groupId"],
+        onDelete = CASCADE
+    ), ForeignKey(
+        entity = ExpanseGroupMembers::class,
+        parentColumns = ["key"],
+        childColumns = ["paidByKey"],
+        onDelete = CASCADE
+    )]
 )
 data class ExpanseTransactions(
-    @PrimaryKey
-    val transactionId: String = UUID.randomUUID().toString(),
+    @PrimaryKey val transactionId: String = UUID.randomUUID().toString(),
     val groupId: String,
     val amount: Double,
     val description: String,
-    val paidBy: String,
+    val paidByKey: String,
     val splitType: SplitType = SplitType.EQUAL,
     val category: String = "",
     val createdAt: Long = System.currentTimeMillis(),
@@ -91,6 +85,9 @@ data class ExpanseTransactions(
     @get:Ignore
     val formatedDate: String
         get() = createdAt.convertToDateFormat()
+
+    val formatedAmount: String
+        get() = amount.removeDecimalIfZero()
 }
 
 @Keep
@@ -98,48 +95,45 @@ data class ExpanseTransactions(
     tableName = "expanse_transaction_split",
     indices = [
         Index(value = ["transactionId"]),
-        Index(value = ["memberUId"]),
+        Index(value = ["memberKey"]),
     ],
-    foreignKeys = [
-        ForeignKey(
-            entity = ExpanseTransactions::class,
-            parentColumns = ["transactionId"],
-            childColumns = ["transactionId"],
-            onDelete = CASCADE
-        ),
-        ForeignKey(
-            entity = ExpanseGroupMembers::class,
-            parentColumns = ["key"],
-            childColumns = ["memberUId"],
-            onDelete = CASCADE
-        )
-    ]
+    foreignKeys = [ForeignKey(
+        entity = ExpanseTransactions::class,
+        parentColumns = ["transactionId"],
+        childColumns = ["transactionId"],
+        onDelete = CASCADE
+    ), ForeignKey(
+        entity = ExpanseGroupMembers::class,
+        parentColumns = ["key"],
+        childColumns = ["memberKey"],
+        onDelete = CASCADE
+    )]
 )
 data class TransactionSplit(
     val transactionId: String,
-    val memberUId: String,
+    val memberKey: String,
     val amount: Double,
+    val paidBy: String,
     val createdAt: Long = System.currentTimeMillis(),
     val isSettled: Boolean = false,
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
 ) {
     @get:Ignore
     val formatedDate: String
         get() = createdAt.convertToDateFormat()
+
+    val formatedAmount: String
+        get() = amount.removeDecimalIfZero()
 }
 
 
 @Keep
 @Entity(
     tableName = "expanse_group",
-    indices = [
-        Index(value = ["groupName"], unique = true)
-    ],
+    indices = [Index(value = ["groupName"], unique = true)],
 )
 data class ExpanseGroup(
-    @PrimaryKey
-    val groupId: String,
+    @PrimaryKey val groupId: String,
     val groupName: String,
     val type: String,
     val createdByUid: String,

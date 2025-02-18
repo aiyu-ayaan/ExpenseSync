@@ -75,6 +75,8 @@ kotlin {
 //            api(libs.image.loader)
 //            api(libs.image.loader.extension.compose.resources)
             implementation(libs.landscapist.coil3)
+
+            implementation(libs.chart)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

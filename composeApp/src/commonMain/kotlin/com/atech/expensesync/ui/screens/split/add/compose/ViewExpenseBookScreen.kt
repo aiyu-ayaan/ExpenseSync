@@ -44,7 +44,8 @@ import com.atech.expensesync.ui_utils.backHandlerThreePane
 private enum class ExtraPane {
     AddExpense,
     GroupMembers,
-    None
+    None,
+    ShowDetailOfTransaction
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -60,6 +61,13 @@ fun ViewExpanseBookScreen(
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     var extraPane by remember { mutableStateOf(ExtraPane.None) }
+//    groupMembers: List<ExpanseGroupMembers>,
+//    split: List<TransactionSplit>,
+
+    var clickedGroupMember by remember { mutableStateOf<List<ExpanseGroupMembers>?>(null) }
+    var clickedTransactionSplit by remember { mutableStateOf<List<TransactionSplit>?>(null) }
+
+
     navigator.backHandlerThreePane(
         backAction = {
             extraPane = ExtraPane.None
@@ -92,7 +100,15 @@ fun ViewExpanseBookScreen(
                         )
                     },
                     onEvent = onEvent,
-                    members = members
+                    members = members,
+                    onItemClick = { groupMembers, split ->
+                        clickedGroupMember = groupMembers
+                        clickedTransactionSplit = split
+                        extraPane = ExtraPane.ShowDetailOfTransaction
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.Extra,
+                        )
+                    }
                 )
             }
         },
@@ -132,6 +148,23 @@ fun ViewExpanseBookScreen(
                     }
                 }
             }
+
+            ExtraPane.ShowDetailOfTransaction -> {
+                {
+                    AnimatedPane {
+                        if (clickedGroupMember != null && clickedTransactionSplit != null) {
+                            ShowDetailOfTransaction(
+                                transaction = transactionWithUser.value.keys.first(),
+                                groupMembers = clickedGroupMember!!,
+                                split = clickedTransactionSplit!!,
+                                onNavigationClick = {
+                                    navigator.navigateBack()
+                                }
+                            )
+                        }
+                    }
+                }
+            }
         }
     )
 }
@@ -155,6 +188,10 @@ private fun Screen(
     onNavigationClick: () -> Unit = {},
     onAddExpenseClick: () -> Unit = {},
     onGroupMembersClick: () -> Unit = {},
+    onItemClick: (
+        groupMembers: List<ExpanseGroupMembers>,
+        split: List<TransactionSplit>,
+    ) -> Unit,
     onEvent: (AddExpenseEvents) -> Unit
 ) {
     MainContainer(
@@ -200,7 +237,8 @@ private fun Screen(
                     onEvent(AddExpenseEvents.LoadSettleUpScreen)
                     SettleUpScreen(
                         state = transactionWithUser.value,
-                        groupMembers = members
+                        groupMembers = members,
+                        onClick = onItemClick
                     )
                 }
 

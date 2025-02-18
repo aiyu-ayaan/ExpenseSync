@@ -27,9 +27,9 @@ interface ExpanseTransactionDao {
     fun getGroupMembers(groupId: String): Int?
 
 
-    @Query("SELECT * FROM EXPANSE_GROUP_MEMBERS WHERE groupId = :groupId and uid != :paidBy")
+    @Query("SELECT * FROM EXPANSE_GROUP_MEMBERS WHERE groupId = :groupId")
     fun getGroupMembersList(
-        groupId: String, paidBy: String
+        groupId: String
     ): List<ExpanseGroupMembers>
 
     @Query("SELECT * FROM expanse_transactions WHERE groupId = :groupId ORDER BY createdAt DESC")
@@ -55,12 +55,13 @@ interface ExpanseTransactionDao {
         if (members != null) {
             val splitAmount = (transaction.amount / members).takeUpToTwoDecimal()
             val splits = getGroupMembersList(
-                transaction.groupId, transaction.paidBy.split("$")[0]
+                transaction.groupId
             ).map {
                 TransactionSplit(
                     transactionId = transaction.transactionId,
-                    memberUId = it.key,
-                    amount = splitAmount
+                    memberKey = it.key,
+                    amount = splitAmount,
+                    paidBy = transaction.paidByKey
                 )
             }
             insertTransactionSplits(splits)
@@ -86,8 +87,8 @@ interface ExpanseTransactionDao {
                     val splits = getTransactionSplits(transaction.transactionId)
                     val splitsWithMembers = splits.map { split ->
                         val groupMember =
-                            getGroupMembersByUid(split.memberUId.split("$")[0]).firstOrNull()
-                                ?: throw IllegalStateException("No group member found for uid: ${split.memberUId}")
+                            getGroupMembersByUid(split.memberKey.split("$")[0]).firstOrNull()
+                                ?: throw IllegalStateException("No group member found for uid: ${split.memberKey}")
 
                         Pair(split, groupMember)
                     }

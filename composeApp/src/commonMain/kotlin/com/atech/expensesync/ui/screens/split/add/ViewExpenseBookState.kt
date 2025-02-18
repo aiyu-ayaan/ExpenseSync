@@ -51,7 +51,7 @@ class CreateExpenseStateToExpanseTransactionsMapper :
             groupId = entity!!.paidBy.groupId,
             amount = entity.amount,
             description = entity.description,
-            paidBy = entity.paidBy.key,
+            paidByKey = entity.paidBy.key,
             splitType = entity.splitType,
         )
 
