@@ -23,7 +23,9 @@ import com.atech.expensesync.component.LoadImageFromUrl
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,5 +106,14 @@ fun UserItem(
             } else null
         )
         HorizontalDivider()
+    }
+}
+
+@Preview
+@Composable
+private fun GroupMemberScreenPreview(modifier: Modifier = Modifier) {
+    ExpenseSyncTheme {
+        GroupMembersScreen(
+        )
     }
 }

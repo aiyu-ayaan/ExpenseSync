@@ -32,6 +32,7 @@ import com.atech.expensesync.ui.theme.spacing
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.ic_google_logo
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppButton(
@@ -163,4 +164,13 @@ fun GoogleButton(
             }
         }
     }
+}
+
+@Composable
+@Preview
+fun AppButtonPreview() {
+    AppButton(
+        text = "Button",
+        onClick = {}
+    )
 }
