@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.atech.expensesync.utils.takeUpToTwoDecimal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -52,7 +53,7 @@ interface ExpanseTransactionDao {
         insertTransaction(transaction)
         val members = getGroupMembers(transaction.groupId)
         if (members != null) {
-            val splitAmount = transaction.amount / members
+            val splitAmount = (transaction.amount / members).takeUpToTwoDecimal()
             val splits = getGroupMembersList(
                 transaction.groupId, transaction.paidBy.split("$")[0]
             ).map {

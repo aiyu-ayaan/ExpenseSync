@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.UUID
-import kotlin.random.Random
 
 class AddExpenseViewModel(
     private val expanseGroupMemberUseCases: ExpanseGroupMemberUseCases,
@@ -89,8 +88,8 @@ class AddExpenseViewModel(
                 expenseTransactionUseCases.mapTransactionWithSplitAndThenUser(
                     viewExpanseBookArgs?.grpId ?: ""
                 ).onEach {
-                        _getTransactionWithUser.value = it
-                    }.launchIn(viewModelScope)
+                    _getTransactionWithUser.value = it
+                }.launchIn(viewModelScope)
             }
         }
     }
@@ -107,13 +106,13 @@ class AddExpenseViewModel(
     private fun insertDummyGroupMember(
         groupId: String,
     ) = viewModelScope.launch {
-        val number = Random(10).nextInt()
+        val randomWord = ('a'..'z').toList().shuffled().subList(0, 5).joinToString("")
         expanseGroupMemberUseCases.insert(
             data = ExpanseGroupMembers(
                 groupId = groupId,
                 uid = UUID.randomUUID().toString(),
-                name = "Test User $number",
-                email = "test$number@expensesync.com",
+                name = "Test $randomWord",
+                email = "test$randomWord@expensesync.com",
                 pic = "https://picsum.photos/200"
             )
         )
