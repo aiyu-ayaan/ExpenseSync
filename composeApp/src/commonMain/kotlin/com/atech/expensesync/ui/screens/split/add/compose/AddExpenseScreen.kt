@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AddAPhoto
-import androidx.compose.material.icons.twotone.CameraAlt
 import androidx.compose.material.icons.twotone.DateRange
 import androidx.compose.material.icons.twotone.Description
 import androidx.compose.material.icons.twotone.NoteAlt
@@ -40,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.atech.expensesync.component.DatePickerModal
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.database.room.split.ExpenseGroupMembers
 import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
 import com.atech.expensesync.ui.screens.split.add.CreateExpenseState
 import com.atech.expensesync.ui.screens.split.add.ViewExpenseBookState
@@ -63,7 +62,7 @@ fun AddExpenseScreen(
     modifier: Modifier = Modifier,
     viewExpenseBookState: ViewExpenseBookState,
     state: CreateExpenseState,
-    groupMembers: List<ExpanseGroupMembers>,
+    groupMembers: List<ExpenseGroupMembers>,
     onNavigationClick: () -> Unit,
     onEvent: (AddExpenseEvents) -> Unit
 ) {

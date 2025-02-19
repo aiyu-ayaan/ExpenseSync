@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 interface ExpanseTransactionDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTransaction(transaction: ExpanseTransactions)
+    suspend fun insertTransaction(transaction: ExpenseTransactions)
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -30,24 +30,24 @@ interface ExpanseTransactionDao {
     @Query("SELECT * FROM EXPANSE_GROUP_MEMBERS WHERE groupId = :groupId")
     fun getGroupMembersList(
         groupId: String
-    ): List<ExpanseGroupMembers>
+    ): List<ExpenseGroupMembers>
 
     @Query("SELECT * FROM expanse_transactions WHERE groupId = :groupId ORDER BY createdAt DESC")
-    fun getGroupTransactions(groupId: String): Flow<List<ExpanseTransactions>>
+    fun getGroupTransactions(groupId: String): Flow<List<ExpenseTransactions>>
 
     @Query("SELECT * FROM expanse_transactions WHERE transactionId = :transactionId")
-    suspend fun getTransactionById(transactionId: String): ExpanseTransactions?
+    suspend fun getTransactionById(transactionId: String): ExpenseTransactions?
 
     @Update
-    suspend fun updateTransaction(transaction: ExpanseTransactions)
+    suspend fun updateTransaction(transaction: ExpenseTransactions)
 
     @Delete
-    suspend fun deleteTransaction(transaction: ExpanseTransactions)
+    suspend fun deleteTransaction(transaction: ExpenseTransactions)
 
 
     @Transaction
     suspend fun insertTransactionWithSplits(
-        transaction: ExpanseTransactions,
+        transaction: ExpenseTransactions,
         splitType: SplitType = SplitType.EQUAL,
     ) {
         insertTransaction(transaction)
@@ -69,18 +69,18 @@ interface ExpanseTransactionDao {
     }
 
     @Query("SELECT * FROM expanse_transactions WHERE groupId = :groupId ORDER BY createdAt DESC")
-    fun getGroupTransactionsFlow(groupId: String): Flow<List<ExpanseTransactions>>
+    fun getGroupTransactionsFlow(groupId: String): Flow<List<ExpenseTransactions>>
 
 
     @Query("SELECT * FROM expanse_transaction_split WHERE transactionId = :transactionId")
     fun getTransactionSplits(transactionId: String): List<TransactionSplit>
 
     @Query("SELECT * FROM expanse_group_members WHERE uid = :uid")
-    fun getGroupMembersByUid(uid: String): List<ExpanseGroupMembers>
+    fun getGroupMembersByUid(uid: String): List<ExpenseGroupMembers>
 
 
     suspend fun mapTransactionWithSplitAndThenUser(groupId: String):
-            Flow<Map<ExpanseTransactions, List<Pair<TransactionSplit, ExpanseGroupMembers>>>> =
+            Flow<Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>> =
         getGroupTransactionsFlow(groupId).map { transactions ->
             withContext(Dispatchers.IO) {
                 transactions.associate { transaction ->

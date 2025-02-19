@@ -5,17 +5,17 @@ import androidx.room.RoomDatabase
 import com.atech.expensesync.database.room.split.ExpanseGroup
 import com.atech.expensesync.database.room.split.ExpanseGroupDao
 import com.atech.expensesync.database.room.split.ExpanseGroupMemberDao
-import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.database.room.split.ExpenseGroupMembers
 import com.atech.expensesync.database.room.split.ExpanseTransactionDao
-import com.atech.expensesync.database.room.split.ExpanseTransactions
+import com.atech.expensesync.database.room.split.ExpenseTransactions
 import com.atech.expensesync.database.room.split.TransactionSplit
 import com.atech.expensesync.database.room.split.TransactionSplitDao
 
 
 @Database(
     entities = [
-        ExpanseGroupMembers::class,
-        ExpanseTransactions::class,
+        ExpenseGroupMembers::class,
+        ExpenseTransactions::class,
         TransactionSplit::class,
         ExpanseGroup::class
     ],

@@ -22,7 +22,7 @@ import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.LoadImageFromUrl
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.pref.PrefKeys
-import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.database.room.split.ExpenseGroupMembers
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -31,7 +31,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun GroupMembersScreen(
     modifier: Modifier = Modifier,
-    state: List<ExpanseGroupMembers> = emptyList(),
+    state: List<ExpenseGroupMembers> = emptyList(),
     onNavigationClick: () -> Unit = {}
 ) {
     val uid = LocalDataStore.current.getString(PrefKeys.USER_ID)
@@ -73,7 +73,7 @@ fun GroupMembersScreen(
 @Composable
 fun UserItem(
     modifier: Modifier = Modifier,
-    groupMembers: ExpanseGroupMembers,
+    groupMembers: ExpenseGroupMembers,
     isOwner: Boolean = false
 ) {
     Column {

@@ -32,12 +32,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.room.split.ExpanseGroupMembers
-import com.atech.expensesync.database.room.split.ExpanseTransactions
+import com.atech.expensesync.database.room.split.ExpenseGroupMembers
+import com.atech.expensesync.database.room.split.ExpenseTransactions
 import com.atech.expensesync.database.room.split.TransactionSplit
 import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
 import com.atech.expensesync.ui.screens.split.add.CreateExpenseState
 import com.atech.expensesync.ui.screens.split.add.ViewExpenseBookState
+import com.atech.expensesync.ui.screens.split.add.compose.settleUpScreen.SettleUpScreen
+import com.atech.expensesync.ui.screens.split.add.compose.settleUpScreen.ShowDetailOfTransaction
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 
@@ -55,8 +57,8 @@ fun ViewExpanseBookScreen(
     navHostController: NavHostController,
     state: ViewExpenseBookState,
     addExpenseBookState: CreateExpenseState,
-    members: List<ExpanseGroupMembers>,
-    transactionWithUser: State<Map<ExpanseTransactions, List<Pair<TransactionSplit, ExpanseGroupMembers>>>>,
+    members: List<ExpenseGroupMembers>,
+    transactionWithUser: State<Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>>,
     onEvent: (AddExpenseEvents) -> Unit
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
@@ -64,7 +66,8 @@ fun ViewExpanseBookScreen(
 //    groupMembers: List<ExpanseGroupMembers>,
 //    split: List<TransactionSplit>,
 
-    var clickedGroupMember by remember { mutableStateOf<List<ExpanseGroupMembers>?>(null) }
+    var clickedTranslation by remember { mutableStateOf<ExpenseTransactions?>(null) }
+    var clickedGroupMember by remember { mutableStateOf<List<ExpenseGroupMembers>?>(null) }
     var clickedTransactionSplit by remember { mutableStateOf<List<TransactionSplit>?>(null) }
 
 
@@ -101,7 +104,8 @@ fun ViewExpanseBookScreen(
                     },
                     onEvent = onEvent,
                     members = members,
-                    onItemClick = { groupMembers, split ->
+                    onItemClick = { expanseTransaction, groupMembers, split ->
+                        clickedTranslation = expanseTransaction
                         clickedGroupMember = groupMembers
                         clickedTransactionSplit = split
                         extraPane = ExtraPane.ShowDetailOfTransaction
@@ -152,9 +156,13 @@ fun ViewExpanseBookScreen(
             ExtraPane.ShowDetailOfTransaction -> {
                 {
                     AnimatedPane {
-                        if (clickedGroupMember != null && clickedTransactionSplit != null) {
+                        if (
+                            clickedTranslation != null &&
+                            clickedGroupMember != null
+                            && clickedTransactionSplit != null
+                        ) {
                             ShowDetailOfTransaction(
-                                transaction = transactionWithUser.value.keys.first(),
+                                transaction = clickedTranslation!!,
                                 groupMembers = clickedGroupMember!!,
                                 split = clickedTransactionSplit!!,
                                 onNavigationClick = {
@@ -182,14 +190,15 @@ private enum class TabState {
 private fun Screen(
     modifier: Modifier = Modifier,
     grpName: String,
-    transactionWithUser: State<Map<ExpanseTransactions,
-            List<Pair<TransactionSplit, ExpanseGroupMembers>>>>,
-    members: List<ExpanseGroupMembers>,
+    transactionWithUser: State<Map<ExpenseTransactions,
+            List<Pair<TransactionSplit, ExpenseGroupMembers>>>>,
+    members: List<ExpenseGroupMembers>,
     onNavigationClick: () -> Unit = {},
     onAddExpenseClick: () -> Unit = {},
     onGroupMembersClick: () -> Unit = {},
     onItemClick: (
-        groupMembers: List<ExpanseGroupMembers>,
+        transaction: ExpenseTransactions,
+        groupMembers: List<ExpenseGroupMembers>,
         split: List<TransactionSplit>,
     ) -> Unit,
     onEvent: (AddExpenseEvents) -> Unit

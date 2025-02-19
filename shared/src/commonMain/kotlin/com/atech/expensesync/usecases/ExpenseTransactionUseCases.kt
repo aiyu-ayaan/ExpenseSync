@@ -1,7 +1,7 @@
 package com.atech.expensesync.usecases
 
 import com.atech.expensesync.database.room.split.ExpanseTransactionDao
-import com.atech.expensesync.database.room.split.ExpanseTransactions
+import com.atech.expensesync.database.room.split.ExpenseTransactions
 
 
 data class ExpenseTransactionUseCases(
@@ -16,7 +16,7 @@ data class CreateNewTransactionUseCase(
     val dao: ExpanseTransactionDao
 ) {
     suspend operator fun invoke(
-        data: ExpanseTransactions
+        data: ExpenseTransactions
     ) {
         dao.insertTransactionWithSplits(data)
     }
@@ -32,7 +32,7 @@ data class UpdateTransactionUseCase(
     val dao: ExpanseTransactionDao
 ) {
     suspend operator fun invoke(
-        data: ExpanseTransactions
+        data: ExpenseTransactions
     ) {
         dao.updateTransaction(data)
     }
@@ -42,7 +42,7 @@ data class DeleteTransactionUseCase(
     val dao: ExpanseTransactionDao
 ) {
     suspend operator fun invoke(
-        data: ExpanseTransactions
+        data: ExpenseTransactions
     ) {
         dao.deleteTransaction(data)
     }

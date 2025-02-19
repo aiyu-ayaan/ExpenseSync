@@ -10,14 +10,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ExpanseGroupMemberDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMember(member: ExpanseGroupMembers)
+    suspend fun insertMember(member: ExpenseGroupMembers)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMembers(data: List<ExpanseGroupMembers>)
+    suspend fun insertMembers(data: List<ExpenseGroupMembers>)
 
     @Query("SELECT * FROM expanse_group_members WHERE groupId = :groupId")
-    fun getGroupMembers(groupId: String): Flow<List<ExpanseGroupMembers>>
+    fun getGroupMembers(groupId: String): Flow<List<ExpenseGroupMembers>>
 
     @Delete
-    suspend fun removeMember(member: ExpanseGroupMembers)
+    suspend fun removeMember(member: ExpenseGroupMembers)
 }

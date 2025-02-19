@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
-import com.atech.expensesync.database.room.split.ExpanseGroupMembers
-import com.atech.expensesync.database.room.split.ExpanseTransactions
+import com.atech.expensesync.database.room.split.ExpenseGroupMembers
+import com.atech.expensesync.database.room.split.ExpenseTransactions
 import com.atech.expensesync.database.room.split.TransactionSplit
 import com.atech.expensesync.navigation.ViewExpanseBookArgs
 import com.atech.expensesync.usecases.ExpanseGroupMemberUseCases
@@ -28,14 +28,14 @@ class AddExpenseViewModel(
     private val _viewExpenseBookState = mutableStateOf<ViewExpenseBookState>(ViewExpenseBookState())
     val viewExpenseBookState: State<ViewExpenseBookState> get() = _viewExpenseBookState
 
-    private val _grpMembers = mutableStateOf<List<ExpanseGroupMembers>>(emptyList())
-    val grpMembers: State<List<ExpanseGroupMembers>> get() = _grpMembers
+    private val _grpMembers = mutableStateOf<List<ExpenseGroupMembers>>(emptyList())
+    val grpMembers: State<List<ExpenseGroupMembers>> get() = _grpMembers
 
     private val _getTransactionWithUser =
-        mutableStateOf<Map<ExpanseTransactions, List<Pair<TransactionSplit, ExpanseGroupMembers>>>>(
+        mutableStateOf<Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>>(
             emptyMap()
         )
-    val getTransactionWithUser: State<Map<ExpanseTransactions, List<Pair<TransactionSplit, ExpanseGroupMembers>>>>
+    val getTransactionWithUser: State<Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>>
         get() = _getTransactionWithUser
 
     private val _createExpenseState = mutableStateOf<CreateExpenseState>(
@@ -108,7 +108,7 @@ class AddExpenseViewModel(
     ) = viewModelScope.launch {
         val randomWord = ('a'..'z').toList().shuffled().subList(0, 5).joinToString("")
         expanseGroupMemberUseCases.insert(
-            data = ExpanseGroupMembers(
+            data = ExpenseGroupMembers(
                 groupId = groupId,
                 uid = UUID.randomUUID().toString(),
                 name = "Test $randomWord",

@@ -16,7 +16,7 @@ interface ExpanseGroupDao {
     suspend fun insert(data: ExpanseGroup)
 
     @Insert
-    suspend fun insertMembers(data: List<ExpanseGroupMembers>)
+    suspend fun insertMembers(data: List<ExpenseGroupMembers>)
 
 
     @Query("SELECT * FROM expanse_group WHERE isActive = 1 ORDER BY createdAt DESC")
@@ -35,7 +35,7 @@ interface ExpanseGroupDao {
     @Transaction
     suspend fun insertGroupWithMembers(
         groupName: ExpanseGroup,
-        members: List<ExpanseGroupMembers>
+        members: List<ExpenseGroupMembers>
     ) {
         insert(groupName)
         insertMembers(members)

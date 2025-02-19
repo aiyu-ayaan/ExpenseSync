@@ -1,7 +1,7 @@
 package com.atech.expensesync.usecases
 
 import com.atech.expensesync.database.room.split.ExpanseGroupMemberDao
-import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.database.room.split.ExpenseGroupMembers
 
 class ExpanseGroupMemberUseCases(
     val insert: InsertMember,
@@ -10,11 +10,11 @@ class ExpanseGroupMemberUseCases(
 )
 
 data class InsertMember(private val dao: ExpanseGroupMemberDao) {
-    suspend operator fun invoke(data: ExpanseGroupMembers) {
+    suspend operator fun invoke(data: ExpenseGroupMembers) {
         dao.insertMember(data)
     }
 
-    suspend operator fun invoke(data: List<ExpanseGroupMembers>) {
+    suspend operator fun invoke(data: List<ExpenseGroupMembers>) {
         dao.insertMembers(data)
     }
 }
@@ -24,7 +24,7 @@ data class GetGroupMembers(private val dao: ExpanseGroupMemberDao) {
 }
 
 data class RemoveMember(private val dao: ExpanseGroupMemberDao) {
-    suspend operator fun invoke(data: ExpanseGroupMembers) {
+    suspend operator fun invoke(data: ExpenseGroupMembers) {
         dao.removeMember(data)
     }
 }

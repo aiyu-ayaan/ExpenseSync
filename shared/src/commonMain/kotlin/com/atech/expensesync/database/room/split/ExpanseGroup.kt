@@ -36,7 +36,7 @@ enum class SplitType {
     )]
 )
 @Keep
-data class ExpanseGroupMembers(
+data class ExpenseGroupMembers(
     val uid: String,
     val name: String,
     val email: String,
@@ -65,13 +65,13 @@ data class ExpanseGroupMembers(
         childColumns = ["groupId"],
         onDelete = CASCADE
     ), ForeignKey(
-        entity = ExpanseGroupMembers::class,
+        entity = ExpenseGroupMembers::class,
         parentColumns = ["key"],
         childColumns = ["paidByKey"],
         onDelete = CASCADE
     )]
 )
-data class ExpanseTransactions(
+data class ExpenseTransactions(
     @PrimaryKey val transactionId: String = UUID.randomUUID().toString(),
     val groupId: String,
     val amount: Double,
@@ -98,12 +98,12 @@ data class ExpanseTransactions(
         Index(value = ["memberKey"]),
     ],
     foreignKeys = [ForeignKey(
-        entity = ExpanseTransactions::class,
+        entity = ExpenseTransactions::class,
         parentColumns = ["transactionId"],
         childColumns = ["transactionId"],
         onDelete = CASCADE
     ), ForeignKey(
-        entity = ExpanseGroupMembers::class,
+        entity = ExpenseGroupMembers::class,
         parentColumns = ["key"],
         childColumns = ["memberKey"],
         onDelete = CASCADE

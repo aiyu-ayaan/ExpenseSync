@@ -8,7 +8,7 @@ import com.atech.expensesync.database.models.User
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.room.split.ExpanseGroup
-import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.database.room.split.ExpenseGroupMembers
 import com.atech.expensesync.usecases.SplitUseCases
 import com.atech.expensesync.utils.fromJson
 import kotlinx.coroutines.launch
@@ -39,7 +39,7 @@ class SplitViewModel(
                         createdByUid = userModel.uid,
                     ),
                     listOf(
-                        ExpanseGroupMembers(
+                        ExpenseGroupMembers(
                             uid = userModel.uid,
                             name = userModel.name,
                             email = userModel.email,

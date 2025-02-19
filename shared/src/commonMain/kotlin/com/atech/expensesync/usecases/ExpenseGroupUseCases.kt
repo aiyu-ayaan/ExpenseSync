@@ -2,7 +2,7 @@ package com.atech.expensesync.usecases
 
 import com.atech.expensesync.database.room.split.ExpanseGroup
 import com.atech.expensesync.database.room.split.ExpanseGroupDao
-import com.atech.expensesync.database.room.split.ExpanseGroupMembers
+import com.atech.expensesync.database.room.split.ExpenseGroupMembers
 
 
 data class SplitUseCases(
@@ -17,7 +17,7 @@ data class CreateNewGroupUseCase(
 ) {
     suspend operator fun invoke(
         data: ExpanseGroup,
-        members: List<ExpanseGroupMembers>
+        members: List<ExpenseGroupMembers>
     ) {
         dao.insertGroupWithMembers(
             groupName = data,
