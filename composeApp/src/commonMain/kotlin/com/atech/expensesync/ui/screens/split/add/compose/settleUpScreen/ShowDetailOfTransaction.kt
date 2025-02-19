@@ -2,24 +2,31 @@ package com.atech.expensesync.ui.screens.split.add.compose.settleUpScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AddAPhoto
 import androidx.compose.material.icons.twotone.Delete
+import androidx.compose.material.icons.twotone.Description
 import androidx.compose.material.icons.twotone.Edit
+import androidx.compose.material.icons.twotone.Money
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import com.aay.compose.baseComponents.model.LegendPosition
 import com.aay.compose.donutChart.DonutChart
 import com.aay.compose.donutChart.model.PieChartData
+import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.split.ExpenseGroupMembers
 import com.atech.expensesync.database.room.split.ExpenseTransactions
@@ -40,7 +47,7 @@ fun ShowDetailOfTransaction(
 ) {
     MainContainer(
         modifier = modifier,
-        title = transaction.description,
+        title = "Details",
         onNavigationClick = onNavigationClick,
         actions = {
             IconButton(onClick = { /*TODO*/ }) {
@@ -58,21 +65,54 @@ fun ShowDetailOfTransaction(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(MaterialTheme.spacing.medium)
-                .padding(paddingValue),
+                .padding(paddingValue)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
-            Text(
-                text = transaction.description,
-                style = MaterialTheme.typography.bodyLarge
+            val colors = OutlinedTextFieldDefaults.colors(
+                disabledTextColor = OutlinedTextFieldDefaults.colors().focusedTextColor,
+                disabledContainerColor = OutlinedTextFieldDefaults.colors().focusedContainerColor,
+                disabledBorderColor = OutlinedTextFieldDefaults.colors().focusedIndicatorColor,
+                disabledPlaceholderColor = OutlinedTextFieldDefaults.colors().focusedPlaceholderColor,
+                disabledLeadingIconColor = OutlinedTextFieldDefaults.colors().focusedLeadingIconColor,
+                disabledTrailingIconColor = OutlinedTextFieldDefaults.colors().focusedTrailingIconColor,
+                disabledLabelColor = OutlinedTextFieldDefaults.colors().focusedLabelColor,
+                disabledSupportingTextColor = OutlinedTextFieldDefaults.colors().focusedSupportingTextColor,
             )
-            Text(
-                text = transaction.formatedAmount,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
+            EditTextEnhance(
+                modifier = Modifier.fillMaxWidth(),
+                value = transaction.description,
+                placeholder = "Description",
+                enable = false,
+                trailingIcon = null,
+                colors = colors,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.TwoTone.Description,
+                        contentDescription = null
+                    )
+                },
             )
-            Text(
-                "Paid by ${groupMembers.first { it.key.contains(transaction.paidByKey) }.name} on ${transaction.formatedDate}",
-                style = MaterialTheme.typography.labelSmall,
+
+            EditTextEnhance(
+                modifier = Modifier.fillMaxWidth(),
+                value = transaction.formatedAmount,
+                placeholder = "Amount",
+                enable = false,
+                trailingIcon = null,
+                colors = colors,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.TwoTone.Money,
+                        contentDescription = null
+                    )
+                },
+                supportingText = {
+                    Text(
+                        "Paid by ${groupMembers.first { it.key.contains(transaction.paidByKey) }.name} on ${transaction.formatedDate}",
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
             )
             CreateDonutChar(
                 groupMembers = groupMembers,
@@ -104,7 +144,9 @@ private fun CreateDonutChar(
             )
         }
     DonutChart(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f),
         pieChartData = pieChartData,
         centerTitle = "Split",
         centerTitleStyle = textStyle,
