@@ -84,6 +84,15 @@ class AddExpenseViewModel(
                 event.onComplete()
             }
 
+            is AddExpenseEvents.SetTransactionForEdit -> {
+                val model =
+                    CreateExpenseStateToExpanseTransactionsMapper().mapToCreateExpenseState(
+                        domainModel = event.model,
+                        splitTo = grpMembers.value
+                    )
+                _createExpenseState.value = model
+            }
+
             AddExpenseEvents.LoadSettleUpScreen -> viewModelScope.launch {
                 expenseTransactionUseCases.mapTransactionWithSplitAndThenUser(
                     viewExpanseBookArgs?.grpId ?: ""
@@ -91,6 +100,7 @@ class AddExpenseViewModel(
                     _getTransactionWithUser.value = it
                 }.launchIn(viewModelScope)
             }
+
         }
     }
 

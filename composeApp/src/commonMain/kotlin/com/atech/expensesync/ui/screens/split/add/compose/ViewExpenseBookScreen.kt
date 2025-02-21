@@ -21,6 +21,7 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -104,6 +105,10 @@ fun ViewExpanseBookScreen(
                     },
                     onEvent = onEvent,
                     members = members,
+                    navigator = navigator,
+                    onExtraPaneChange = {
+                        extraPane = it
+                    },
                     onItemClick = { expanseTransaction, groupMembers, split ->
                         clickedTranslation = expanseTransaction
                         clickedGroupMember = groupMembers
@@ -185,11 +190,13 @@ private enum class TabState {
     Export
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 private fun Screen(
     modifier: Modifier = Modifier,
     grpName: String,
+    navigator: ThreePaneScaffoldNavigator<Nothing>,
+    onExtraPaneChange: (ExtraPane) -> Unit,
     transactionWithUser: State<Map<ExpenseTransactions,
             List<Pair<TransactionSplit, ExpenseGroupMembers>>>>,
     members: List<ExpenseGroupMembers>,
@@ -247,7 +254,14 @@ private fun Screen(
                     SettleUpScreen(
                         state = transactionWithUser.value,
                         groupMembers = members,
-                        onClick = onItemClick
+                        onClick = onItemClick,
+                        onEditClick = {
+                            onExtraPaneChange.invoke(ExtraPane.AddExpense)
+                            onEvent(AddExpenseEvents.SetTransactionForEdit(it))
+                            navigator.navigateTo(
+                                ListDetailPaneScaffoldRole.Extra,
+                            )
+                        }
                     )
                 }
 

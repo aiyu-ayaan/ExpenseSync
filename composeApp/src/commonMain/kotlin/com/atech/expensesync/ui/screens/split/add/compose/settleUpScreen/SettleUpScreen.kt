@@ -26,6 +26,7 @@ fun SettleUpScreen(
     modifier: Modifier = Modifier,
     groupMembers: List<ExpenseGroupMembers>,
     state: Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>,
+    onEditClick : (ExpenseTransactions) -> Unit,
     onClick: (
         transaction: ExpenseTransactions,
         groupMembers: List<ExpenseGroupMembers>,
@@ -44,6 +45,9 @@ fun SettleUpScreen(
                 paidByName = paidBy.name,
                 onClick = {
                     onClick(transaction, groupMembers, splits.map { it.first })
+                },
+                onEditClick = {
+                    onEditClick(transaction)
                 }
             )
         }
@@ -55,6 +59,7 @@ private fun ShowTransactionItems(
     modifier: Modifier = Modifier,
     paidByName: String,
     transaction: ExpenseTransactions,
+    onEditClick : () -> Unit,
     onClick: () -> Unit
 ) {
     Column(
@@ -85,7 +90,7 @@ private fun ShowTransactionItems(
                 )
             },
             trailingContent = {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = onEditClick) {
                     Icon(
                         imageVector = Icons.TwoTone.Edit,
                         contentDescription = null

@@ -6,6 +6,7 @@ import com.atech.expensesync.database.room.split.ExpenseTransactions
 import com.atech.expensesync.database.room.split.SplitType
 import com.atech.expensesync.utils.EntityMapper
 import com.atech.expensesync.utils.convertToDateFormat
+import java.util.UUID
 
 data class ViewExpenseBookState(
     val groupName: String = "",
@@ -19,7 +20,8 @@ data class CreateExpenseState(
     val paidBy: ExpenseGroupMembers,
     val splitType: SplitType = SplitType.EQUAL,
     val splitTo: List<ExpenseGroupMembers> = emptyList(),
-    val date: Long = System.currentTimeMillis()
+    val date: Long = System.currentTimeMillis(),
+    val transactionId: String = UUID.randomUUID().toString(),
 ) {
     val formatedDate: String
         get() = date.convertToDateFormat()
@@ -39,7 +41,7 @@ data class CreateExpenseState(
                 groupId = groupId
             ),
             splitType = SplitType.EQUAL,
-            splitTo = emptyList()
+            splitTo = emptyList(),
         )
     }
 }
@@ -53,9 +55,24 @@ class CreateExpenseStateToExpanseTransactionsMapper :
             description = entity.description,
             paidByKey = entity.paidBy.key,
             splitType = entity.splitType,
+            transactionId = entity.transactionId,
+            createdAt = entity.date
         )
 
 
     override fun mapToEntity(domainModel: ExpenseTransactions): CreateExpenseState? = null
 
+    fun mapToCreateExpenseState(
+        domainModel: ExpenseTransactions,
+        splitTo: List<ExpenseGroupMembers>
+    ): CreateExpenseState =
+        CreateExpenseState(
+            description = domainModel.description,
+            amount = domainModel.amount,
+            paidBy = splitTo.first { it.key == domainModel.paidByKey },
+            splitType = domainModel.splitType,
+            splitTo = splitTo,
+            transactionId = domainModel.transactionId,
+            date = domainModel.createdAt
+        )
 }
