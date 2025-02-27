@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -66,7 +67,7 @@ fun AddExpenseScreen(
     onNavigationClick: () -> Unit,
     onEvent: (AddExpenseEvents) -> Unit
 ) {
-
+    val title = if (state.amount != 0.0) "Edit Expense" else "Add Expense"
     var isDatePickerVisible by remember { mutableStateOf(false) }
     AnimatedVisibility(isDatePickerVisible) {
         DatePickerModal(onDateSelected = {
@@ -81,22 +82,24 @@ fun AddExpenseScreen(
     }
     MainContainer(
         modifier = modifier,
-        title = "Add Expense",
+        title =title,
         onNavigationClick = onNavigationClick,
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    onEvent.invoke(AddExpenseEvents.AddExpenseToGroup(onComplete = onNavigationClick))
-                },
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+            AnimatedVisibility(state.amount != 0.0) {
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        onEvent.invoke(AddExpenseEvents.AddExpenseToGroup(onComplete = onNavigationClick))
+                    },
                 ) {
-                    Icon(imageVector = Icons.TwoTone.Payment, contentDescription = "Add")
-                    Text(
-                        modifier = Modifier.padding(start = MaterialTheme.spacing.medium),
-                        text = "Add"
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(imageVector = Icons.TwoTone.Payment, contentDescription = "Add")
+                        Text(
+                            modifier = Modifier.padding(start = MaterialTheme.spacing.medium),
+                            text = title
+                        )
+                    }
                 }
             }
         },
@@ -155,7 +158,8 @@ fun AddExpenseScreen(
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
-                    capitalization = KeyboardCapitalization.Sentences
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Next
                 ),
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
@@ -173,8 +177,9 @@ fun AddExpenseScreen(
                     )
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Decimal
-                )
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Done
+                ),
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             Row(
