@@ -56,18 +56,22 @@ private enum class ExpanseBottomBar(
     NOTE_ALT(Icons.TwoTone.NoteAlt, "note"),
 }
 
+enum class AddExpenseScreenTitle(val title: String) {
+    ADD("Add Expense"),
+    EDIT("Edit Expense")
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExpenseScreen(
     modifier: Modifier = Modifier,
+    title: AddExpenseScreenTitle = AddExpenseScreenTitle.ADD,
     viewExpenseBookState: ViewExpenseBookState,
     state: CreateExpenseState,
     groupMembers: List<ExpenseGroupMembers>,
     onNavigationClick: () -> Unit,
     onEvent: (AddExpenseEvents) -> Unit
 ) {
-    val title = if (state.amount != 0.0) "Edit Expense" else "Add Expense"
     var isDatePickerVisible by remember { mutableStateOf(false) }
     AnimatedVisibility(isDatePickerVisible) {
         DatePickerModal(onDateSelected = {
@@ -82,7 +86,7 @@ fun AddExpenseScreen(
     }
     MainContainer(
         modifier = modifier,
-        title =title,
+        title = title.title,
         onNavigationClick = onNavigationClick,
         floatingActionButton = {
             AnimatedVisibility(state.amount != 0.0) {
@@ -97,7 +101,7 @@ fun AddExpenseScreen(
                         Icon(imageVector = Icons.TwoTone.Payment, contentDescription = "Add")
                         Text(
                             modifier = Modifier.padding(start = MaterialTheme.spacing.medium),
-                            text = title
+                            text = title.title
                         )
                     }
                 }

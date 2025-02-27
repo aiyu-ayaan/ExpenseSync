@@ -21,7 +21,7 @@ data class CreateExpenseState(
     val splitType: SplitType = SplitType.EQUAL,
     val splitTo: List<ExpenseGroupMembers> = emptyList(),
     val date: Long = System.currentTimeMillis(),
-    val transactionId: String = UUID.randomUUID().toString(),
+    val transactionId: String,
 ) {
     val formatedDate: String
         get() = date.convertToDateFormat()
@@ -42,6 +42,7 @@ data class CreateExpenseState(
             ),
             splitType = SplitType.EQUAL,
             splitTo = emptyList(),
+            transactionId = ""
         )
     }
 }
@@ -55,7 +56,10 @@ class CreateExpenseStateToExpanseTransactionsMapper :
             description = entity.description,
             paidByKey = entity.paidBy.key,
             splitType = entity.splitType,
-            transactionId = entity.transactionId,
+            transactionId = entity.transactionId.ifEmpty {
+                UUID.randomUUID()
+                    .toString()
+            },
             createdAt = entity.date
         )
 
@@ -73,6 +77,6 @@ class CreateExpenseStateToExpanseTransactionsMapper :
             splitType = domainModel.splitType,
             splitTo = splitTo,
             transactionId = domainModel.transactionId,
-            date = domainModel.createdAt
+            date = domainModel.createdAt,
         )
 }

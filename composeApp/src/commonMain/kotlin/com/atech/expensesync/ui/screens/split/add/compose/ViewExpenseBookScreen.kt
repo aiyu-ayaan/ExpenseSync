@@ -45,10 +45,7 @@ import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 
 private enum class ExtraPane {
-    AddExpense,
-    GroupMembers,
-    None,
-    ShowDetailOfTransaction
+    AddExpense, GroupMembers, None, ShowDetailOfTransaction
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -75,8 +72,7 @@ fun ViewExpanseBookScreen(
     navigator.backHandlerThreePane(
         backAction = {
             extraPane = ExtraPane.None
-        }
-    )
+        })
     ListDetailPaneScaffold(
         modifier = modifier.background(MaterialTheme.colorScheme.surface),
         directive = navigator.scaffoldDirective,
@@ -117,8 +113,7 @@ fun ViewExpanseBookScreen(
                         navigator.navigateTo(
                             ListDetailPaneScaffoldRole.Extra,
                         )
-                    }
-                )
+                    })
             }
         },
         detailPane = {
@@ -133,14 +128,15 @@ fun ViewExpanseBookScreen(
                 {
                     AnimatedPane {
                         AddExpenseScreen(
+                            title = if (addExpenseBookState.transactionId.isBlank()) AddExpenseScreenTitle.ADD
+                            else AddExpenseScreenTitle.EDIT,
                             viewExpenseBookState = state,
                             state = addExpenseBookState,
                             groupMembers = members,
                             onEvent = onEvent,
                             onNavigationClick = {
                                 navigator.navigateBack()
-                            }
-                        )
+                            })
                     }
                 }
             }
@@ -151,9 +147,7 @@ fun ViewExpanseBookScreen(
                         GroupMembersScreen(
                             onNavigationClick = {
                                 navigator.navigateBack()
-                            },
-                            state = members,
-                            onEvent = onEvent
+                            }, state = members, onEvent = onEvent
                         )
                     }
                 }
@@ -162,33 +156,24 @@ fun ViewExpanseBookScreen(
             ExtraPane.ShowDetailOfTransaction -> {
                 {
                     AnimatedPane {
-                        if (
-                            clickedTranslation != null &&
-                            clickedGroupMember != null
-                            && clickedTransactionSplit != null
-                        ) {
+                        if (clickedTranslation != null && clickedGroupMember != null && clickedTransactionSplit != null) {
                             ShowDetailOfTransaction(
                                 transaction = clickedTranslation!!,
                                 groupMembers = clickedGroupMember!!,
                                 split = clickedTransactionSplit!!,
                                 onNavigationClick = {
                                     navigator.navigateBack()
-                                }
-                            )
+                                })
                         }
                     }
                 }
             }
-        }
-    )
+        })
 }
 
 
 private enum class TabState {
-    SettleUp,
-    Balance,
-    Whiteboard,
-    Export
+    SettleUp, Balance, Whiteboard, Export
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
@@ -198,8 +183,7 @@ private fun Screen(
     grpName: String,
     navigator: ThreePaneScaffoldNavigator<Nothing>,
     onExtraPaneChange: (ExtraPane) -> Unit,
-    transactionWithUser: State<Map<ExpenseTransactions,
-            List<Pair<TransactionSplit, ExpenseGroupMembers>>>>,
+    transactionWithUser: State<Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>>,
     members: List<ExpenseGroupMembers>,
     onNavigationClick: () -> Unit = {},
     onAddExpenseClick: () -> Unit = {},
@@ -234,8 +218,7 @@ private fun Screen(
                     )
                 }
             }
-        }
-    ) { paddingValue ->
+        }) { paddingValue ->
         var state by remember { mutableStateOf(0) }
         Column(
             modifier = Modifier.padding(paddingValue),
@@ -246,8 +229,7 @@ private fun Screen(
                 createTabs(
                     state = state,
                     stateChange = { state = it },
-                    list = TabState.entries.map { it.name }
-                )
+                    list = TabState.entries.map { it.name })
             }
             when (TabState.entries[state]) {
                 TabState.SettleUp -> {
@@ -262,8 +244,7 @@ private fun Screen(
                             navigator.navigateTo(
                                 ListDetailPaneScaffoldRole.Extra,
                             )
-                        }
-                    )
+                        })
                 }
 
                 TabState.Balance -> {
@@ -289,9 +270,7 @@ private fun SetTabLayout(
     state: Int,
     tabs: @Composable (() -> Unit),
 ) {
-    if (com.atech.expensesync.ui_utils.getDisplayType() ==
-        com.atech.expensesync.ui_utils.DeviceType.MOBILE
-    ) {
+    if (com.atech.expensesync.ui_utils.getDisplayType() == com.atech.expensesync.ui_utils.DeviceType.MOBILE) {
         ScrollableTabRow(
             modifier = modifier.fillMaxWidth(),
             selectedTabIndex = state,
@@ -309,15 +288,10 @@ private fun SetTabLayout(
 
 @Composable
 private fun createTabs(
-    state: Int,
-    stateChange: (Int) -> Unit,
-    list: List<String>
+    state: Int, stateChange: (Int) -> Unit, list: List<String>
 ) {
     list.forEachIndexed { index, title ->
-        Tab(
-            selected = state == index,
-            onClick = { stateChange(index) },
-            text = { Text(title) })
+        Tab(selected = state == index, onClick = { stateChange(index) }, text = { Text(title) })
     }
 }
 

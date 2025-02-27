@@ -88,7 +88,7 @@ class AddExpenseViewModel(
                 val model =
                     CreateExpenseStateToExpanseTransactionsMapper().mapToCreateExpenseState(
                         domainModel = event.model,
-                        splitTo = grpMembers.value
+                        splitTo = grpMembers.value,
                     )
                 _createExpenseState.value = model
             }
