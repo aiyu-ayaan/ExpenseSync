@@ -9,6 +9,6 @@ interface ExpenseSyncClient {
     suspend fun logInToDesktop(uid: String, model: DesktopLogInDetails): ResponseDataState<String>
 
     companion object {
-        const val BASE_URL = "http://192.168.216.65:9090"
+        const val BASE_URL = "http://192.168.135.65:9090"
     }
 }

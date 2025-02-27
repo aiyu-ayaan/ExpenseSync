@@ -153,6 +153,7 @@ fun ViewExpanseBookScreen(
                                 navigator.navigateBack()
                             },
                             state = members,
+                            onEvent = onEvent
                         )
                     }
                 }

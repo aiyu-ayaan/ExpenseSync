@@ -23,6 +23,7 @@ import com.atech.expensesync.component.LoadImageFromUrl
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.room.split.ExpenseGroupMembers
+import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -32,7 +33,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun GroupMembersScreen(
     modifier: Modifier = Modifier,
     state: List<ExpenseGroupMembers> = emptyList(),
-    onNavigationClick: () -> Unit = {}
+    onEvent: (AddExpenseEvents) -> Unit = {},
+    onNavigationClick: () -> Unit = {},
 ) {
     val uid = LocalDataStore.current.getString(PrefKeys.USER_ID)
     MainContainer(
@@ -40,7 +42,9 @@ fun GroupMembersScreen(
         modifier = modifier,
         onNavigationClick = onNavigationClick,
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = {
+                onEvent.invoke(AddExpenseEvents.InsertNewGroupMember)
+            }) {
                 Icon(
                     imageVector = Icons.TwoTone.GroupAdd,
                     contentDescription = null

@@ -101,6 +101,7 @@ class AddExpenseViewModel(
                 }.launchIn(viewModelScope)
             }
 
+            AddExpenseEvents.InsertNewGroupMember -> insertDummyGroupMember(viewExpanseBookArgs!!.grpId)
         }
     }
 

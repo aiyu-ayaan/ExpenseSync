@@ -6,9 +6,10 @@ import com.atech.expensesync.navigation.ViewExpanseBookArgs
 sealed interface AddExpenseEvents {
     data class SetViewExpenseBookArgs(val args: ViewExpanseBookArgs?) : AddExpenseEvents
     data class SetTransactionForEdit(val model : ExpenseTransactions) : AddExpenseEvents
-    object GetExpenseGroupMembers : AddExpenseEvents
+    data object GetExpenseGroupMembers : AddExpenseEvents
     data class OnCreateExpenseStateChange(val state: CreateExpenseState) : AddExpenseEvents
     data object OnCreateExpenseStateReset : AddExpenseEvents
     data class AddExpenseToGroup(val onComplete: () -> Unit) : AddExpenseEvents
     data object LoadSettleUpScreen : AddExpenseEvents
+    data object InsertNewGroupMember : AddExpenseEvents
 }

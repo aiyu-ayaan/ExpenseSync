@@ -24,11 +24,11 @@ interface ExpanseTransactionDao {
     suspend fun insertTransactionSplits(transactionSplits: List<TransactionSplit>)
 
     @Query("SELECT COUNT(*) FROM EXPANSE_GROUP_MEMBERS WHERE groupId = :groupId")
-    fun getGroupMembers(groupId: String): Int?
+    suspend fun getGroupMembers(groupId: String): Int?
 
 
     @Query("SELECT * FROM EXPANSE_GROUP_MEMBERS WHERE groupId = :groupId")
-    fun getGroupMembersList(
+    suspend fun getGroupMembersList(
         groupId: String
     ): List<ExpenseGroupMembers>
 
@@ -73,10 +73,10 @@ interface ExpanseTransactionDao {
 
 
     @Query("SELECT * FROM expanse_transaction_split WHERE transactionId = :transactionId")
-    fun getTransactionSplits(transactionId: String): List<TransactionSplit>
+    suspend fun getTransactionSplits(transactionId: String): List<TransactionSplit>
 
     @Query("SELECT * FROM expanse_group_members WHERE uid = :uid")
-    fun getGroupMembersByUid(uid: String): List<ExpenseGroupMembers>
+    suspend fun getGroupMembersByUid(uid: String): List<ExpenseGroupMembers>
 
 
     suspend fun mapTransactionWithSplitAndThenUser(groupId: String):
