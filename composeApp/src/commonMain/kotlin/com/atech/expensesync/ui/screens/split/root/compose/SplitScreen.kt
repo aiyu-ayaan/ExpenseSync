@@ -1,7 +1,6 @@
 package com.atech.expensesync.ui.screens.split.root.compose
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.GroupItems
@@ -147,18 +145,16 @@ private fun MainContent(
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { },
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(imageVector = Icons.TwoTone.Payment, contentDescription = "Add")
+                text = {
                     Text(
-                        modifier = Modifier.padding(start = MaterialTheme.spacing.medium),
                         text = "Add Expense"
                     )
-                }
-            }
+                },
+                icon = {
+                    Icon(imageVector = Icons.TwoTone.Payment, contentDescription = "Add")
+                },
+                onClick = { },
+            )
         }
     ) { paddingValue ->
         LazyColumn(

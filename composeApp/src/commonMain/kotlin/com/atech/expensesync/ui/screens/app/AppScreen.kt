@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.screens.app
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.atech.expensesync.ui.screens.meal.root.compose.MealScreen
 import com.atech.expensesync.ui.screens.split.root.compose.SplitScreen
 import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.SystemUiController
@@ -89,43 +91,44 @@ fun AppScreen(
             }
         },
     ) {
-        when (currentDestination) {
-            BaseAppScreen.Split -> {
-                SplitScreen(
+        AnimatedContent(
+            targetState = currentDestination,
+        ) { destination ->
+            when (destination) {
+                BaseAppScreen.Split -> {
+                    SplitScreen(
+                        navHostController = navHostController,
+                        canShowAppBar = {
+                            showNavigation = it
+                        }
+                    )
+                }
+
+                BaseAppScreen.Budget -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("Budget")
+                    }
+                }
+
+                BaseAppScreen.MessTrack -> MealScreen(
                     navHostController = navHostController,
                     canShowAppBar = {
                         showNavigation = it
                     }
                 )
-            }
 
-            BaseAppScreen.Budget -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Budget")
-                }
-            }
-
-            BaseAppScreen.MessTrack -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Settings")
-                }
-            }
-
-            BaseAppScreen.Calender -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Calender")
+                BaseAppScreen.Calender -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("Calender")
+                    }
                 }
             }
         }
