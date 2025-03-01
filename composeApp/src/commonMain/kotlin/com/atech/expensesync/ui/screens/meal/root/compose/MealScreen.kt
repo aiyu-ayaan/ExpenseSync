@@ -180,6 +180,9 @@ private fun MealListScreen(
                 clearIconClick = {
                     price = 0.0.formatAmount()
                 },
+                supportingText = {
+                    Text("Set default if you don't want to change")
+                },
                 onValueChange = { newValue ->
                     if (newValue.isValidDecimalInput()) {
                         price = newValue
