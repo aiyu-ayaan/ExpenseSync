@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.screens.meal.root.compose
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
@@ -27,7 +28,10 @@ fun MealItem(
     lastMonthPrice: Double = 100.0,
     onMealItemClick: () -> Unit = {}
 ) {
-    DefaultCard {
+    DefaultCard(
+        modifier = Modifier
+            .clickable { onMealItemClick.invoke() }
+    ) {
         val (current, total) = getCurrentDayAndTotalDays()
         Column {
             ListItem(
