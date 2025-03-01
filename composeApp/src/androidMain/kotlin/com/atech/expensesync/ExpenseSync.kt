@@ -7,5 +7,11 @@ class ExpenseSync : Application() {
     override fun onCreate() {
         super.onCreate()
         KoinInitializer(applicationContext).init()
+        instance = this
+    }
+
+    companion object {
+        var instance: ExpenseSync? = null
+            private set
     }
 }

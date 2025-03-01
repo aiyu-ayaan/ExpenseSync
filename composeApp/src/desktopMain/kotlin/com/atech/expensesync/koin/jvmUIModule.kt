@@ -10,6 +10,6 @@ val jvmUIModule = module {
     single { SplitViewModel(get(), get()) }
     single { LogInViewModel(get(), get()) }
     single { AddExpenseViewModel(get(),get(),get()) }
-    single { MealViewModel() }
+    single { MealViewModel(get()) }
 //    single { QRHelperImp() }
 }

@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.database.room.meal.MealBookEntry
+import com.atech.expensesync.database.room.meal.MealDao
 import com.atech.expensesync.database.room.split.ExpanseGroup
 import com.atech.expensesync.database.room.split.ExpanseGroupDao
 import com.atech.expensesync.database.room.split.ExpanseGroupMemberDao
@@ -30,4 +31,5 @@ abstract class ExpenseSyncDatabase : RoomDatabase() {
     abstract val expanseGroupMemberDao: ExpanseGroupMemberDao
     abstract val expanseTransactionDao: ExpanseTransactionDao
     abstract val transactionSplitDao: TransactionSplitDao
+    abstract val mealDao: MealDao
 }

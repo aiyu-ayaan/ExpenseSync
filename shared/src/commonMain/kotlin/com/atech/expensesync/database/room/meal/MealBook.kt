@@ -52,7 +52,7 @@ data class MealBook(
     val description: String = "",
     val created: Long = System.currentTimeMillis(),
     @PrimaryKey(autoGenerate = false)
-    val mealBookId: String = UUID.fromString(name).toString(),
+    val mealBookId: String = UUID.randomUUID().toString(),
 ) {
     @get:Ignore
     val formattedDate: String

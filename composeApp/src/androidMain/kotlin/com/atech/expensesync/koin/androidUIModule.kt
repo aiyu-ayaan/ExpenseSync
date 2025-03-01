@@ -13,5 +13,5 @@ val androidUIModule = module {
     viewModel { LogInViewModel(get(), get()) }
     viewModel { ScanViewModel(get(), get()) }
     viewModel { AddExpenseViewModel(get(), get(), get()) }
-    viewModel { MealViewModel() }
+    viewModel { MealViewModel(get()) }
 }

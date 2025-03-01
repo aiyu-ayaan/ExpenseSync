@@ -27,6 +27,7 @@ import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.formatAmount
 import com.atech.expensesync.ui_utils.isValidDecimalInput
+import com.atech.expensesync.ui_utils.showToast
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +46,14 @@ fun AddMealBookScreen(
         actions = {
             AppButton(
                 text = "Create", enable = true, onClick = {
-                    onEvent.invoke(MealScreenEvents.OnAddMeal)
+                    onEvent.invoke(MealScreenEvents.OnAddMeal {
+                        if (it > 0) {
+                            showToast("Meal Book created successfully")
+                            onNavigationClick()
+                        } else {
+                            showToast("Failed to create Meal Book.Check Meal Book name and try again")
+                        }
+                    })
                 })
         }) { paddingValues ->
         Column(
@@ -82,8 +90,7 @@ fun AddMealBookScreen(
                         onEvent.invoke(
                             MealScreenEvents.OnMealScreenStateChange(
                                 state.copy(
-                                    defaultPrice =
-                                        newValue.toDoubleOrNull() ?: 0.0
+                                    defaultPrice = newValue.toDoubleOrNull() ?: 0.0
                                 )
                             )
                         )
