@@ -19,6 +19,7 @@ firebaseAdmin = "9.2.0"
 junit = "4.13.2"
 kotlin = "2.1.0"
 kotlinx-coroutines = "1.10.1"
+kotlinxDatetimeVersion = "0.6.2"
 ktor = "3.0.3"
 ktorServerContentNegotiation = "3.0.3"
 landscapistCoil3 = "2.4.6"
@@ -68,6 +69,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-datetime-v062 = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetimeVersion" }
 ktor-serialization-kotlinx-json-jvm = { module = "io.ktor:ktor-serialization-kotlinx-json-jvm" }
 ktor-server-caching-headers-jvm = { module = "io.ktor:ktor-server-caching-headers-jvm" }
 ktor-server-call-logging-jvm = { module = "io.ktor:ktor-server-call-logging-jvm" }

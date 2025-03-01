@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.atech.expensesync.ui.screens.app.AppScreen
+import com.atech.expensesync.ui.screens.meal.view.compose.ViewMealScreen
 import com.atech.expensesync.ui.screens.scan.compose.ScanScreen
 import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
 import com.atech.expensesync.ui.screens.split.add.AddExpenseViewModel
@@ -23,6 +24,12 @@ sealed class AppNavigation(val route: String) {
 data class ViewExpanseBookArgs(
     val grpId: String,
     val grpName: String,
+)
+
+@Serializable
+data class ViewMealArgs(
+    val mealBookId: String,
+    val mealBookName: String,
 )
 
 fun NavGraphBuilder.appNavigation(
@@ -57,6 +64,13 @@ fun NavGraphBuilder.appNavigation(
                 members = viewModel.grpMembers.value,
                 transactionWithUser = viewModel.getTransactionWithUser,
                 onEvent = viewModel::onEvent
+            )
+        }
+        animatedComposableEnh<ViewMealArgs> {
+            val args = it.toRoute<ViewMealArgs>()
+            ViewMealScreen(
+                mealBookId = args.mealBookId,
+                mealBookName = args.mealBookName
             )
         }
     }

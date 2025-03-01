@@ -38,6 +38,7 @@ import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.database.room.meal.MealBookEntry
+import com.atech.expensesync.navigation.ViewMealArgs
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.screens.meal.root.MealScreenEvents
 import com.atech.expensesync.ui.screens.meal.root.MealViewModel
@@ -78,18 +79,33 @@ fun MealScreen(
         listPane = {
             AnimatedPane {
                 canShowAppBar.invoke(true)
-                MealListScreen(onAddMealBookClick = {
-                    viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(AddMealBookState()))
-                    navigator.navigateTo(ListDetailPaneScaffoldRole.Extra)
-                }, state = mealBookItems, onEvent = viewModel::onEvent, calculateTotalPrice = {
-                    val value by viewModel.calculateTotalForCurrentMonth(it).collectAsState(0.0)
-                    value
-                }, calculateTotalLastMonthPrice = {
-                    if (checkIts1stDayOfMonth()) {
-                        val value by viewModel.calculateTotalForLastMonth(it).collectAsState(0.0)
+                MealListScreen(
+                    onItemClick = {
+                        navHostController.navigate(
+                            ViewMealArgs(
+                                mealBookId = it.mealBookId,
+                                mealBookName = it.name
+                            )
+                        )
+                    },
+                    onAddMealBookClick = {
+                        viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(AddMealBookState()))
+                        navigator.navigateTo(ListDetailPaneScaffoldRole.Extra)
+                    },
+                    state = mealBookItems,
+                    onEvent = viewModel::onEvent,
+                    calculateTotalPrice = {
+                        val value by viewModel.calculateTotalForCurrentMonth(it).collectAsState(0.0)
                         value
-                    } else 0.0
-                })
+                    },
+                    calculateTotalLastMonthPrice = {
+                        if (checkIts1stDayOfMonth()) {
+                            val value by viewModel.calculateTotalForLastMonth(it)
+                                .collectAsState(0.0)
+                            value
+                        } else 0.0
+                    }
+                )
             }
         },
         extraPane = {
@@ -128,7 +144,8 @@ private fun MealListScreen(
     state: List<MealBook>,
     calculateTotalPrice: @Composable (String) -> Double,
     calculateTotalLastMonthPrice: @Composable (String) -> Double = { 0.0 },
-    onEvent: (MealScreenEvents) -> Unit = {}
+    onEvent: (MealScreenEvents) -> Unit = {},
+    onItemClick: (MealBook) -> Unit = {}
 ) {
     var isPriceDialogVisible by remember { mutableStateOf(false) }
     var price by remember { mutableStateOf(0.0.formatAmount()) }
@@ -218,6 +235,9 @@ private fun MealListScreen(
         ) {
             items(state) {
                 MealItem(
+                    onMealItemClick = {
+                        onItemClick.invoke(it)
+                    },
                     totalPrice = calculateTotalPrice.invoke(it.mealBookId),
                     lastMonthPrice = calculateTotalLastMonthPrice.invoke(it.mealBookId),
                     state = it,
