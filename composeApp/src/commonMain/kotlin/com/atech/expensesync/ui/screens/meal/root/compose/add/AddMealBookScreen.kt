@@ -45,7 +45,9 @@ fun AddMealBookScreen(
         onNavigationClick = onNavigationClick,
         actions = {
             AppButton(
-                text = "Create", enable = true, onClick = {
+                text = "Create",
+                enable = state.defaultPrice != 0.0 && state.name.isNotEmpty(),
+                onClick = {
                     onEvent.invoke(MealScreenEvents.OnAddMeal {
                         if (it > 0) {
                             showToast("Meal Book created successfully")
