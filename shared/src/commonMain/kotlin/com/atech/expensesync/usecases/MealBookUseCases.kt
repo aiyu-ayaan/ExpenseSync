@@ -12,7 +12,8 @@ data class MealBookUseCases(
     val updateMealBook: UpdateMealBook,
     val updateMealBookEntry: UpdateMealBookEntry,
     val deleteMealBook: DeleteMealBook,
-    val deleteMealBookEntry: DeleteMealBookEntry
+    val deleteMealBookEntry: DeleteMealBookEntry,
+    val getTotalPrice: GetTotalPrice
 )
 
 
@@ -49,4 +50,11 @@ data class DeleteMealBook(private val dao: MealDao) {
 data class DeleteMealBookEntry(private val dao: MealDao) {
     suspend operator fun invoke(mealBookEntry: MealBookEntry) =
         dao.deleteMealBookEntry(mealBookEntry)
+}
+
+data class GetTotalPrice(private val dao: MealDao) {
+    operator fun invoke(
+        mealBookId: String, startOfMonth: Long, endOfMonth: Long
+    ) =
+        dao.getTotalPrice(mealBookId, startOfMonth, endOfMonth)
 }

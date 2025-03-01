@@ -26,7 +26,8 @@ fun MealItem(
     state: MealBook,
     totalPrice: Double = 0.0,
     lastMonthPrice: Double = 100.0,
-    onMealItemClick: () -> Unit = {}
+    onMealItemClick: () -> Unit = {},
+    onActionClick: () -> Unit = {}
 ) {
     DefaultCard(
         modifier = Modifier
@@ -42,13 +43,13 @@ fun MealItem(
                 secondaryText = if (totalPrice != 0.0) {
                     {
                         Text(
-                            "Price till now: ${totalPrice.formatAmount()} ${state.defaultCurrency.symbol}"
+                            "Bill this month: ${totalPrice.formatAmount()} ${state.defaultCurrency.symbol}"
                         )
                     }
                 } else if (lastMonthPrice != 0.0 && current == 1) {
                     {
                         Text(
-                            "Last month price: ${lastMonthPrice.formatAmount()} ${state.defaultCurrency.symbol}"
+                            "Bill Last month: ${lastMonthPrice.formatAmount()} ${state.defaultCurrency.symbol}"
                         )
                     }
                 } else null,
@@ -62,7 +63,7 @@ fun MealItem(
                     )
                 },
                 trailing = {
-                    FloatingActionButton(onClick = {}, content = {
+                    FloatingActionButton(onClick = onActionClick, content = {
                         Icon(
                             imageVector = Icons.TwoTone.Checklist,
                             contentDescription = "Check Circle"

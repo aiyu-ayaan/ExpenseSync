@@ -32,13 +32,13 @@ fun Long.convertToDateFormat(format: DatePattern = DatePattern.DD_MM_YYYY): Stri
     localDateTime.toJavaLocalDateTime().format(formatter)
 }
 
-fun checkIts1stDayOfMonth(date: Long): Boolean {
+fun checkIts1stDayOfMonth(date: Long = System.currentTimeMillis()): Boolean {
     val instant = Instant.fromEpochMilliseconds(date)
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     return localDateTime.dayOfMonth == 1
 }
 
-fun checkItsLastDayOfMonth(date: Long): Boolean {
+fun checkItsLastDayOfMonth(date: Long = System.currentTimeMillis()): Boolean {
     val instant = Instant.fromEpochMilliseconds(date)
     val localDateTime: LocalDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     return localDateTime.dayOfMonth == localDateTime.month.length(localDateTime.isLeapYear())

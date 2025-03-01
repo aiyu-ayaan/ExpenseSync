@@ -33,4 +33,17 @@ interface MealDao {
 
     @Delete
     suspend fun deleteMealBookEntry(mealBookEntry: MealBookEntry)
+
+
+    @Query("""
+        SELECT SUM(price) FROM MEAL_BOOK_ENTRY 
+        WHERE mealBookId = :mealBookId
+        AND createdAt >= :startOfMonth
+        AND createdAt <= :endOfMonth
+    """)
+    fun getTotalPrice(
+        mealBookId: String,
+        startOfMonth: Long,
+        endOfMonth: Long
+    ): Flow<Double>
 }

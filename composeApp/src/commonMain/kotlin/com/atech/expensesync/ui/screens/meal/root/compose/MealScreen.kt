@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.meal.MealBook
+import com.atech.expensesync.database.room.meal.MealBookEntry
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.screens.meal.root.MealScreenEvents
 import com.atech.expensesync.ui.screens.meal.root.MealViewModel
@@ -31,6 +32,8 @@ import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 import com.atech.expensesync.ui_utils.koinViewModel
+import com.atech.expensesync.ui_utils.showToast
+import com.atech.expensesync.utils.checkIts1stDayOfMonth
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 //private enum class DetailsScreenType {
@@ -47,7 +50,6 @@ fun MealScreen(
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     val viewModel = koinViewModel<MealViewModel>()
     val mealBookItems by viewModel.mealBooks.collectAsState(emptyList())
-
     navigator.backHandlerThreePane(backAction = {
 //        detailsScreenType = DetailsScreenType.None
         viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(null))
@@ -62,10 +64,22 @@ fun MealScreen(
                 MealListScreen(
                     onAddMealBookClick = {
                         viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(AddMealBookState()))
-//                        detailsScreenType = DetailsScreenType.AddMealBook
                         navigator.navigateTo(ListDetailPaneScaffoldRole.Extra)
                     },
-                    state = mealBookItems
+                    state = mealBookItems,
+                    onEvent = viewModel::onEvent,
+                    calculateTotalPrice = {
+                        val value by viewModel.calculateTotalForCurrentMonth(it)
+                            .collectAsState(0.0)
+                        value
+                    },
+                    calculateTotalLastMonthPrice = {
+                        if (checkIts1stDayOfMonth()) {
+                            val value by viewModel.calculateTotalForLastMonth(it)
+                                .collectAsState(0.0)
+                            value
+                        } else 0.0
+                    }
                 )
             }
         },
@@ -96,12 +110,16 @@ fun MealScreen(
     )
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MealListScreen(
     modifier: Modifier = Modifier,
     onAddMealBookClick: () -> Unit = {},
-    state: List<MealBook>
+    state: List<MealBook>,
+    calculateTotalPrice: @Composable (String) -> Double,
+    calculateTotalLastMonthPrice: @Composable (String) -> Double = { 0.0 },
+    onEvent: (MealScreenEvents) -> Unit = {}
 ) {
     MainContainer(
         modifier = modifier, title = "Meal", floatingActionButton = {
@@ -119,7 +137,24 @@ private fun MealListScreen(
         ) {
             items(state) {
                 MealItem(
-                    state = it
+                    totalPrice = calculateTotalPrice.invoke(it.mealBookId),
+                    lastMonthPrice = calculateTotalLastMonthPrice.invoke(it.mealBookId),
+                    state = it,
+                    onActionClick = {
+                        onEvent.invoke(
+                            MealScreenEvents.AddMealBookEntry(
+                                mealBookEntry = MealBookEntry(
+                                    mealBookId = it.mealBookId,
+                                    price = it.defaultPrice,
+                                ),
+                                onComplete = {
+                                    showToast(
+                                        "Meal Book Entry created successfully"
+                                    )
+                                }
+                            )
+                        )
+                    }
                 )
             }
         }
@@ -131,7 +166,8 @@ private fun MealListScreen(
 private fun MealScreenPreview() {
     ExpenseSyncTheme {
         MealListScreen(
-            state = emptyList()
+            state = emptyList(),
+            calculateTotalPrice = { 0.0 }
         )
     }
 }

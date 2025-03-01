@@ -20,6 +20,7 @@ import com.atech.expensesync.usecases.GetGroupMembers
 import com.atech.expensesync.usecases.GetGroupsUseCase
 import com.atech.expensesync.usecases.GetMealBookEntries
 import com.atech.expensesync.usecases.GetMealBooks
+import com.atech.expensesync.usecases.GetTotalPrice
 import com.atech.expensesync.usecases.GetTransactionsUseCase
 import com.atech.expensesync.usecases.InsertMember
 import com.atech.expensesync.usecases.LogInToDesktopUseCase
@@ -80,5 +81,6 @@ val commonModule = module {
     single { UpdateMealBookEntry(get()) }
     single { DeleteMealBook(get()) }
     single { DeleteMealBookEntry(get()) }
-    single { MealBookUseCases(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GetTotalPrice(get()) }
+    single { MealBookUseCases(get(), get(), get(), get(), get(), get(), get(), get(),get()) }
 }

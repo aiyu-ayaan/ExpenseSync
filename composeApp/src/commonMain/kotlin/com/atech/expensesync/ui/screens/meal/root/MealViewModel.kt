@@ -5,7 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.usecases.MealBookUseCases
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.util.Calendar
 
 class MealViewModel(
     private val useCases: MealBookUseCases
@@ -16,6 +19,55 @@ class MealViewModel(
     val mealBooks = useCases.getMealBooks.invoke()
 
     private val mapper = AddMealBookStateTOMealBookMapper()
+
+    fun calculateTotalForCurrentMonth(
+        mealBookId: String
+    ) = viewModelScope.async {
+        val calendar = Calendar.getInstance()
+            .apply {
+                set(Calendar.DAY_OF_MONTH, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+        val startOfMonth = calendar.timeInMillis
+        calendar.add(Calendar.MONTH, 1)
+        val endOfMonth = calendar.timeInMillis
+        useCases.getTotalPrice
+            .invoke(
+                mealBookId,
+                startOfMonth,
+                endOfMonth
+            )
+    }.run {
+        runBlocking { await() }
+    }
+
+    fun calculateTotalForLastMonth(
+        mealBookId: String
+    ) = viewModelScope.async {
+        val calendar = Calendar.getInstance()
+            .apply {
+                set(Calendar.DAY_OF_MONTH, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+        calendar.add(Calendar.MONTH, -1)
+        val startOfMonth = calendar.timeInMillis
+        calendar.add(Calendar.MONTH, 1)
+        val endOfMonth = calendar.timeInMillis
+        useCases.getTotalPrice
+            .invoke(
+                mealBookId,
+                startOfMonth,
+                endOfMonth
+            )
+    }.run {
+        runBlocking { await() }
+    }
 
     fun onEvent(event: MealScreenEvents) {
         when (event) {
@@ -30,6 +82,11 @@ class MealViewModel(
             }
 
             is MealScreenEvents.OnMealScreenStateChange -> _addMealState.value = event.state
+            is MealScreenEvents.AddMealBookEntry -> viewModelScope.launch {
+                event.onComplete.invoke(
+                    useCases.createMealBookEntry.invoke(event.mealBookEntry)
+                )
+            }
         }
     }
 }
