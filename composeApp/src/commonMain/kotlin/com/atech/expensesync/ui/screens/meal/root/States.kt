@@ -1,13 +1,14 @@
 package com.atech.expensesync.ui.screens.meal.root
 
 import com.atech.expensesync.database.room.meal.MealBook
+import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.EntityMapper
 
 data class AddMealBookState(
     val name: String = "",
     val defaultPrice: Double = 0.0,
     val description: String = "",
-    val defaultCurrency: String = "INR",
+    val defaultCurrency: Currency = Currency.INR,
 )
 
 

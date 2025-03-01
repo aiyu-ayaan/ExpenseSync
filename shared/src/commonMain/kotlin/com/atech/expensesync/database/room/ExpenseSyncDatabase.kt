@@ -24,7 +24,7 @@ import com.atech.expensesync.database.room.split.TransactionSplitDao
         MealBook::class,
         MealBookEntry::class
     ],
-    version = 1
+    version = 2
 )
 abstract class ExpenseSyncDatabase : RoomDatabase() {
     abstract val expanseGroupDao: ExpanseGroupDao

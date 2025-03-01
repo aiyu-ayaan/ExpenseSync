@@ -13,6 +13,8 @@ class MealViewModel(
     private val _addMealState = mutableStateOf<AddMealBookState?>(null)
     val addMealState: State<AddMealBookState?> get() = _addMealState
 
+    val mealBooks = useCases.getMealBooks.invoke()
+
     private val mapper = AddMealBookStateTOMealBookMapper()
 
     fun onEvent(event: MealScreenEvents) {

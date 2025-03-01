@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.convertToDateFormat
 import java.util.UUID
 
@@ -48,7 +49,7 @@ data class MealBookEntry(
 data class MealBook(
     val name: String,
     val defaultPrice: Double,
-    val defaultCurrency: String = "INR",
+    val defaultCurrency: Currency = Currency.INR,
     val description: String = "",
     val created: Long = System.currentTimeMillis(),
     @PrimaryKey(autoGenerate = false)

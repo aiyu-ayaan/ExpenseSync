@@ -1,6 +1,7 @@
 package com.atech.expensesync.utils
 
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -29,4 +30,29 @@ fun Long.convertToDateFormat(format: DatePattern = DatePattern.DD_MM_YYYY): Stri
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     val formatter = DateTimeFormatter.ofPattern(format.pattern)
     localDateTime.toJavaLocalDateTime().format(formatter)
+}
+
+fun checkIts1stDayOfMonth(date: Long): Boolean {
+    val instant = Instant.fromEpochMilliseconds(date)
+    val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    return localDateTime.dayOfMonth == 1
+}
+
+fun checkItsLastDayOfMonth(date: Long): Boolean {
+    val instant = Instant.fromEpochMilliseconds(date)
+    val localDateTime: LocalDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    return localDateTime.dayOfMonth == localDateTime.month.length(localDateTime.isLeapYear())
+}
+
+/**
+ * Get current day and total days of the month
+ */
+fun getCurrentDayAndTotalDays(): Pair<Int, Int> {
+    val instant = Instant.fromEpochMilliseconds(System.currentTimeMillis())
+    val localDateTime: LocalDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    return Pair(localDateTime.dayOfMonth, localDateTime.month.length(localDateTime.isLeapYear()))
+}
+
+private fun LocalDateTime.isLeapYear(): Boolean {
+    return this.year % 4 == 0 && (this.year % 100 != 0 || this.year % 400 == 0)
 }

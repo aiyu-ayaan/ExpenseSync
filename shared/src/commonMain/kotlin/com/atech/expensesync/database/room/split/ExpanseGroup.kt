@@ -7,6 +7,7 @@ import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.convertToDateFormat
 import com.atech.expensesync.utils.removeDecimalIfZero
 import java.util.UUID
@@ -141,7 +142,7 @@ data class ExpanseGroup(
     val whiteBoard: String? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val isActive: Boolean = true,
-    val defaultCurrency: String = "INR",
+    val defaultCurrency: Currency = Currency.INR,
 ) {
     @get:Ignore
     val formatedDate: String

@@ -1,0 +1,32 @@
+package com.atech.expensesync.utils
+
+enum class Currency(val symbol: String) {
+    INR("₹"),
+    USD("$"),
+    EUR("€"),
+    GBP("£"),
+    JPY("¥"),
+    CHF("CHF"),
+    AUD("A$"),
+    CAD("C$"),
+    CNY("¥"),
+    KRW("₩"),
+    RUB("₽"),
+    BRL("R$"),
+    MXN("$"),
+    SEK("kr"),
+    NOK("kr"),
+    DKK("kr"),
+    ZAR("R"),
+    SGD("S$"),
+    HKD("HK$"),
+    NZD("NZ$"),
+    TRY("₺"),
+    PLN("zł"),
+    THB("฿"),
+    IDR("Rp"),
+    PHP("₱"),
+    MYR("RM"),
+    HUF("Ft"),
+    CZK("Kč")
+}
