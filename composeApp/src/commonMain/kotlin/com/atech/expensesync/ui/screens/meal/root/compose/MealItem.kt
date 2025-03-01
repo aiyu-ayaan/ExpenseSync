@@ -1,17 +1,18 @@
 package com.atech.expensesync.ui.screens.meal.root.compose
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.ListItem
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Checklist
 import androidx.compose.material.icons.twotone.EmojiFoodBeverage
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.atech.expensesync.component.DefaultCard
 import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
@@ -34,44 +35,45 @@ fun MealItem(
             .clickable { onMealItemClick.invoke() }
     ) {
         val (current, total) = getCurrentDayAndTotalDays()
-        Column {
-            ListItem(
-                modifier = modifier,
-                text = {
-                    Text(state.name)
-                },
-                secondaryText = if (totalPrice != 0.0) {
-                    {
-                        Text(
-                            "Bill this month: ${totalPrice.formatAmount()} ${state.defaultCurrency.symbol}"
-                        )
-                    }
-                } else if (lastMonthPrice != 0.0 && current == 1) {
-                    {
-                        Text(
-                            "Bill Last month: ${lastMonthPrice.formatAmount()} ${state.defaultCurrency.symbol}"
-                        )
-                    }
-                } else null,
-                overlineText = {
-                    Text("${current}/${total}")
-                },
-                icon = {
-                    Icon(
-                        imageVector = Icons.TwoTone.EmojiFoodBeverage,
-                        contentDescription = "Meal Book"
+        ListItem(
+            modifier = modifier,
+            colors = ListItemDefaults.colors(
+                containerColor = Color.Transparent
+            ),
+            headlineContent = {
+                Text(state.name)
+            },
+            supportingContent = if (totalPrice != 0.0) {
+                {
+                    Text(
+                        "Bill this month: ${totalPrice.formatAmount()} ${state.defaultCurrency.symbol}"
                     )
-                },
-                trailing = {
-                    FloatingActionButton(onClick = onActionClick, content = {
-                        Icon(
-                            imageVector = Icons.TwoTone.Checklist,
-                            contentDescription = "Check Circle"
-                        )
-                    })
                 }
-            )
-        }
+            } else if (lastMonthPrice != 0.0 && current == 1) {
+                {
+                    Text(
+                        "Bill Last month: ${lastMonthPrice.formatAmount()} ${state.defaultCurrency.symbol}"
+                    )
+                }
+            } else null,
+            overlineContent = {
+                Text("${current}/${total}")
+            },
+            leadingContent = {
+                Icon(
+                    imageVector = Icons.TwoTone.EmojiFoodBeverage,
+                    contentDescription = "Meal Book"
+                )
+            },
+            trailingContent = {
+                FloatingActionButton(onClick = onActionClick, content = {
+                    Icon(
+                        imageVector = Icons.TwoTone.Checklist,
+                        contentDescription = "Check Circle"
+                    )
+                })
+            }
+        )
     }
 }
 
