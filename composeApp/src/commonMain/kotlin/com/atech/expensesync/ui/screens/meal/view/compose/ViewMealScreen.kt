@@ -30,6 +30,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ExperimentalComposeApi
@@ -43,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -113,6 +115,7 @@ fun ViewMealScreen(
         firstDayOfWeek = firstDayOfWeek,
         firstVisibleMonth = currentMonth
     )
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     LaunchedEffect(calendarState.firstVisibleMonth) {
@@ -127,7 +130,14 @@ fun ViewMealScreen(
     var showHistoryBottomSheet by remember { mutableStateOf(false) }
 
     MainContainer(
-        modifier = modifier, title = mealBookName, onNavigationClick = onNavigateUp, actions = {
+        modifier = modifier
+            .nestedScroll(
+                scrollBehavior.nestedScrollConnection
+            ),
+        scrollBehavior = scrollBehavior,
+        title = mealBookName,
+        onNavigationClick = onNavigateUp,
+        actions = {
             IconButton(
                 enabled = calendarState.firstVisibleMonth.yearMonth.month != currentMonth.month,
                 onClick = {
@@ -138,7 +148,8 @@ fun ViewMealScreen(
                 }) {
                 Icon(imageVector = Icons.TwoTone.Today, contentDescription = null)
             }
-        }) { paddingValues ->
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
                 .padding(MaterialTheme.spacing.medium).verticalScroll(
