@@ -70,7 +70,6 @@ import com.atech.expensesync.ui_utils.getDisplayType
 import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.DatePattern
 import com.atech.expensesync.utils.convertToDateFormat
-import com.atech.expensesync.utils.expenseSyncLogger
 import com.atech.expensesync.utils.firstDayOfWeek
 import com.atech.expensesync.utils.generatePriceSumOfBasicOfWeek
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -222,16 +221,17 @@ fun ShowLineChart(
     month: Month
 ) {
     val (monthPrev, monthCurr) = state.generatePriceSumOfBasicOfWeek(month)
-
+    val monthCurrSum = monthCurr.sum()
+    val monthPrevSum = monthPrev.sum()
     AnimatedVisibility(
-        (monthCurr.all { it == 0.0 } && monthPrev.all { it == 0.0 }).not()
+        (monthPrevSum == 0.0 && monthCurrSum == 0.0).not()
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             TitleComposable("Summary")
-            listOf(
+            val lineChartData = listOf(
                 LineParameters(
                     label = month.name.lowercase().replaceFirstChar { it.uppercase() },
                     lineColor = MaterialTheme.colorScheme.primary,
@@ -249,39 +249,73 @@ fun ShowLineChart(
                     lineType = LineType.CURVED_LINE,
                     lineShadow = true
                 )
-            ).also {
-                LineChart(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .aspectRatio(1f),
-                    linesParameters = it,
-                    isGrid = false,
-                    xAxisData = List(monthCurr.size) { index -> "Week ${index + 1}" },
-                    animateChart = true,
-                    yAxisStyle = TextStyle(
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(
+            )
+            LineChart(
+                modifier = modifier
+                    .fillMaxSize()
+                    .aspectRatio(1f),
+                linesParameters = lineChartData,
+                isGrid = false,
+                xAxisData = List(monthCurr.size) { index -> "Week ${index + 1}" },
+                animateChart = true,
+                yAxisStyle = TextStyle(
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(
+                        alpha = .6f
+                    ),
+                ),
+                xAxisStyle = TextStyle(
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                        .copy(
                             alpha = .6f
                         ),
-                    ),
-                    xAxisStyle = TextStyle(
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                            .copy(
-                                alpha = .6f
-                            ),
-                        fontWeight = FontWeight.W400
-                    ),
-                    yAxisRange = 14,
-                    oneLineChart = false,
-                    gridOrientation = GridOrientation.VERTICAL,
-                    descriptionStyle = TextStyle(
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.W400
-                    ),
-                )
+                    fontWeight = FontWeight.W400
+                ),
+                yAxisRange = 14,
+                oneLineChart = false,
+                gridOrientation = GridOrientation.VERTICAL,
+                descriptionStyle = TextStyle(
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.W400
+                ),
+            )
+            DisplayCard(
+                modifier = Modifier.padding(top = MaterialTheme.spacing.medium)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(
+                            vertical = MaterialTheme
+                                .spacing.medium
+                        ),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+                ) {
+                    AnimatedVisibility(
+                        monthCurrSum != 0.0
+                    ) {
+                        Text(
+                            text = "Current: ${monthCurrSum.formatAmount()}",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                    AnimatedVisibility(
+                        monthPrevSum != 0.0
+                    ) {
+                        Text(
+                            text = "Previous: ${monthPrevSum.formatAmount()}",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
             }
+
+            Spacer(
+                modifier = Modifier.height(MaterialTheme.spacing.bottomPadding)
+            )
         }
     }
 }
