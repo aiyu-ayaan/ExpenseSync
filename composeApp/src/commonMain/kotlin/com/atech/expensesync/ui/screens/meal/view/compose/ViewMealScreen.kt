@@ -48,6 +48,7 @@ import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.now
 import com.kizitonwose.calendar.core.plusMonths
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -62,7 +63,6 @@ import java.util.Calendar
 fun ViewMealScreen(
     modifier: Modifier = Modifier,
     mealBookName: String,
-    mealBookId: String = "",
     state: List<MealBookEntry> = generateMealBookEntries(),
     onNavigateUp: () -> Unit = {}
 ) {
@@ -86,7 +86,6 @@ fun ViewMealScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
                 .padding(MaterialTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val calenderModifier = when (getDisplayType()) {
@@ -109,8 +108,8 @@ fun ViewMealScreen(
                     }
 
                 },
-                monthHeader = {
-                    MonthHeader(calendarMonth = it)
+                monthHeader = { month ->
+                    MonthHeader(calendarMonth = month)
                 },
             )
         }
@@ -121,6 +120,8 @@ fun ViewMealScreen(
 @Composable
 private fun MonthHeader(calendarMonth: CalendarMonth) {
     val daysOfWeek = calendarMonth.weekDays.first().map { it.date.dayOfWeek }
+    val reorderedDaysOfWeek = listOf(DayOfWeek.SUNDAY) +
+            daysOfWeek.filterNot { it == DayOfWeek.SUNDAY }
     Column(
         modifier = Modifier.wrapContentHeight(),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
@@ -132,7 +133,7 @@ private fun MonthHeader(calendarMonth: CalendarMonth) {
             style = MaterialTheme.typography.bodyMedium
         )
         Row(modifier = Modifier.fillMaxWidth()) {
-            for (dayOfWeek in daysOfWeek) {
+            for (dayOfWeek in reorderedDaysOfWeek) {
                 Text(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,

@@ -69,7 +69,6 @@ fun NavGraphBuilder.appNavigation(
         animatedComposableEnh<ViewMealArgs> {
             val args = it.toRoute<ViewMealArgs>()
             ViewMealScreen(
-                mealBookId = args.mealBookId,
                 mealBookName = args.mealBookName
             )
         }
