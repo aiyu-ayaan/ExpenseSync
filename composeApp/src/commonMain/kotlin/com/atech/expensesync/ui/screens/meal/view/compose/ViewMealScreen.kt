@@ -2,6 +2,7 @@ package com.atech.expensesync.ui.screens.meal.view.compose
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -63,9 +65,13 @@ import com.atech.expensesync.ui.screens.meal.view.ViewMealState
 import com.atech.expensesync.ui.screens.meal.view.toInternal
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.DeviceType
+import com.atech.expensesync.ui_utils.formatAmount
 import com.atech.expensesync.ui_utils.getDisplayType
+import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.DatePattern
 import com.atech.expensesync.utils.convertToDateFormat
+import com.atech.expensesync.utils.expenseSyncLogger
+import com.atech.expensesync.utils.firstDayOfWeek
 import com.atech.expensesync.utils.generatePriceSumOfBasicOfWeek
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
@@ -73,7 +79,6 @@ import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.YearMonth
-import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.now
 import com.kizitonwose.calendar.core.plusMonths
@@ -100,6 +105,7 @@ import java.util.Calendar
 fun ViewMealScreen(
     modifier: Modifier = Modifier,
     mealBookName: String,
+    defaultCurrency: Currency = Currency.INR,
     state: List<MealBookEntry>,
     calenderMonth: CalendarMonthInternal,
     onEvent: (ViewMealState) -> Unit = {},
@@ -108,7 +114,7 @@ fun ViewMealScreen(
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(100) }
     val endMonth = remember { currentMonth.plusMonths(100) }
-    val firstDayOfWeek = remember { firstDayOfWeekFromLocale() }
+    val firstDayOfWeek = remember { firstDayOfWeek() }
     val calendarState = rememberCalendarState(
         startMonth = startMonth,
         endMonth = endMonth,
@@ -163,7 +169,6 @@ fun ViewMealScreen(
             )
             val calenderModifier = when (getDisplayType()) {
                 DeviceType.MOBILE -> Modifier.fillMaxWidth()
-
                 else -> Modifier.fillMaxWidth(
                     .5f
                 )
@@ -182,29 +187,29 @@ fun ViewMealScreen(
                     MonthHeader(calendarMonth = month)
                 })
             TextButton(
-                modifier = Modifier.fillMaxWidth(), onClick = {
-                    scope.launch {
-                        sheetState.show()
-                        showHistoryBottomSheet = true
-                    }
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    showHistoryBottomSheet = true
                 }) {
                 Text("View History")
             }
             ShowLineChart(
                 state = state,
-                month = calenderMonth.yearMonth.month
+                month = calenderMonth.yearMonth.month,
             )
         }
         AnimatedVisibility(
             showHistoryBottomSheet
         ) {
             ViewHistory(
-                modifier = Modifier.fillMaxWidth(), sheetState = sheetState, onDismissRequest = {
-                    scope.launch {
-                        sheetState.hide()
-                        showHistoryBottomSheet = false
-                    }
-                }, state = state, calenderMonth = calenderMonth
+                modifier = Modifier.fillMaxWidth(),
+                sheetState = sheetState,
+                onDismissRequest = {
+                    showHistoryBottomSheet = false
+                },
+                state = state,
+                calenderMonth = calenderMonth,
+                defaultCurrency = defaultCurrency
             )
         }
     }
@@ -217,6 +222,7 @@ fun ShowLineChart(
     month: Month
 ) {
     val (monthPrev, monthCurr) = state.generatePriceSumOfBasicOfWeek(month)
+
     AnimatedVisibility(
         (monthCurr.all { it == 0.0 } && monthPrev.all { it == 0.0 }).not()
     ) {
@@ -249,23 +255,31 @@ fun ShowLineChart(
                         .fillMaxSize()
                         .aspectRatio(1f),
                     linesParameters = it,
-                    isGrid = true,
-                    gridColor = Color.Transparent,
+                    isGrid = false,
                     xAxisData = List(monthCurr.size) { index -> "Week ${index + 1}" },
                     animateChart = true,
-                    showGridWithSpacer = true,
                     yAxisStyle = TextStyle(
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = .6f
+                        ),
                     ),
                     xAxisStyle = TextStyle(
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.onSurface
+                            .copy(
+                                alpha = .6f
+                            ),
                         fontWeight = FontWeight.W400
                     ),
                     yAxisRange = 14,
                     oneLineChart = false,
-                    gridOrientation = GridOrientation.VERTICAL
+                    gridOrientation = GridOrientation.VERTICAL,
+                    descriptionStyle = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.W400
+                    ),
                 )
             }
         }
@@ -278,6 +292,7 @@ fun ShowLineChart(
 private fun ViewHistory(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
+    defaultCurrency: Currency,
     onDismissRequest: () -> Unit = {},
     state: List<MealBookEntry>,
     calenderMonth: CalendarMonthInternal
@@ -325,11 +340,15 @@ private fun ViewHistory(
                     style = JetLimeEventDefaults.eventStyle(
                         position = position
                     ), additionalContent = {
-                        ExtendedEventContent(item)
+                        ExtendedEventContent(
+                            item,
+                            total = eventsMap[item]?.sumOf { it.price } ?: 0.0,
+                            defaultCurrency = defaultCurrency
+                        )
                     }) {
                     Column {
                         val getItem = eventsMap[item] ?: emptyList()
-                        VerticalEventContent(getItem)
+                        VerticalEventContent(getItem, defaultCurrency)
                     }
                 }
             }
@@ -341,7 +360,12 @@ private fun ViewHistory(
 }
 
 @Composable
-fun ExtendedEventContent(item: String, modifier: Modifier = Modifier) {
+fun ExtendedEventContent(
+    item: String,
+    total: Double = 0.0,
+    defaultCurrency: Currency,
+    modifier: Modifier = Modifier
+) {
     Card(
         modifier = modifier.wrapContentHeight(),
     ) {
@@ -356,29 +380,54 @@ fun ExtendedEventContent(item: String, modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.SemiBold,
                 text = item
             )
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.bodyMedium,
+                text = "Total: ${total.formatAmount()} ${defaultCurrency.symbol}",
+                fontWeight = FontWeight.SemiBold
+            )
         }
     }
 }
 
 @Composable
-fun VerticalEventContent(item: List<MealBookEntry>, modifier: Modifier = Modifier) {
+fun VerticalEventContent(
+    item: List<MealBookEntry>,
+    defaultCurrency: Currency = Currency.INR,
+    modifier: Modifier = Modifier,
+) {
     Card(
         modifier = modifier,
     ) {
         Column {
             item.forEach { meal ->
-                if (meal.description.isNotEmpty()) Text(
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                        .padding(horizontal = 12.dp).padding(top = 8.dp),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    text = meal.description,
-                )
-                Text(
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    fontSize = if (meal.description.isNotEmpty()) 14.sp else 16.sp,
-                    text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_A),
+                ListItem(
+                    headlineContent = {
+                        Text(
+                            text = "${meal.price.formatAmount()} ${defaultCurrency.symbol}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
+                    supportingContent = if (meal.description.isNotEmpty()) {
+                        {
+                            Text(
+                                text = meal.description,
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier
+                                    .basicMarquee(
+                                    )
+                            )
+                        }
+                    } else null,
+                    trailingContent = {
+                        Text(
+                            text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_A),
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1
+                        )
+                    }
                 )
             }
         }

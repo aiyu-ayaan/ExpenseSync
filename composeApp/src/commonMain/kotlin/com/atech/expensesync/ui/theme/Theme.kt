@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -15,9 +16,9 @@ fun ExpenseSyncTheme(
     content: @Composable () -> Unit
 ) {
     val theme = getColorScheme(true)
-    val colorScheme = /*if (isSystemInDarkTheme())
+    val colorScheme = if (isSystemInDarkTheme())
         theme.darkColorScheme
-    else*/
+    else
         theme.lightColorScheme
     MaterialTheme(
         colorScheme = colorScheme,

@@ -2,6 +2,7 @@ package com.atech.expensesync.utils
 
 import com.atech.expensesync.database.room.meal.MealBookEntry
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -12,6 +13,7 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Locale
 
 /**
  * Date pattern
@@ -91,6 +93,9 @@ fun List<MealBookEntry>.generatePriceSumOfBasicOfWeek(
     val previousMonth = if (present.number == 1) Month.DECEMBER else Month.of(present.number - 1)
     val previousMonthYear = if (present.number == 1) currentYear - 1 else currentYear
 
+    // Get first day of week from locale
+    val firstDayOfWeek = firstDayOfWeek()
+
     // Convert entries to LocalDate for easier date manipulation
     val entriesWithDate = this.map { entry ->
         val instant = Instant.fromEpochMilliseconds(entry.createdAt)
@@ -109,7 +114,7 @@ fun List<MealBookEntry>.generatePriceSumOfBasicOfWeek(
     // Calculate price sums by week for current month (support up to 5 weeks)
     val currentMonthSums = MutableList(5) { 0.0 }
     currentMonthEntries.forEach { (entry, date) ->
-        val weekOfMonth = getWeekOfMonth(date) - 1 // Convert to 0-based index
+        val weekOfMonth = getWeekOfMonth(date, firstDayOfWeek) - 1 // Convert to 0-based index
         if (weekOfMonth in 0..4) {
             currentMonthSums[weekOfMonth] += entry.price
         }
@@ -118,7 +123,7 @@ fun List<MealBookEntry>.generatePriceSumOfBasicOfWeek(
     // Calculate price sums by week for previous month (support up to 5 weeks)
     val previousMonthSums = MutableList(5) { 0.0 }
     previousMonthEntries.forEach { (entry, date) ->
-        val weekOfMonth = getWeekOfMonth(date) - 1 // Convert to 0-based index
+        val weekOfMonth = getWeekOfMonth(date, firstDayOfWeek) - 1 // Convert to 0-based index
         if (weekOfMonth in 0..4) {
             previousMonthSums[weekOfMonth] += entry.price
         }
@@ -127,10 +132,37 @@ fun List<MealBookEntry>.generatePriceSumOfBasicOfWeek(
     return Pair(previousMonthSums, currentMonthSums)
 }
 
-// Helper function to calculate week of month (1-based)
-private fun getWeekOfMonth(date: LocalDate): Int {
+// Helper function to calculate week of month (1-based) based on locale's first day of week
+private fun getWeekOfMonth(date: LocalDate, firstDayOfWeek: DayOfWeek): Int {
     val firstDayOfMonth = LocalDate(date.year, date.month, 1)
+
+    // Calculate days to adjust based on first day of week from locale
+    val daysToAdjust = (firstDayOfMonth.dayOfWeek.ordinal - firstDayOfWeek.ordinal + 7) % 7
+
+    // Calculate adjusted day position
     val daysSinceStartOfMonth = date.dayOfMonth - 1
-    val adjustedDayOfWeek = (firstDayOfMonth.dayOfWeek.ordinal + daysSinceStartOfMonth) % 7
-    return (daysSinceStartOfMonth + adjustedDayOfWeek) / 7 + 1
+    val adjustedDayPosition = daysSinceStartOfMonth + daysToAdjust
+
+    return adjustedDayPosition / 7 + 1
+}
+
+/**
+ * Gets the first day of week based on the current locale using Kotlin's datetime library.
+ * @return The first day of week as a kotlinx.datetime.DayOfWeek enum
+ */
+fun firstDayOfWeek(): DayOfWeek {
+    val calendar = Calendar.getInstance(Locale.getDefault())
+    val firstDayOfWeek = calendar.firstDayOfWeek
+
+    // Convert from Calendar.MONDAY (value 2) to kotlinx.datetime.DayOfWeek.MONDAY (value 1)
+    return when (firstDayOfWeek) {
+        Calendar.SUNDAY -> DayOfWeek.SUNDAY
+        Calendar.MONDAY -> DayOfWeek.MONDAY
+        Calendar.TUESDAY -> DayOfWeek.TUESDAY
+        Calendar.WEDNESDAY -> DayOfWeek.WEDNESDAY
+        Calendar.THURSDAY -> DayOfWeek.THURSDAY
+        Calendar.FRIDAY -> DayOfWeek.FRIDAY
+        Calendar.SATURDAY -> DayOfWeek.SATURDAY
+        else -> DayOfWeek.MONDAY // Default to Monday if something unexpected happens
+    }
 }

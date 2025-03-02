@@ -5,7 +5,6 @@ import android.util.Log
 actual fun expenseSyncLogger(
     message: String, loggerType: LoggerType
 ) {
-    Log.d("AAA","Called")
     when (loggerType) {
         LoggerType.DEBUG -> Log.d("ExpanseSyncLogger", message)
         LoggerType.ERROR -> Log.e("ExpanseSyncLogger", message)
