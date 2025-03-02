@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Today
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -196,6 +197,7 @@ fun ViewMealScreen(
             ShowLineChart(
                 state = state,
                 month = calenderMonth.yearMonth.month,
+                defaultCurrency = defaultCurrency
             )
         }
         AnimatedVisibility(
@@ -219,7 +221,8 @@ fun ViewMealScreen(
 fun ShowLineChart(
     modifier: Modifier = Modifier,
     state: List<MealBookEntry>,
-    month: Month
+    month: Month,
+    defaultCurrency: Currency = Currency.INR
 ) {
     val (monthPrev, monthCurr) = state.generatePriceSumOfBasicOfWeek(month)
     val monthCurrSum = monthCurr.sum()
@@ -297,7 +300,7 @@ fun ShowLineChart(
                         monthCurrSum != 0.0
                     ) {
                         Text(
-                            text = "Current: ${monthCurrSum.formatAmount()}",
+                            text = "Current: ${defaultCurrency.symbol} ${monthCurrSum.formatAmount()}",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -306,7 +309,7 @@ fun ShowLineChart(
                         monthPrevSum != 0.0
                     ) {
                         Text(
-                            text = "Previous: ${monthPrevSum.formatAmount()}",
+                            text = "Previous: ${defaultCurrency.symbol} ${monthPrevSum.formatAmount()}",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -402,7 +405,10 @@ fun ExtendedEventContent(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.wrapContentHeight(),
+        modifier = modifier.wrapContentHeight()
+            .padding(
+                bottom = MaterialTheme.spacing.large
+            ),
     ) {
         Column(
             modifier = Modifier.wrapContentWidth().padding(MaterialTheme.spacing.medium),
@@ -419,7 +425,7 @@ fun ExtendedEventContent(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.bodyMedium,
-                text = "Total: ${total.formatAmount()} ${defaultCurrency.symbol}",
+                text = "Total:\n${defaultCurrency.symbol} ${total.formatAmount()}",
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -435,35 +441,40 @@ fun VerticalEventContent(
     Card(
         modifier = modifier,
     ) {
+        val maxIndex = item.size - 1
         Column {
-            item.forEach { meal ->
-                ListItem(
-                    headlineContent = {
-                        Text(
-                            text = "${meal.price.formatAmount()} ${defaultCurrency.symbol}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    },
-                    supportingContent = if (meal.description.isNotEmpty()) {
-                        {
+            item.forEachIndexed { index, meal ->
+                Column {
+                    ListItem(
+                        headlineContent = {
                             Text(
-                                text = meal.description,
+                                text = "${defaultCurrency.symbol} ${meal.price.formatAmount()}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        },
+                        supportingContent = if (meal.description.isNotEmpty()) {
+                            {
+                                Text(
+                                    text = meal.description,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    modifier = Modifier
+                                        .basicMarquee(
+                                        )
+                                )
+                            }
+                        } else null,
+                        trailingContent = {
+                            Text(
+                                text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_A),
                                 style = MaterialTheme.typography.labelMedium,
-                                modifier = Modifier
-                                    .basicMarquee(
-                                    )
+                                maxLines = 1
                             )
                         }
-                    } else null,
-                    trailingContent = {
-                        Text(
-                            text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_A),
-                            style = MaterialTheme.typography.labelMedium,
-                            maxLines = 1
-                        )
-                    }
-                )
+                    )
+                    if (maxIndex != 0 && index != maxIndex)
+                        HorizontalDivider()
+                }
             }
         }
     }
