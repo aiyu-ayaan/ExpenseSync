@@ -6,6 +6,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 /**
  * Date pattern
@@ -55,4 +56,20 @@ fun getCurrentDayAndTotalDays(): Pair<Int, Int> {
 
 private fun LocalDateTime.isLeapYear(): Boolean {
     return this.year % 4 == 0 && (this.year % 100 != 0 || this.year % 400 == 0)
+}
+
+infix fun Long.isSameMonth(other: Long): Boolean {
+    val calendar1 = Calendar.getInstance().apply { timeInMillis = this@isSameMonth }
+    val calendar2 = Calendar.getInstance().apply { timeInMillis = other }
+
+    return calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR) &&
+            calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH)
+}
+
+infix fun Long.isSameDay(other: Long): Boolean {
+    val calendar1 = Calendar.getInstance().apply { timeInMillis = this@isSameDay }
+    val calendar2 = Calendar.getInstance().apply { timeInMillis = other }
+
+    return calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR) &&
+            calendar1.get(Calendar.DAY_OF_YEAR) == calendar2.get(Calendar.DAY_OF_YEAR)
 }

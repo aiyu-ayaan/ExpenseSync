@@ -48,10 +48,13 @@ import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.now
 import com.kizitonwose.calendar.core.plusMonths
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +63,7 @@ fun ViewMealScreen(
     modifier: Modifier = Modifier,
     mealBookName: String,
     mealBookId: String = "",
-    state: List<MealBookEntry> = emptyList(),
+    state: List<MealBookEntry> = generateMealBookEntries(),
     onNavigateUp: () -> Unit = {}
 ) {
     val currentMonth = remember { YearMonth.now() }
@@ -76,7 +79,9 @@ fun ViewMealScreen(
 
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     MainContainer(
-        modifier = modifier, title = "View Meal", onNavigationClick = onNavigateUp
+        modifier = modifier,
+        title = mealBookName,
+        onNavigationClick = onNavigateUp
     ) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
@@ -96,7 +101,9 @@ fun ViewMealScreen(
                 state = calendarState,
                 dayContent = { day ->
                     Day(
-                        day, isSelected = selectedDate == day.date, noOfEvent = (0..5).random()
+                        day = day,
+                        isSelected = selectedDate == day.date,
+                        events = state,
                     ) { day1 ->
                         selectedDate = day1.date
                     }
@@ -140,16 +147,40 @@ private fun MonthHeader(calendarMonth: CalendarMonth) {
 
 @Composable
 fun Day(
-    day: CalendarDay, isSelected: Boolean,
-    noOfEvent: Int = 0,
+    day: CalendarDay,
+    isSelected: Boolean,
+    events: List<MealBookEntry> = emptyList(),
     onClick: (CalendarDay) -> Unit
 ) {
+    val month: Month = day.date.month
+    val eventsMap = events.convertToEventMap(
+        year = day.date.year,
+        month = month
+    )
+    val dayOfMonth = day.date.dayOfMonth
+
+    // Find events for the current day
+    val noOfEvent = eventsMap.entries
+        .find { (_, eventsList) ->
+            eventsList.any { entry ->
+                val entryCal = Calendar.getInstance().apply { timeInMillis = entry.createdAt }
+                entryCal.get(Calendar.DAY_OF_MONTH) == dayOfMonth
+            }
+        }
+        ?.key ?: 0
+
     Box(
-        modifier = Modifier.aspectRatio(1f).clip(CircleShape).background(
-            color = if (isSelected) MaterialTheme.colorScheme.primary
-            else Color.Transparent
-        ).clickable(
-            enabled = day.position == DayPosition.MonthDate, onClick = { onClick(day) }),
+        modifier = Modifier
+            .aspectRatio(1f)
+            .clip(CircleShape)
+            .background(
+                color = if (isSelected) MaterialTheme.colorScheme.primary
+                else Color.Transparent
+            )
+            .clickable(
+                enabled = day.position == DayPosition.MonthDate,
+                onClick = { onClick(day) }
+            ),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -172,10 +203,13 @@ fun Day(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Box(
-                        modifier = Modifier.size(6.dp).clip(CircleShape).background(
-                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.primary
-                        )
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(
+                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                                else MaterialTheme.colorScheme.primary
+                            )
                     )
                     Spacer(modifier = Modifier.width(2.dp))
                     Text(
@@ -191,20 +225,32 @@ fun Day(
     }
 }
 
-fun generateMealBookEntries(): List<MealBookEntry> {
-    val sdf = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
-    val startDate = sdf.parse("01/03/25")!!.time
-    val endDate = sdf.parse("10/03/25")!!.time
 
-    return (0..9).map { index ->
-        MealBookEntry(
-            price = (5..20).random().toDouble(),
-            description = "Meal $index",
-            mealBookId = "aiyu",
-            createdAt = startDate + (index * (endDate - startDate) / 9)
-        )
-    }
-}
+fun List<MealBookEntry>.convertToEventMap(year: Int, month: Month): Map<Int, List<MealBookEntry>> =
+    this
+        .filter {
+            val entryDate = Instant.fromEpochMilliseconds(it.createdAt)
+                .toLocalDateTime(TimeZone.currentSystemDefault()).date
+
+            entryDate.year == year && entryDate.month == month
+        }
+        .groupBy { entry ->
+            Instant.fromEpochMilliseconds(entry.createdAt)
+                .toLocalDateTime(TimeZone.currentSystemDefault()).date.dayOfMonth
+        }
+        .entries
+        .associateBy({ it.value.size }, { it.value })
+
+fun generateMealBookEntries(): List<MealBookEntry> =
+    listOf(
+        MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+        MealBookEntry(20.0, "Lunch", "2", createdAt = 1740814713000), // March 2, 2024
+        MealBookEntry(15.0, "Dinner", "3", createdAt = 1740901113000),  // March 3, 2024,
+
+        MealBookEntry(15.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
+        MealBookEntry(15.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
+        MealBookEntry(15.0, "Dinner", "3", createdAt = 1735717113000)  // Jan 1, 2024
+    )
 
 
 @Preview
