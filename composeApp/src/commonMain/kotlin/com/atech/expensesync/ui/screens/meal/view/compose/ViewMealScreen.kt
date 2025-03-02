@@ -3,6 +3,7 @@ package com.atech.expensesync.ui.screens.meal.view.compose
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,13 +62,15 @@ import com.atech.expensesync.component.DisplayCard
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.component.TitleComposable
 import com.atech.expensesync.database.room.meal.MealBookEntry
+import com.atech.expensesync.ui.screens.meal.editmealbook.EditMealBookDialog
 import com.atech.expensesync.ui.screens.meal.view.CalendarMonthInternal
-import com.atech.expensesync.ui.screens.meal.view.ViewMealState
+import com.atech.expensesync.ui.screens.meal.view.ViewMealEvents
 import com.atech.expensesync.ui.screens.meal.view.toInternal
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.DeviceType
 import com.atech.expensesync.ui_utils.formatAmount
 import com.atech.expensesync.ui_utils.getDisplayType
+import com.atech.expensesync.ui_utils.showToast
 import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.DatePattern
 import com.atech.expensesync.utils.convertToDateFormat
@@ -109,7 +112,7 @@ fun ViewMealScreen(
     defaultCurrency: Currency = Currency.INR,
     state: List<MealBookEntry>,
     calenderMonth: CalendarMonthInternal,
-    onEvent: (ViewMealState) -> Unit = {},
+    onEvent: (ViewMealEvents) -> Unit = {},
     onNavigateUp: () -> Unit = {}
 ) {
     val currentMonth = remember { YearMonth.now() }
@@ -125,9 +128,11 @@ fun ViewMealScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var isPriceDialogVisible by remember { mutableStateOf(false) }
+    var mealBookEntry: MealBookEntry? by remember { mutableStateOf(null) }
     LaunchedEffect(calendarState.firstVisibleMonth) {
         onEvent.invoke(
-            ViewMealState.SetCalendarMonth(
+            ViewMealEvents.SetCalendarMonth(
                 calendarMonth = calendarState.firstVisibleMonth.toInternal()
             )
         )
@@ -211,7 +216,55 @@ fun ViewMealScreen(
                 },
                 state = state,
                 calenderMonth = calenderMonth,
-                defaultCurrency = defaultCurrency
+                defaultCurrency = defaultCurrency,
+                onItemClick = {
+                    mealBookEntry = it
+                    isPriceDialogVisible = !isPriceDialogVisible
+                }
+            )
+        }
+        AnimatedVisibility(
+            isPriceDialogVisible && mealBookEntry != null
+        ) {
+            EditMealBookDialog(
+                isEdit = true,
+                price = mealBookEntry?.price?.formatAmount() ?: 0.0.formatAmount(),
+                currency = defaultCurrency,
+                date = mealBookEntry?.createdAt ?: System.currentTimeMillis(),
+                onDismissRequest = {
+                    isPriceDialogVisible = false
+                    mealBookEntry = null
+                }, confirmButton = { it ->
+                    onEvent.invoke(
+                        ViewMealEvents.UpdateMealBookEntry(
+                            oldMealBookEntry = mealBookEntry,
+                            mealBookEntry = it.copy(
+                                mealBookId = mealBookEntry?.mealBookId
+                                    ?: return@EditMealBookDialog,
+                            ), onComplete = { request ->
+                                if (request < 0) {
+                                    showToast(
+                                        "Failed to create Meal Book Entry"
+                                    )
+                                    return@UpdateMealBookEntry
+                                }
+                                showToast(
+                                    "Meal Book Entry created successfully"
+                                )
+                                isPriceDialogVisible = false
+                                mealBookEntry = null
+                            })
+                    )
+                },
+                onDeleteItem = {
+                    onEvent.invoke(
+                        ViewMealEvents.OnDeleteMealBookEntry(
+                            mealBookEntry = mealBookEntry ?: return@EditMealBookDialog
+                        )
+                    )
+                    isPriceDialogVisible = false
+                    mealBookEntry = null
+                }
             )
         }
     }
@@ -333,7 +386,8 @@ private fun ViewHistory(
     defaultCurrency: Currency,
     onDismissRequest: () -> Unit = {},
     state: List<MealBookEntry>,
-    calenderMonth: CalendarMonthInternal
+    calenderMonth: CalendarMonthInternal,
+    onItemClick: (MealBookEntry) -> Unit
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -386,7 +440,11 @@ private fun ViewHistory(
                     }) {
                     Column {
                         val getItem = eventsMap[item] ?: emptyList()
-                        VerticalEventContent(getItem, defaultCurrency)
+                        VerticalEventContent(
+                            getItem,
+                            defaultCurrency,
+                            onItemClick = onItemClick
+                        )
                     }
                 }
             }
@@ -437,6 +495,7 @@ fun VerticalEventContent(
     item: List<MealBookEntry>,
     defaultCurrency: Currency = Currency.INR,
     modifier: Modifier = Modifier,
+    onItemClick: (MealBookEntry) -> Unit
 ) {
     Card(
         modifier = modifier,
@@ -446,6 +505,10 @@ fun VerticalEventContent(
             item.forEachIndexed { index, meal ->
                 Column {
                     ListItem(
+                        modifier = Modifier
+                            .clickable {
+                                onItemClick(meal)
+                            },
                         headlineContent = {
                             Text(
                                 text = "${defaultCurrency.symbol} ${meal.price.formatAmount()}",

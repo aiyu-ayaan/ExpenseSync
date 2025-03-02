@@ -26,7 +26,7 @@ interface MealDao {
     suspend fun updateMealBook(mealBook: MealBook)
 
     @Update
-    suspend fun updateMealBookEntry(mealBookEntry: MealBookEntry)
+    suspend fun updateMealBookEntry(mealBookEntry: MealBookEntry): Int
 
     @Delete
     suspend fun deleteMealBook(mealBook: MealBook)
@@ -35,12 +35,14 @@ interface MealDao {
     suspend fun deleteMealBookEntry(mealBookEntry: MealBookEntry)
 
 
-    @Query("""
+    @Query(
+        """
         SELECT SUM(price) FROM MEAL_BOOK_ENTRY 
         WHERE mealBookId = :mealBookId
         AND createdAt >= :startOfMonth
         AND createdAt <= :endOfMonth
-    """)
+    """
+    )
     fun getTotalPrice(
         mealBookId: String,
         startOfMonth: Long,

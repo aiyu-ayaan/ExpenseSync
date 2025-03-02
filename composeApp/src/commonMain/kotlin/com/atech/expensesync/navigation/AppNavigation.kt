@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.atech.expensesync.ui.screens.app.AppScreen
-import com.atech.expensesync.ui.screens.meal.view.ViewMealState
+import com.atech.expensesync.ui.screens.meal.view.ViewMealEvents
 import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
 import com.atech.expensesync.ui.screens.meal.view.compose.ViewMealScreen
 import com.atech.expensesync.ui.screens.scan.compose.ScanScreen
@@ -72,7 +72,7 @@ fun NavGraphBuilder.appNavigation(
         animatedComposableEnh<ViewMealArgs> {
             val args = it.toRoute<ViewMealArgs>()
             val viewModel = koinViewModel<ViewMealViewModel>()
-            viewModel.onEvent(ViewMealState.SetMealBookId(args.mealBookId))
+            viewModel.onEvent(ViewMealEvents.SetMealBookId(args.mealBookId))
             val calenderMonth by viewModel.calenderMonth
             val mealBookEntryState by viewModel.mealBookEntryState
             ViewMealScreen(

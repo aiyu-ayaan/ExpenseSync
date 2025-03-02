@@ -9,6 +9,7 @@ import com.atech.expensesync.usecases.MealBookUseCases
 import com.kizitonwose.calendar.core.YearMonth
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class ViewMealViewModel(
     private val useCase: MealBookUseCases
@@ -27,17 +28,30 @@ class ViewMealViewModel(
     val calenderMonth: State<CalendarMonthInternal> get() = _calenderMonth
 
     internal fun onEvent(
-        onEvent: ViewMealState
+        onEvent: ViewMealEvents
     ) {
         when (onEvent) {
-            is ViewMealState.SetMealBookId -> {
+            is ViewMealEvents.SetMealBookId -> {
                 if (_mealBookId != null) return
                 _mealBookId = onEvent.mealBookId
                 loadData()
             }
 
-            is ViewMealState.SetCalendarMonth -> {
+            is ViewMealEvents.SetCalendarMonth -> {
                 _calenderMonth.value = onEvent.calendarMonth
+            }
+
+            is ViewMealEvents.UpdateMealBookEntry -> viewModelScope.launch {
+                onEvent.onComplete.invoke(
+                    useCase.updateMealBookEntry(
+                        mealBookEntry = onEvent.mealBookEntry,
+                        oldMealBookEntry = onEvent.oldMealBookEntry
+                    )
+                )
+            }
+
+            is ViewMealEvents.OnDeleteMealBookEntry -> viewModelScope.launch {
+                useCase.deleteMealBookEntry(onEvent.mealBookEntry)
             }
         }
     }

@@ -39,8 +39,19 @@ data class UpdateMealBook(private val dao: MealDao) {
 }
 
 data class UpdateMealBookEntry(private val dao: MealDao) {
-    suspend operator fun invoke(mealBookEntry: MealBookEntry) =
-        dao.updateMealBookEntry(mealBookEntry)
+    suspend operator fun invoke(
+        mealBookEntry: MealBookEntry,
+        oldMealBookEntry: MealBookEntry? = null
+    ): Long {
+        if (oldMealBookEntry == null) {
+            return dao.updateMealBookEntry(mealBookEntry).toLong()
+        }
+        if (oldMealBookEntry.createdAt != mealBookEntry.createdAt) {
+            dao.deleteMealBookEntry(oldMealBookEntry)
+            return dao.createMealBookEntry(mealBookEntry)
+        }
+        return dao.updateMealBookEntry(mealBookEntry).toLong()
+    }
 }
 
 data class DeleteMealBook(private val dao: MealDao) {

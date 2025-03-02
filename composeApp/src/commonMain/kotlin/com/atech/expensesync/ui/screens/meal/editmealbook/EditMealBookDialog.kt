@@ -3,10 +3,12 @@ package com.atech.expensesync.ui.screens.meal.editmealbook
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Book
+import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material.icons.twotone.Today
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
@@ -26,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -41,15 +44,16 @@ import com.atech.expensesync.utils.convertToDateFormat
 import kotlinx.datetime.TimeZone
 import java.util.Calendar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditMealBookDialog(
     modifier: Modifier = Modifier,
+    isEdit: Boolean = false,
     price: String,
     description: String = "",
     date: Long = System.currentTimeMillis(),
     currency: Currency = Currency.INR,
     onDismissRequest: () -> Unit,
+    onDeleteItem: () -> Unit = {},
     confirmButton: (MealBookEntry) -> Unit,
 ) {
     var editablePrice by remember {
@@ -64,6 +68,37 @@ fun EditMealBookDialog(
     var isDatePickerVisible by remember {
         mutableStateOf(false)
     }
+
+    var isDeleteDialogVisible by remember {
+        mutableStateOf(false)
+    }
+
+    AnimatedVisibility(isDeleteDialogVisible) {
+        AlertDialog(
+            title = {
+                Text("Delete Meal Book")
+            },
+            text = {
+                Text("Are you sure you want to delete this meal book?")
+            },
+            onDismissRequest = { isDeleteDialogVisible = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    isDeleteDialogVisible = false
+                    onDeleteItem()
+                }) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    isDeleteDialogVisible = false
+                }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
     AnimatedVisibility(isDatePickerVisible) {
         DatePickerModal(onDateSelected = {
             editableDate = it ?: editableDate
@@ -72,90 +107,121 @@ fun EditMealBookDialog(
             isDatePickerVisible = false
         })
     }
-    AlertDialog(modifier = modifier, icon = {
-        Icon(
-            imageVector = Icons.TwoTone.Book, contentDescription = "Add Meal"
-        )
-    }, title = {
-        Text("Add Meal Price")
-    }, text = {
-        Column(
-            modifier = Modifier,
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
-        ) {
-            TextItem(
-                containerColor = AlertDialogDefaults.containerColor,
+    AlertDialog(
+        modifier = modifier,
+        icon = {
+            Icon(
+                imageVector = Icons.TwoTone.Book, contentDescription = "Add Meal"
+            )
+        },
+        title = {
+            Text("Add Meal Price")
+        },
+        text = {
+            Column(
                 modifier = Modifier,
-                text = "Date : ${editableDate.convertToDateFormat(DatePattern.DD_MM_YYYY_HH_MM_A)}",
-                endIcon = Icons.TwoTone.Today,
-                onClick = {
-                    isDatePickerVisible = !isDatePickerVisible
-                })
-            EditTextEnhance(
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = "Per meal cost",
-                value = editablePrice,
-                clearIconClick = {
-                    editablePrice = 0.0.formatAmount()
-                },
-                supportingText = {
-                    Text("Set default if you don't want to change")
-                },
-                onValueChange = { newValue ->
-                    if (newValue.isValidDecimalInput()) {
-                        editablePrice = newValue
-                    }
-                },
-                leadingIcon = {
-                    IconButton(onClick = {}) {
-                        Text(
-                            text = currency.symbol,
-                            textAlign = TextAlign.Center,
-                            fontSize = 24.sp,
-                        )
-                    }
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Next
-                )
-            )
-            EditTextEnhance(
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = "Description",
-                value = editableDescription,
-                clearIconClick = {
-                    editableDescription = ""
-                },
-                onValueChange = { newValue ->
-                    editableDescription = newValue
-                },
-                supportingText = {
-                    Text("Add description\nLeave empty if not required")
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done
-                )
-            )
-        }
-    }, onDismissRequest = onDismissRequest, confirmButton = {
-        TextButton(
-            enabled = editablePrice != 0.0.formatAmount(), onClick = {
-                confirmButton(
-                    MealBookEntry(
-                        price = editablePrice.toDoubleOrNull() ?: 0.0,
-                        description = editableDescription,
-                        mealBookId = "",
-                        createdAt = editableDate
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+            ) {
+                TextItem(
+                    containerColor = AlertDialogDefaults.containerColor,
+                    modifier = Modifier,
+                    text = "Date : ${editableDate.convertToDateFormat(DatePattern.DD_MM_YYYY_HH_MM_A)}",
+                    endIcon = Icons.TwoTone.Today,
+                    onClick = {
+                        isDatePickerVisible = !isDatePickerVisible
+                    })
+                EditTextEnhance(
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = "Per meal cost",
+                    value = editablePrice,
+                    clearIconClick = {
+                        editablePrice = 0.0.formatAmount()
+                    },
+                    supportingText = {
+                        Text("Set default if you don't want to change")
+                    },
+                    onValueChange = { newValue ->
+                        if (newValue.isValidDecimalInput()) {
+                            editablePrice = newValue
+                        }
+                    },
+                    leadingIcon = {
+                        IconButton(onClick = {}) {
+                            Text(
+                                text = currency.symbol,
+                                textAlign = TextAlign.Center,
+                                fontSize = 24.sp,
+                            )
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Next
                     )
                 )
-            }) {
-            Text("Add")
-        }
-    }, dismissButton = {
-        TextButton(onClick = onDismissRequest) {
-            Text("Cancel")
-        }
-    })
+                EditTextEnhance(
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = "Description",
+                    value = editableDescription,
+                    clearIconClick = {
+                        editableDescription = ""
+                    },
+                    onValueChange = { newValue ->
+                        editableDescription = newValue
+                    },
+                    supportingText = {
+                        Text("Add description\nLeave empty if not required")
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done,
+                        capitalization = KeyboardCapitalization.Sentences
+                    )
+                )
+                if (isEdit)
+                    TextButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            isDeleteDialogVisible = true
+                        }
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                        ) {
+                            Icon(
+                                imageVector = Icons.TwoTone.Delete, contentDescription = null
+                            )
+                            Text(
+                                "Delete"
+
+                            )
+                        }
+                    }
+
+            }
+        },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(
+                enabled = editablePrice != 0.0.formatAmount(), onClick = {
+                    confirmButton(
+                        MealBookEntry(
+                            price = editablePrice.toDoubleOrNull() ?: 0.0,
+                            description = editableDescription,
+                            mealBookId = "",
+                            createdAt = editableDate
+                        )
+                    )
+                }) {
+                Text("Add")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Cancel")
+            }
+        },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
