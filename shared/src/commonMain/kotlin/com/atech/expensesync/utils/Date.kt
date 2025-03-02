@@ -26,6 +26,7 @@ enum class DatePattern(val pattern: String) {
     DD_MM_YYYY("dd-MMM yy"),
     MMM_YY("MMM yy"),
     HH_MM_A("hh:mm a"),
+    DD_MM_YYYY_HH_MM_A("dd-MMM yy hh:mm a"),
 }
 
 /**

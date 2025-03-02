@@ -70,6 +70,7 @@ import com.atech.expensesync.ui_utils.getDisplayType
 import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.DatePattern
 import com.atech.expensesync.utils.convertToDateFormat
+import com.atech.expensesync.utils.expenseSyncLogger
 import com.atech.expensesync.utils.firstDayOfWeek
 import com.atech.expensesync.utils.generatePriceSumOfBasicOfWeek
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -506,14 +507,11 @@ fun Day(
     val eventsMap = events.convertToEventMap(
         year = day.date.year, month = month
     )
+    expenseSyncLogger(
+        "$eventsMap"
+    )
     val dayOfMonth = day.date.dayOfMonth
-
-    val noOfEvent = eventsMap.entries.find { (_, eventsList) ->
-        eventsList.any { entry ->
-            val entryCal = Calendar.getInstance().apply { timeInMillis = entry.createdAt }
-            entryCal.get(Calendar.DAY_OF_MONTH) == dayOfMonth
-        }
-    }?.key ?: 0
+    val noOfEvent = eventsMap[dayOfMonth]?.size ?: 0
 
     Box(
         modifier = Modifier.aspectRatio(1f).clip(CircleShape).background(
@@ -561,16 +559,26 @@ fun Day(
 }
 
 
-fun List<MealBookEntry>.convertToEventMap(year: Int, month: Month): Map<Int, List<MealBookEntry>> =
-    this.filter {
-        val entryDate = Instant.fromEpochMilliseconds(it.createdAt)
-            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+fun List<MealBookEntry>.convertToEventMap(year: Int, month: Month): Map<Int, List<MealBookEntry>> {
+    // Create a Calendar instance to work with dates
+    val calendar = Calendar.getInstance()
 
-        entryDate.year == year && entryDate.month == month
-    }.groupBy { entry ->
-        Instant.fromEpochMilliseconds(entry.createdAt)
-            .toLocalDateTime(TimeZone.currentSystemDefault()).date.dayOfMonth
-    }.entries.associateBy({ it.value.size }, { it.value })
+    // Filter entries that match the specified year and month
+    val filteredEntries = this.filter { entry ->
+        calendar.timeInMillis = entry.createdAt
+        val entryYear = calendar.get(Calendar.YEAR)
+        val entryMonth = calendar.get(Calendar.MONTH)
+
+        // Month in Calendar is 0-based (January is 0), while Month enum is typically 1-based
+        entryYear == year && entryMonth == (month.ordinal)
+    }
+
+    // Group entries by day of month
+    return filteredEntries.groupBy { entry ->
+        calendar.timeInMillis = entry.createdAt
+        calendar.get(Calendar.DAY_OF_MONTH)
+    }
+}
 
 
 fun List<MealBookEntry>.convertToDateMap(
