@@ -1,7 +1,6 @@
 package com.atech.expensesync.ui.screens.meal.view.compose
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +33,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ExperimentalComposeApi
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,10 +51,14 @@ import com.atech.expensesync.component.DisplayCard
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.component.TitleComposable
 import com.atech.expensesync.database.room.meal.MealBookEntry
-import com.atech.expensesync.ui.theme.ExpenseSyncTheme
+import com.atech.expensesync.ui.screens.meal.view.CalendarMonthInternal
+import com.atech.expensesync.ui.screens.meal.view.ViewMealState
+import com.atech.expensesync.ui.screens.meal.view.toInternal
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.DeviceType
 import com.atech.expensesync.ui_utils.getDisplayType
+import com.atech.expensesync.utils.DatePattern
+import com.atech.expensesync.utils.convertToDateFormat
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
@@ -77,18 +81,19 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import java.util.Calendar
 
 
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalComposeApi::class
+    ExperimentalMaterial3Api::class
 )
 @Composable
 fun ViewMealScreen(
     modifier: Modifier = Modifier,
     mealBookName: String,
-    state: List<MealBookEntry> = generateMealBookEntries(),
+    state: List<MealBookEntry> = emptyList(),
+    calenderMonth: CalendarMonthInternal,
+    onEvent: (ViewMealState) -> Unit = {},
     onNavigateUp: () -> Unit = {}
 ) {
     val currentMonth = remember { YearMonth.now() }
@@ -103,9 +108,11 @@ fun ViewMealScreen(
     )
 
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-    val calenderMonth by remember(calendarState.firstVisibleMonth) {
-        mutableStateOf(
-            calendarState.firstVisibleMonth
+    LaunchedEffect(calendarState.firstVisibleMonth) {
+        onEvent.invoke(
+            ViewMealState.SetCalendarMonth(
+                calendarMonth = calendarState.firstVisibleMonth.toInternal()
+            )
         )
     }
     val sheetState = rememberModalBottomSheetState()
@@ -113,10 +120,7 @@ fun ViewMealScreen(
     var showHistoryBottomSheet by remember { mutableStateOf(false) }
 
     MainContainer(
-        modifier = modifier,
-        title = mealBookName,
-        onNavigationClick = onNavigateUp,
-        actions = {
+        modifier = modifier, title = mealBookName, onNavigationClick = onNavigateUp, actions = {
             IconButton(
                 enabled = calendarState.firstVisibleMonth.yearMonth.month != currentMonth.month,
                 onClick = {
@@ -127,8 +131,7 @@ fun ViewMealScreen(
                 }) {
                 Icon(imageVector = Icons.TwoTone.Today, contentDescription = null)
             }
-        }
-    ) { paddingValues ->
+        }) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
                 .padding(MaterialTheme.spacing.medium).verticalScroll(
@@ -161,8 +164,7 @@ fun ViewMealScreen(
                     MonthHeader(calendarMonth = month)
                 })
             TextButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
+                modifier = Modifier.fillMaxWidth(), onClick = {
                     scope.launch {
                         sheetState.show()
                         showHistoryBottomSheet = true
@@ -194,7 +196,7 @@ private fun ViewHistory(
     sheetState: SheetState,
     onDismissRequest: () -> Unit = {},
     state: List<MealBookEntry>,
-    calenderMonth: CalendarMonth
+    calenderMonth: CalendarMonthInternal
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -202,8 +204,7 @@ private fun ViewHistory(
         onDismissRequest = onDismissRequest,
     ) {
         Column(
-            modifier = Modifier
-                .padding(MaterialTheme.spacing.medium)
+            modifier = Modifier.padding(MaterialTheme.spacing.medium)
         ) {
             TitleComposable(
                 "${
@@ -216,8 +217,7 @@ private fun ViewHistory(
             )
             if (eventsMap.isEmpty()) {
                 DisplayCard(
-                    modifier = Modifier
-                        .padding(top = MaterialTheme.spacing.medium)
+                    modifier = Modifier.padding(top = MaterialTheme.spacing.medium)
                 ) {
                     Text(
                         "No entries found",
@@ -267,8 +267,8 @@ fun ExtendedEventContent(item: String, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
-                fontSize = 10.sp,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
                 text = item
             )
@@ -283,7 +283,7 @@ fun VerticalEventContent(item: List<MealBookEntry>, modifier: Modifier = Modifie
     ) {
         Column {
             item.forEach { meal ->
-                Text(
+                if (meal.description.isNotEmpty()) Text(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight()
                         .padding(horizontal = 12.dp).padding(top = 8.dp),
                     fontSize = 16.sp,
@@ -293,8 +293,8 @@ fun VerticalEventContent(item: List<MealBookEntry>, modifier: Modifier = Modifie
                 Text(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight()
                         .padding(horizontal = 12.dp, vertical = 8.dp),
-                    fontSize = 14.sp,
-                    text = meal.formattedDate,
+                    fontSize = if (meal.description.isNotEmpty()) 14.sp else 16.sp,
+                    text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_A),
                 )
             }
         }
@@ -311,10 +311,10 @@ private fun MonthHeader(calendarMonth: CalendarMonth) {
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = calendarMonth.yearMonth.month.name.lowercase()
-                .replaceFirstChar { it.uppercase() },
+                .replaceFirstChar { it.uppercase() } + if (calendarMonth.yearMonth.year == YearMonth.now().year) ""
+            else " ${calendarMonth.yearMonth.year}",
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleSmall
-        )
+            style = MaterialTheme.typography.titleSmall)
         Row(modifier = Modifier.fillMaxWidth()) {
             for (dayOfWeek in daysOfWeek) {
                 Text(
@@ -350,13 +350,11 @@ fun Day(
 
     Box(
         modifier = Modifier.aspectRatio(1f).clip(CircleShape).background(
-            color = if (isSelected) MaterialTheme.colorScheme.primary
-                .copy(
-                    alpha = .6f
-                )
+            color = if (isSelected) MaterialTheme.colorScheme.primary.copy(
+                alpha = .6f
+            )
             else Color.Transparent
-        ),
-        contentAlignment = Alignment.Center
+        ), contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -426,30 +424,20 @@ fun List<MealBookEntry>.convertToDateMap(
 }.groupBy({ it.first }, { it.second }) // Group by the formatted date string
 
 
-fun generateMealBookEntries(): List<MealBookEntry> = listOf(
-    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-    MealBookEntry(20.0, "Lunch", "2", createdAt = 1740814713000), // March 2, 2024
-    MealBookEntry(15.0, "Dinner", "3", createdAt = 1740901113000),  // March 3, 2024,
+//fun generateMealBookEntries(): List<MealBookEntry> = listOf(
+//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+//    MealBookEntry(20.0, "Lunch", "2", createdAt = 1740814713000), // March 2, 2024
+//    MealBookEntry(15.0, "Dinner", "3", createdAt = 1740901113000),  // March 3, 2024,
+//
+//    MealBookEntry(15.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
+//    MealBookEntry(15.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
+//    MealBookEntry(15.0, "Dinner", "3", createdAt = 1735717113000)  // Jan 1, 2024
+//)
 
-    MealBookEntry(15.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
-    MealBookEntry(15.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
-    MealBookEntry(15.0, "Dinner", "3", createdAt = 1735717113000)  // Jan 1, 2024
-)
-
-
-@Preview
-@Composable
-private fun ViewMealScreenPreview() {
-    ExpenseSyncTheme {
-        ViewMealScreen(
-            mealBookName = "Test", state = generateMealBookEntries()
-        )
-    }
-}

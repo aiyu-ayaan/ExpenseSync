@@ -1,10 +1,13 @@
 package com.atech.expensesync.navigation
 
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.atech.expensesync.ui.screens.app.AppScreen
+import com.atech.expensesync.ui.screens.meal.view.ViewMealState
+import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
 import com.atech.expensesync.ui.screens.meal.view.compose.ViewMealScreen
 import com.atech.expensesync.ui.screens.scan.compose.ScanScreen
 import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
@@ -16,8 +19,8 @@ import com.atech.expensesync.ui_utils.koinViewModel
 import kotlinx.serialization.Serializable
 
 sealed class AppNavigation(val route: String) {
-    object AppScreen : AppNavigation("app_screen")
-    object ScanScreen : AppNavigation("scan_screen")
+    data object AppScreen : AppNavigation("app_screen")
+    data object ScanScreen : AppNavigation("scan_screen")
 }
 
 @Serializable
@@ -68,8 +71,15 @@ fun NavGraphBuilder.appNavigation(
         }
         animatedComposableEnh<ViewMealArgs> {
             val args = it.toRoute<ViewMealArgs>()
+            val viewModel = koinViewModel<ViewMealViewModel>()
+            viewModel.onEvent(ViewMealState.SetMealBookId(args.mealBookId))
+            val calenderMonth by viewModel.calenderMonth
+            val mealBookEntryState by viewModel.mealBookEntryState
             ViewMealScreen(
-                mealBookName = args.mealBookName
+                mealBookName = args.mealBookName,
+                state = mealBookEntryState,
+                calenderMonth = calenderMonth,
+                onEvent = viewModel::onEvent
             )
         }
     }

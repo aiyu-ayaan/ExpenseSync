@@ -18,6 +18,7 @@ import java.util.Calendar
 enum class DatePattern(val pattern: String) {
     DD_MM_YYYY("dd-MMM yy"),
     MMM_YY("MMM yy"),
+    HH_MM_A("hh:mm a"),
 }
 
 /**
