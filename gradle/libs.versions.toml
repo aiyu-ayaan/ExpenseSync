@@ -16,6 +16,8 @@ chart = "Beta-0.0.5"
 compose-multiplatform = "1.7.0"
 core = "3.5.1"
 firebaseAdmin = "9.2.0"
+jetlime = "3.0.1"
+calendar = "2.6.2"
 junit = "4.13.2"
 kotlin = "2.1.0"
 kotlinx-coroutines = "1.10.1"
@@ -56,6 +58,8 @@ androidx-activity = { module = "androidx.activity:activity", version.ref = "andr
 chart = { module = "io.github.thechance101:chart", version.ref = "chart" }
 core = { module = "com.google.zxing:core", version.ref = "core" }
 firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebaseAdmin" }
+jetlime = { module = "io.github.pushpalroy:jetlime", version.ref = "jetlime" }
+calendar = { module = "com.kizitonwose.calendar:compose-multiplatform", version.ref = "calendar" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

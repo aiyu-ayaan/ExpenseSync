@@ -1,8 +1,14 @@
 package com.atech.expensesync.ui.theme
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
+
+val ColorScheme.captionColor: Color
+    @Composable
+    get() = onSurface.copy(alpha = 0.6f)
 
 @Composable
 fun ExpenseSyncTheme(

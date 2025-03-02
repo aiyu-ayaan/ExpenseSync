@@ -78,7 +78,8 @@ kotlin {
 
             implementation(libs.chart)
             implementation(libs.kotlinx.datetime.v062)
-            implementation("com.kizitonwose.calendar:compose-multiplatform:2.6.2")
+            implementation(libs.calendar)
+            implementation(libs.jetlime)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
