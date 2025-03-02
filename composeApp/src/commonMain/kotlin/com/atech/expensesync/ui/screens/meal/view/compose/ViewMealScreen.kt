@@ -22,7 +22,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material.icons.twotone.Today
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -140,16 +142,46 @@ fun ViewMealScreen(
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showHistoryBottomSheet by remember { mutableStateOf(false) }
+    var deleteWarningDialogVisible by remember { mutableStateOf(false) }
+
+    AnimatedVisibility(deleteWarningDialogVisible) {
+        AlertDialog(title = {
+            Text("Delete Meal Book")
+        }, text = {
+            Text("Are you sure you want to delete this meal book?")
+        }, onDismissRequest = { deleteWarningDialogVisible = false }, confirmButton = {
+            TextButton(onClick = {
+                deleteWarningDialogVisible = false
+                onEvent.invoke(
+                    ViewMealEvents.OnDeleteMealBook {
+                        onNavigateUp()
+                    })
+            }) {
+                Text("Delete")
+            }
+        }, dismissButton = {
+            TextButton(onClick = {
+                deleteWarningDialogVisible = false
+            }) {
+                Text("Cancel")
+            }
+        })
+    }
 
     MainContainer(
-        modifier = modifier
-            .nestedScroll(
+        modifier = modifier.nestedScroll(
                 scrollBehavior.nestedScrollConnection
             ),
         scrollBehavior = scrollBehavior,
         title = mealBookName,
         onNavigationClick = onNavigateUp,
         actions = {
+            IconButton(
+                onClick = {
+                    deleteWarningDialogVisible = !deleteWarningDialogVisible
+                }) {
+                Icon(imageVector = Icons.TwoTone.Delete, contentDescription = null)
+            }
             IconButton(
                 enabled = calendarState.firstVisibleMonth.yearMonth.month != currentMonth.month,
                 onClick = {
@@ -160,8 +192,7 @@ fun ViewMealScreen(
                 }) {
                 Icon(imageVector = Icons.TwoTone.Today, contentDescription = null)
             }
-        }
-    ) { paddingValues ->
+        }) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
                 .padding(MaterialTheme.spacing.medium).verticalScroll(
@@ -193,8 +224,7 @@ fun ViewMealScreen(
                     MonthHeader(calendarMonth = month)
                 })
             TextButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
+                modifier = Modifier.fillMaxWidth(), onClick = {
                     showHistoryBottomSheet = true
                 }) {
                 Text("View History")
@@ -220,8 +250,7 @@ fun ViewMealScreen(
                 onItemClick = {
                     mealBookEntry = it
                     isPriceDialogVisible = !isPriceDialogVisible
-                }
-            )
+                })
         }
         AnimatedVisibility(
             isPriceDialogVisible && mealBookEntry != null
@@ -234,13 +263,12 @@ fun ViewMealScreen(
                 onDismissRequest = {
                     isPriceDialogVisible = false
                     mealBookEntry = null
-                }, confirmButton = { it ->
+                },
+                confirmButton = { it ->
                     onEvent.invoke(
                         ViewMealEvents.UpdateMealBookEntry(
-                            oldMealBookEntry = mealBookEntry,
-                            mealBookEntry = it.copy(
-                                mealBookId = mealBookEntry?.mealBookId
-                                    ?: return@EditMealBookDialog,
+                            oldMealBookEntry = mealBookEntry, mealBookEntry = it.copy(
+                                mealBookId = mealBookEntry?.mealBookId ?: return@EditMealBookDialog,
                             ), onComplete = { request ->
                                 if (request < 0) {
                                     showToast(
@@ -264,8 +292,7 @@ fun ViewMealScreen(
                     )
                     isPriceDialogVisible = false
                     mealBookEntry = null
-                }
-            )
+                })
         }
     }
 }
@@ -308,9 +335,7 @@ fun ShowLineChart(
                 )
             )
             LineChart(
-                modifier = modifier
-                    .fillMaxSize()
-                    .aspectRatio(1f),
+                modifier = modifier.fillMaxSize().aspectRatio(1f),
                 linesParameters = lineChartData,
                 isGrid = false,
                 xAxisData = List(monthCurr.size) { index -> "Week ${index + 1}" },
@@ -322,12 +347,9 @@ fun ShowLineChart(
                     ),
                 ),
                 xAxisStyle = TextStyle(
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                        .copy(
+                    fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(
                             alpha = .6f
-                        ),
-                    fontWeight = FontWeight.W400
+                        ), fontWeight = FontWeight.W400
                 ),
                 yAxisRange = 14,
                 oneLineChart = false,
@@ -342,12 +364,9 @@ fun ShowLineChart(
                 modifier = Modifier.padding(top = MaterialTheme.spacing.medium)
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(
-                            vertical = MaterialTheme
-                                .spacing.medium
-                        ),
-                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+                    modifier = Modifier.padding(
+                            vertical = MaterialTheme.spacing.medium
+                        ), verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
                 ) {
                     AnimatedVisibility(
                         monthCurrSum != 0.0
@@ -435,15 +454,12 @@ private fun ViewHistory(
                         ExtendedEventContent(
                             item,
                             total = eventsMap[item]?.sumOf { it.price } ?: 0.0,
-                            defaultCurrency = defaultCurrency
-                        )
+                            defaultCurrency = defaultCurrency)
                     }) {
                     Column {
                         val getItem = eventsMap[item] ?: emptyList()
                         VerticalEventContent(
-                            getItem,
-                            defaultCurrency,
-                            onItemClick = onItemClick
+                            getItem, defaultCurrency, onItemClick = onItemClick
                         )
                     }
                 }
@@ -457,14 +473,10 @@ private fun ViewHistory(
 
 @Composable
 fun ExtendedEventContent(
-    item: String,
-    total: Double = 0.0,
-    defaultCurrency: Currency,
-    modifier: Modifier = Modifier
+    item: String, total: Double = 0.0, defaultCurrency: Currency, modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.wrapContentHeight()
-            .padding(
+        modifier = modifier.wrapContentHeight().padding(
                 bottom = MaterialTheme.spacing.large
             ),
     ) {
@@ -505,38 +517,31 @@ fun VerticalEventContent(
             item.forEachIndexed { index, meal ->
                 Column {
                     ListItem(
-                        modifier = Modifier
-                            .clickable {
-                                onItemClick(meal)
-                            },
-                        headlineContent = {
+                        modifier = Modifier.clickable {
+                            onItemClick(meal)
+                        }, headlineContent = {
+                        Text(
+                            text = "${defaultCurrency.symbol} ${meal.price.formatAmount()}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }, supportingContent = if (meal.description.isNotEmpty()) {
+                        {
                             Text(
-                                text = "${defaultCurrency.symbol} ${meal.price.formatAmount()}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        },
-                        supportingContent = if (meal.description.isNotEmpty()) {
-                            {
-                                Text(
-                                    text = meal.description,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    modifier = Modifier
-                                        .basicMarquee(
-                                        )
-                                )
-                            }
-                        } else null,
-                        trailingContent = {
-                            Text(
-                                text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_A),
+                                text = meal.description,
                                 style = MaterialTheme.typography.labelMedium,
-                                maxLines = 1
+                                modifier = Modifier.basicMarquee(
+                                    )
                             )
                         }
-                    )
-                    if (maxIndex != 0 && index != maxIndex)
-                        HorizontalDivider()
+                    } else null, trailingContent = {
+                        Text(
+                            text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_A),
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1
+                        )
+                    })
+                    if (maxIndex != 0 && index != maxIndex) HorizontalDivider()
                 }
             }
         }

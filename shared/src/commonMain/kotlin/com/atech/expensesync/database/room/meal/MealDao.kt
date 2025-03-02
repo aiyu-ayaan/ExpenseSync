@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -33,6 +34,18 @@ interface MealDao {
 
     @Delete
     suspend fun deleteMealBookEntry(mealBookEntry: MealBookEntry)
+
+    @Query("Delete from meal_book_entry where mealBookId = :mealBookId")
+    suspend fun deleteMealBookEntries(mealBookId: String)
+
+    @Query("Delete from meal_book where mealBookId = :mealBookId")
+    suspend fun deleteMealBookById(mealBookId: String)
+
+    @Transaction
+    suspend fun deleteMealBookAndEntries(mealBookId: String) {
+        deleteMealBookById(mealBookId)
+        deleteMealBookEntries(mealBookId)
+    }
 
 
     @Query(

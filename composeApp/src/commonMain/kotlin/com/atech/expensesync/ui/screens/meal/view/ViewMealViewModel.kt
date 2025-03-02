@@ -21,8 +21,7 @@ class ViewMealViewModel(
 
     private val _calenderMonth = mutableStateOf(
         CalendarMonthInternal(
-            yearMonth = YearMonth.now(),
-            weekDays = emptyList()
+            yearMonth = YearMonth.now(), weekDays = emptyList()
         )
     )
     val calenderMonth: State<CalendarMonthInternal> get() = _calenderMonth
@@ -53,12 +52,16 @@ class ViewMealViewModel(
             is ViewMealEvents.OnDeleteMealBookEntry -> viewModelScope.launch {
                 useCase.deleteMealBookEntry(onEvent.mealBookEntry)
             }
+
+            is ViewMealEvents.OnDeleteMealBook -> viewModelScope.launch {
+                useCase.deleteMealBook(_mealBookId ?: return@launch)
+                onEvent.onComplete.invoke()
+            }
         }
     }
 
     private fun loadData() {
-        useCase.getMealBookEntries(_mealBookId ?: return)
-            .onEach {
+        useCase.getMealBookEntries(_mealBookId ?: return).onEach {
                 _mealBookEntryState.value = it
             }.launchIn(viewModelScope)
     }

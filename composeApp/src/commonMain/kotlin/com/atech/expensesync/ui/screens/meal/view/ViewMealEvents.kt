@@ -13,4 +13,7 @@ sealed interface ViewMealEvents {
         ViewMealEvents
 
     data class OnDeleteMealBookEntry(val mealBookEntry: MealBookEntry) : ViewMealEvents
+    data class OnDeleteMealBook(
+        val onComplete: () -> Unit
+    ) : ViewMealEvents
 }

@@ -56,6 +56,8 @@ data class UpdateMealBookEntry(private val dao: MealDao) {
 
 data class DeleteMealBook(private val dao: MealDao) {
     suspend operator fun invoke(mealBook: MealBook) = dao.deleteMealBook(mealBook)
+
+    suspend operator fun invoke(mealBookId: String) = dao.deleteMealBookAndEntries(mealBookId)
 }
 
 data class DeleteMealBookEntry(private val dao: MealDao) {
