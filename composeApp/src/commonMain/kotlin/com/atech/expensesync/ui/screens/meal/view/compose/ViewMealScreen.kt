@@ -43,10 +43,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aay.compose.baseComponents.model.GridOrientation
+import com.aay.compose.lineChart.LineChart
+import com.aay.compose.lineChart.model.LineParameters
+import com.aay.compose.lineChart.model.LineType
 import com.atech.expensesync.component.DisplayCard
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.component.TitleComposable
@@ -59,6 +64,7 @@ import com.atech.expensesync.ui_utils.DeviceType
 import com.atech.expensesync.ui_utils.getDisplayType
 import com.atech.expensesync.utils.DatePattern
 import com.atech.expensesync.utils.convertToDateFormat
+import com.atech.expensesync.utils.generatePriceSumOfBasicOfWeek
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
@@ -80,6 +86,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import java.util.Calendar
 
@@ -91,7 +98,7 @@ import java.util.Calendar
 fun ViewMealScreen(
     modifier: Modifier = Modifier,
     mealBookName: String,
-    state: List<MealBookEntry> = emptyList(),
+    state: List<MealBookEntry>,
     calenderMonth: CalendarMonthInternal,
     onEvent: (ViewMealState) -> Unit = {},
     onNavigateUp: () -> Unit = {}
@@ -172,6 +179,10 @@ fun ViewMealScreen(
                 }) {
                 Text("View History")
             }
+            ShowLineChart(
+                state = state,
+                month = calenderMonth.yearMonth.month
+            )
         }
         AnimatedVisibility(
             showHistoryBottomSheet
@@ -184,6 +195,68 @@ fun ViewMealScreen(
                     }
                 }, state = state, calenderMonth = calenderMonth
             )
+        }
+    }
+}
+
+@Composable
+fun ShowLineChart(
+    modifier: Modifier = Modifier,
+    state: List<MealBookEntry>,
+    month: Month
+) {
+    val (monthPrev, monthCurr) = state.generatePriceSumOfBasicOfWeek(month)
+    AnimatedVisibility(
+        (monthCurr.all { it == 0.0 } && monthPrev.all { it == 0.0 }).not()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+        ) {
+            TitleComposable("Summary")
+            listOf(
+                LineParameters(
+                    label = month.name.lowercase().replaceFirstChar { it.uppercase() },
+                    lineColor = MaterialTheme.colorScheme.primary,
+                    lineType = LineType.CURVED_LINE,
+                    lineShadow = true,
+                    data = monthCurr
+                ),
+                LineParameters(
+                    label = if (month == Month.JANUARY) Month.DECEMBER.name.lowercase()
+                        .replaceFirstChar { it.uppercase() }
+                    else Month.of(month.number - 1).name.lowercase()
+                        .replaceFirstChar { it.uppercase() },
+                    data = monthPrev,
+                    lineColor = MaterialTheme.colorScheme.inversePrimary,
+                    lineType = LineType.CURVED_LINE,
+                    lineShadow = true
+                )
+            ).also {
+                LineChart(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .aspectRatio(1f),
+                    linesParameters = it,
+                    isGrid = true,
+                    gridColor = Color.Transparent,
+                    xAxisData = List(monthCurr.size) { index -> "Week ${index + 1}" },
+                    animateChart = true,
+                    showGridWithSpacer = true,
+                    yAxisStyle = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    ),
+                    xAxisStyle = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.W400
+                    ),
+                    yAxisRange = 14,
+                    oneLineChart = false,
+                    gridOrientation = GridOrientation.VERTICAL
+                )
+            }
         }
     }
 }
@@ -228,11 +301,11 @@ private fun ViewHistory(
             }
             JetLimeColumn(
                 modifier = Modifier.padding(16.dp),
-                itemsList = ItemsList(eventsMap.keys.toList().reversed()),
+                itemsList = ItemsList(eventsMap.keys.toList()),
                 style = JetLimeDefaults.columnStyle(
-                    contentDistance = 32.dp,
-                    itemSpacing = 16.dp,
-                    lineThickness = 2.dp,
+                    contentDistance = MaterialTheme.spacing.extraLarge,
+                    itemSpacing = MaterialTheme.spacing.large,
+                    lineThickness = MaterialTheme.spacing.extraSmall,
                     lineBrush = JetLimeDefaults.lineSolidBrush(color = MaterialTheme.colorScheme.primary),
                     lineVerticalAlignment = VerticalAlignment.RIGHT,
                 ),
@@ -424,20 +497,24 @@ fun List<MealBookEntry>.convertToDateMap(
 }.groupBy({ it.first }, { it.second }) // Group by the formatted date string
 
 
-//fun generateMealBookEntries(): List<MealBookEntry> = listOf(
-//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-//    MealBookEntry(10.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
-//    MealBookEntry(20.0, "Lunch", "2", createdAt = 1740814713000), // March 2, 2024
-//    MealBookEntry(15.0, "Dinner", "3", createdAt = 1740901113000),  // March 3, 2024,
-//
-//    MealBookEntry(15.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
-//    MealBookEntry(15.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
-//    MealBookEntry(15.0, "Dinner", "3", createdAt = 1735717113000)  // Jan 1, 2024
-//)
+fun generateMealBookEntries(): List<MealBookEntry> = listOf(
+    MealBookEntry(1.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+    MealBookEntry(1.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+    MealBookEntry(1.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+    MealBookEntry(1.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+    MealBookEntry(1.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+    MealBookEntry(1.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+    MealBookEntry(1.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+    MealBookEntry(1.0, "Breakfast", "1", createdAt = 1740814713000), // March 2, 2024
+    MealBookEntry(2.0, "Lunch", "2", createdAt = 1740814713000), // March 2, 2024
+    MealBookEntry(1.0, "Dinner", "3", createdAt = 1740901113000),  // March 3, 2024,
+
+    MealBookEntry(1.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
+    MealBookEntry(1.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
+    MealBookEntry(1.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
+    MealBookEntry(1.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
+    MealBookEntry(1.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
+    MealBookEntry(1.0, "Dinner", "3", createdAt = 1738481913000), // Feb 2, 2024
+    MealBookEntry(1.0, "Dinner", "3", createdAt = 1738481913000)  // Jan 1, 2024
+)
 

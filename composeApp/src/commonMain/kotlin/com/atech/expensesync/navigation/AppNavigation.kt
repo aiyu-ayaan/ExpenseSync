@@ -79,7 +79,10 @@ fun NavGraphBuilder.appNavigation(
                 mealBookName = args.mealBookName,
                 state = mealBookEntryState,
                 calenderMonth = calenderMonth,
-                onEvent = viewModel::onEvent
+                onEvent = viewModel::onEvent,
+                onNavigateUp = {
+                    navHostController.navigateUp()
+                }
             )
         }
     }

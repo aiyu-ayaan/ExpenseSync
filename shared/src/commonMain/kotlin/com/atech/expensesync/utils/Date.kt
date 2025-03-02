@@ -1,8 +1,13 @@
 package com.atech.expensesync.utils
 
+import com.atech.expensesync.database.room.meal.MealBookEntry
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
@@ -73,4 +78,59 @@ infix fun Long.isSameDay(other: Long): Boolean {
 
     return calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR) &&
             calendar1.get(Calendar.DAY_OF_YEAR) == calendar2.get(Calendar.DAY_OF_YEAR)
+}
+
+fun List<MealBookEntry>.generatePriceSumOfBasicOfWeek(
+    present: Month
+): Pair<List<Double>, List<Double>> {
+    // Get current date info for proper year calculation
+    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val currentYear = now.year
+
+    // Define previous month
+    val previousMonth = if (present.number == 1) Month.DECEMBER else Month.of(present.number - 1)
+    val previousMonthYear = if (present.number == 1) currentYear - 1 else currentYear
+
+    // Convert entries to LocalDate for easier date manipulation
+    val entriesWithDate = this.map { entry ->
+        val instant = Instant.fromEpochMilliseconds(entry.createdAt)
+        val date = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        Pair(entry, date)
+    }
+
+    // Filter entries for current and previous month
+    val currentMonthEntries = entriesWithDate.filter { (_, date) ->
+        date.month == present && date.year == currentYear
+    }
+    val previousMonthEntries = entriesWithDate.filter { (_, date) ->
+        date.month == previousMonth && date.year == previousMonthYear
+    }
+
+    // Calculate price sums by week for current month (support up to 5 weeks)
+    val currentMonthSums = MutableList(5) { 0.0 }
+    currentMonthEntries.forEach { (entry, date) ->
+        val weekOfMonth = getWeekOfMonth(date) - 1 // Convert to 0-based index
+        if (weekOfMonth in 0..4) {
+            currentMonthSums[weekOfMonth] += entry.price
+        }
+    }
+
+    // Calculate price sums by week for previous month (support up to 5 weeks)
+    val previousMonthSums = MutableList(5) { 0.0 }
+    previousMonthEntries.forEach { (entry, date) ->
+        val weekOfMonth = getWeekOfMonth(date) - 1 // Convert to 0-based index
+        if (weekOfMonth in 0..4) {
+            previousMonthSums[weekOfMonth] += entry.price
+        }
+    }
+
+    return Pair(previousMonthSums, currentMonthSums)
+}
+
+// Helper function to calculate week of month (1-based)
+private fun getWeekOfMonth(date: LocalDate): Int {
+    val firstDayOfMonth = LocalDate(date.year, date.month, 1)
+    val daysSinceStartOfMonth = date.dayOfMonth - 1
+    val adjustedDayOfWeek = (firstDayOfMonth.dayOfWeek.ordinal + daysSinceStartOfMonth) % 7
+    return (daysSinceStartOfMonth + adjustedDayOfWeek) / 7 + 1
 }
