@@ -30,12 +30,12 @@ import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.formatAmount
 import com.atech.expensesync.ui_utils.isValidDecimalInput
-import com.atech.expensesync.utils.expenseSyncLogger
 
 @Composable
 fun EditMealDialog(
     modifier: Modifier = Modifier,
     mealBook: AddMealBookState,
+    canShowDeleteOption: Boolean = true,
     onDismissRequest: () -> Unit,
     onDeleteItem: () -> Unit = {},
     confirmButton: (AddMealBookState) -> Unit,
@@ -125,24 +125,25 @@ fun EditMealDialog(
                         capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Sentences
                     )
                 )
-                TextButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        isDeleteDialogVisible = true
-                    }
-                ) {
-                    Row(
+                if (canShowDeleteOption)
+                    TextButton(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                        onClick = {
+                            isDeleteDialogVisible = true
+                        }
                     ) {
-                        Icon(
-                            imageVector = Icons.TwoTone.Delete, contentDescription = null
-                        )
-                        Text(
-                            "Delete"
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+                        ) {
+                            Icon(
+                                imageVector = Icons.TwoTone.Delete, contentDescription = null
+                            )
+                            Text(
+                                "Delete"
+                            )
+                        }
                     }
-                }
             }
         },
         confirmButton = {

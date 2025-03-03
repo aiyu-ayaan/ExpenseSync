@@ -72,7 +72,11 @@ fun MealScreen(
                 MealListScreen(onItemClick = {
                     navHostController.navigate(
                         ViewMealArgs(
-                            mealBookId = it.mealBookId, mealBookName = it.name
+                            mealBookId = it.mealBookId,
+                            name = it.name,
+                            defaultPrice = it.defaultPrice.toString(),
+                            defaultCurrency = it.defaultCurrency.name,
+                            description = it.description
                         )
                     )
                 }, onAddMealBookClick = {

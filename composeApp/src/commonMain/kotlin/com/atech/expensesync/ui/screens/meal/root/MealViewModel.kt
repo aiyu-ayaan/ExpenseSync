@@ -18,7 +18,7 @@ class MealViewModel(
 
     val mealBooks = useCases.getMealBooks.invoke()
 
-    private val mapper = AddMealBookStateTOMealBookMapper()
+    val mapper by lazy { AddMealBookStateTOMealBookMapper() }
 
     fun calculateTotalForCurrentMonth(
         mealBookId: String

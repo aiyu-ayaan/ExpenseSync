@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.atech.expensesync.ui.screens.app.AppScreen
+import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.screens.meal.view.ViewMealEvents
 import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
 import com.atech.expensesync.ui.screens.meal.view.compose.ViewMealScreen
@@ -16,7 +17,9 @@ import com.atech.expensesync.ui.screens.split.add.compose.ViewExpanseBookScreen
 import com.atech.expensesync.ui_utils.animatedComposable
 import com.atech.expensesync.ui_utils.animatedComposableEnh
 import com.atech.expensesync.ui_utils.koinViewModel
+import com.atech.expensesync.utils.Currency
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 sealed class AppNavigation(val route: String) {
     data object AppScreen : AppNavigation("app_screen")
@@ -31,8 +34,19 @@ data class ViewExpanseBookArgs(
 
 @Serializable
 data class ViewMealArgs(
+    val name: String,
+    val defaultPrice: String,
+    val description: String,
+    val defaultCurrency: String,
     val mealBookId: String,
-    val mealBookName: String,
+)
+
+fun ViewMealArgs.toAddMealBookState() = AddMealBookState(
+    name = name,
+    defaultPrice = defaultPrice.toDoubleOrNull() ?: 0.0,
+    description = description,
+    defaultCurrency = Currency.valueOf(defaultCurrency),
+    mealBookId = mealBookId
 )
 
 fun NavGraphBuilder.appNavigation(
@@ -70,13 +84,13 @@ fun NavGraphBuilder.appNavigation(
             )
         }
         animatedComposableEnh<ViewMealArgs> {
-            val args = it.toRoute<ViewMealArgs>()
+            val args = it.toRoute<ViewMealArgs>().toAddMealBookState()
             val viewModel = koinViewModel<ViewMealViewModel>()
-            viewModel.onEvent(ViewMealEvents.SetMealBookId(args.mealBookId))
+            viewModel.onEvent(ViewMealEvents.SetMealBookId(args.mealBookId, args))
             val calenderMonth by viewModel.calenderMonth
             val mealBookEntryState by viewModel.mealBookEntryState
             ViewMealScreen(
-                mealBookName = args.mealBookName,
+                mealBookState = viewModel.mealBookState.value ?: args,
                 state = mealBookEntryState,
                 calenderMonth = calenderMonth,
                 onEvent = viewModel::onEvent,
