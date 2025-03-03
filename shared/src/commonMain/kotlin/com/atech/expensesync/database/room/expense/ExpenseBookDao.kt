@@ -13,34 +13,34 @@ import kotlinx.coroutines.flow.Flow
 interface ExpenseBookDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertExpense(expense: BudgetBook): Long
+    suspend fun insertExpense(expense: ExpenseBook): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertExpenses(expenses: BudgetBookEntry): Long
+    suspend fun insertExpenses(expenses: ExpenseBookEntry): Long
 
 
     @Update
-    suspend fun updateExpense(expense: BudgetBook): Int
+    suspend fun updateExpense(expense: ExpenseBook): Int
 
     @Update
-    suspend fun updateExpenses(expenses: BudgetBookEntry): Int
+    suspend fun updateExpenses(expenses: ExpenseBookEntry): Int
 
 
     @Delete
-    suspend fun deleteExpense(expense: BudgetBook): Int
+    suspend fun deleteExpense(expense: ExpenseBook): Int
 
     @Delete
-    suspend fun deleteExpenses(expenses: BudgetBookEntry): Int
+    suspend fun deleteExpenses(expenses: ExpenseBookEntry): Int
 
 
     @Query("SELECT * FROM expense_book order by createdAt desc")
-    fun getAllExpenses(): Flow<List<BudgetBook>>
+    fun getAllExpenses(): Flow<List<ExpenseBook>>
 
     @Query("SELECT * FROM expense_book where bookId = :bookId")
-    fun getExpenseById(bookId: String): Flow<BudgetBook>
+    fun getExpenseById(bookId: String): Flow<ExpenseBook>
 
     @Query("SELECT * FROM expense_book_entry where bookId = :bookId")
-    fun getExpenseBookEntry(bookId: String): Flow<List<BudgetBookEntry>>
+    fun getExpenseBookEntry(bookId: String): Flow<List<ExpenseBookEntry>>
 
     @Query("UPDATE expense_book SET totalAmount = totalAmount + :amount where bookId = :bookId")
     suspend fun updateTotalAmount(bookId: String, amount: Double)
@@ -54,7 +54,7 @@ interface ExpenseBookDao {
 
     @Transaction
     suspend fun addTransaction(
-        expenseBookEntry: BudgetBookEntry
+        expenseBookEntry: ExpenseBookEntry
     ) {
         insertExpenses(expenseBookEntry)
         if (expenseBookEntry.transactionType == TransactionType.IN)

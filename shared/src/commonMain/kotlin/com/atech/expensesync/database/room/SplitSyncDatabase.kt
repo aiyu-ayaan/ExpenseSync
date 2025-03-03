@@ -2,7 +2,9 @@ package com.atech.expensesync.database.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.atech.expensesync.database.room.expense.ExpenseBook
 import com.atech.expensesync.database.room.expense.ExpenseBookDao
+import com.atech.expensesync.database.room.expense.ExpenseBookEntry
 import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.database.room.meal.MealBookEntry
 import com.atech.expensesync.database.room.meal.MealDao
@@ -24,6 +26,8 @@ import com.atech.expensesync.database.room.split.TransactionSplitDao
         SplitGroup::class,
         MealBook::class,
         MealBookEntry::class,
+        ExpenseBook::class,
+        ExpenseBookEntry::class
     ],
     version = 1
 )

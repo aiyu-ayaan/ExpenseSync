@@ -53,7 +53,7 @@ enum class TransactionType {
     ]
 )
 @Keep
-data class BudgetBook(
+data class ExpenseBook(
     val bookName: String,
     val description: String = "",
     val totalAmount: Double = 0.0,
@@ -73,7 +73,7 @@ data class BudgetBook(
     ],
     foreignKeys = [
         androidx.room.ForeignKey(
-            entity = BudgetBook::class,
+            entity = ExpenseBook::class,
             parentColumns = ["bookId"],
             childColumns = ["bookId"],
             onDelete = androidx.room.ForeignKey.CASCADE
@@ -81,7 +81,7 @@ data class BudgetBook(
     ]
 )
 @Keep
-data class BudgetBookEntry(
+data class ExpenseBookEntry(
     val amount: Double,
     val bookId: String,
     val transactionType: TransactionType,
