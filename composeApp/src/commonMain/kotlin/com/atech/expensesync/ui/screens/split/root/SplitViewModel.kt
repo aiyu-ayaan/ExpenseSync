@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
-import com.atech.expensesync.database.room.split.ExpanseGroup
-import com.atech.expensesync.database.room.split.ExpenseGroupMembers
+import com.atech.expensesync.database.room.split.SplitGroup
+import com.atech.expensesync.database.room.split.SplitGroupMembers
 import com.atech.expensesync.usecases.SplitUseCases
 import com.atech.expensesync.utils.fromJson
 import kotlinx.coroutines.launch
@@ -32,14 +32,14 @@ class SplitViewModel(
                 val userModel = pref.getString(PrefKeys.USER_MODEL).fromJson<User>()
                 val groupId = UUID.randomUUID().toString()
                 useCases.createNewGroup(
-                    ExpanseGroup(
+                    SplitGroup(
                         groupId = groupId,
                         groupName = _createGroupState.value.groupName,
                         type = _createGroupState.value.groupType.label,
                         createdByUid = userModel.uid,
                     ),
                     listOf(
-                        ExpenseGroupMembers(
+                        SplitGroupMembers(
                             uid = userModel.uid,
                             name = userModel.name,
                             email = userModel.email,

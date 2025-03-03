@@ -23,21 +23,21 @@ enum class SplitType {
 
 
 @Entity(
-    tableName = "expanse_group_members",
+    tableName = "split_group_members",
     indices = [
         Index(value = ["email"]),
         Index(value = ["groupId"]),
         Index(value = ["key"]),
     ],
     foreignKeys = [ForeignKey(
-        entity = ExpanseGroup::class,
+        entity = SplitGroup::class,
         parentColumns = ["groupId"],
         childColumns = ["groupId"],
         onDelete = CASCADE
     )]
 )
 @Keep
-data class ExpenseGroupMembers(
+data class SplitGroupMembers(
     val uid: String,
     val name: String,
     val email: String,
@@ -54,25 +54,25 @@ data class ExpenseGroupMembers(
 
 @Keep
 @Entity(
-    tableName = "expanse_transactions",
+    tableName = "split_transactions",
     indices = [
         Index(value = ["transactionId"], unique = true),
         Index(value = ["groupId"]),
         Index(value = ["paidByKey"]),
     ],
     foreignKeys = [ForeignKey(
-        entity = ExpanseGroup::class,
+        entity = SplitGroup::class,
         parentColumns = ["groupId"],
         childColumns = ["groupId"],
         onDelete = CASCADE
     ), ForeignKey(
-        entity = ExpenseGroupMembers::class,
+        entity = SplitGroupMembers::class,
         parentColumns = ["key"],
         childColumns = ["paidByKey"],
         onDelete = CASCADE
     )]
 )
-data class ExpenseTransactions(
+data class SplitTransactions(
     @PrimaryKey val transactionId: String = UUID.randomUUID().toString(),
     val groupId: String,
     val amount: Double,
@@ -93,18 +93,18 @@ data class ExpenseTransactions(
 
 @Keep
 @Entity(
-    tableName = "expanse_transaction_split",
+    tableName = "split_transaction_split",
     indices = [
         Index(value = ["transactionId"]),
         Index(value = ["memberKey"]),
     ],
     foreignKeys = [ForeignKey(
-        entity = ExpenseTransactions::class,
+        entity = SplitTransactions::class,
         parentColumns = ["transactionId"],
         childColumns = ["transactionId"],
         onDelete = CASCADE
     ), ForeignKey(
-        entity = ExpenseGroupMembers::class,
+        entity = SplitGroupMembers::class,
         parentColumns = ["key"],
         childColumns = ["memberKey"],
         onDelete = CASCADE
@@ -130,10 +130,10 @@ data class TransactionSplit(
 
 @Keep
 @Entity(
-    tableName = "expanse_group",
+    tableName = "split_group",
     indices = [Index(value = ["groupName"], unique = true)],
 )
-data class ExpanseGroup(
+data class SplitGroup(
     @PrimaryKey val groupId: String,
     val groupName: String,
     val type: String,

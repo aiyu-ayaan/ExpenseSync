@@ -22,7 +22,7 @@ import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.LoadImageFromUrl
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.pref.PrefKeys
-import com.atech.expensesync.database.room.split.ExpenseGroupMembers
+import com.atech.expensesync.database.room.split.SplitGroupMembers
 import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
@@ -32,7 +32,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun GroupMembersScreen(
     modifier: Modifier = Modifier,
-    state: List<ExpenseGroupMembers> = emptyList(),
+    state: List<SplitGroupMembers> = emptyList(),
     onEvent: (AddExpenseEvents) -> Unit = {},
     onNavigationClick: () -> Unit = {},
 ) {
@@ -77,7 +77,7 @@ fun GroupMembersScreen(
 @Composable
 fun UserItem(
     modifier: Modifier = Modifier,
-    groupMembers: ExpenseGroupMembers,
+    groupMembers: SplitGroupMembers,
     isOwner: Boolean = false
 ) {
     Column {

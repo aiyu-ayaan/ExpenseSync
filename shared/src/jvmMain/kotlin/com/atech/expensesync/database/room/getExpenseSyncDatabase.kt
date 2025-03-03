@@ -4,7 +4,7 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import java.io.File
 
-fun getExpenseSyncDatabase(): ExpenseSyncDatabase {
+fun getExpenseSyncDatabase(): SplitSyncDatabase {
     val appDataDir = when {
         System.getProperty("os.name").contains("Windows", ignoreCase = true) ->
             System.getenv("APPDATA")
@@ -20,10 +20,9 @@ fun getExpenseSyncDatabase(): ExpenseSyncDatabase {
         appFolder.mkdirs()
     }
     val dbFile = File(appFolder, "expense_sync.db")
-    return Room.databaseBuilder<ExpenseSyncDatabase>(
+    return Room.databaseBuilder<SplitSyncDatabase>(
         name = dbFile.absolutePath,
     ).setDriver(BundledSQLiteDriver())
         .fallbackToDestructiveMigration(false)
-        .addMigrations(ExpenseSyncDatabase.MIGRATION_2_3)
         .build()
 }

@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.GroupItems
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.room.split.ExpanseGroup
+import com.atech.expensesync.database.room.split.SplitGroup
 import com.atech.expensesync.navigation.AppNavigation
 import com.atech.expensesync.navigation.ViewExpanseBookArgs
 import com.atech.expensesync.ui.screens.split.root.SplitViewModel
@@ -116,7 +116,7 @@ fun SplitScreen(
 @Composable
 private fun MainContent(
     modifier: Modifier,
-    groupsFlow: Flow<List<ExpanseGroup>>,
+    groupsFlow: Flow<List<SplitGroup>>,
     addNewGroupClick: () -> Unit,
     linkedDeviceScreenClick: () -> Unit,
     navHostController: NavHostController

@@ -4,7 +4,7 @@ import com.atech.expensesync.database.ktor.http.ExpenseSyncClient
 import com.atech.expensesync.database.ktor.http.ExpenseSyncClientImp
 import com.atech.expensesync.database.ktor.httpClientEngineFactory
 import com.atech.expensesync.database.ktor.websocket.UserDataWebSocket
-import com.atech.expensesync.database.room.ExpenseSyncDatabase
+import com.atech.expensesync.database.room.SplitSyncDatabase
 import com.atech.expensesync.usecases.CreateMealBook
 import com.atech.expensesync.usecases.CreateMealBookEntry
 import com.atech.expensesync.usecases.CreateNewGroupUseCase
@@ -14,8 +14,8 @@ import com.atech.expensesync.usecases.DeleteGroupUseCase
 import com.atech.expensesync.usecases.DeleteMealBook
 import com.atech.expensesync.usecases.DeleteMealBookEntry
 import com.atech.expensesync.usecases.DeleteTransactionUseCase
-import com.atech.expensesync.usecases.ExpanseGroupMemberUseCases
-import com.atech.expensesync.usecases.ExpenseTransactionUseCases
+import com.atech.expensesync.usecases.SplitGroupMemberUseCases
+import com.atech.expensesync.usecases.SplitTransactionUseCases
 import com.atech.expensesync.usecases.GetGroupMembers
 import com.atech.expensesync.usecases.GetGroupsUseCase
 import com.atech.expensesync.usecases.GetMealBookEntries
@@ -39,11 +39,12 @@ import org.koin.dsl.module
 
 val commonModule = module {
     // Dao
-    single { get<ExpenseSyncDatabase>().expanseGroupDao }
-    single { get<ExpenseSyncDatabase>().transactionSplitDao }
-    single { get<ExpenseSyncDatabase>().expanseGroupMemberDao }
-    single { get<ExpenseSyncDatabase>().expanseTransactionDao }
-    single { get<ExpenseSyncDatabase>().mealDao }
+    single { get<SplitSyncDatabase>().splitGroupDao }
+    single { get<SplitSyncDatabase>().transactionSplitDao }
+    single { get<SplitSyncDatabase>().splitGroupMemberDao }
+    single { get<SplitSyncDatabase>().splitTransactionDao }
+    single { get<SplitSyncDatabase>().mealDao }
+    single { get<SplitSyncDatabase>().expenseBookDao }
     single { CreateNewGroupUseCase(get()) }
     single { UpdateGroupUseCase(get()) }
     single { GetGroupsUseCase(get()) }
@@ -65,14 +66,14 @@ val commonModule = module {
     single { InsertMember(get()) }
     single { GetGroupMembers(get()) }
     single { RemoveMember(get()) }
-    single { ExpanseGroupMemberUseCases(get(), get(), get()) }
+    single { SplitGroupMemberUseCases(get(), get(), get()) }
 
     single { CreateNewTransactionUseCase(get()) }
     single { GetTransactionsUseCase(get()) }
     single { UpdateTransactionUseCase(get()) }
     single { DeleteTransactionUseCase(get()) }
     single { MapTransactionWithSplitAndThenUser(get()) }
-    single { ExpenseTransactionUseCases(get(), get(), get(), get(), get()) }
+    single { SplitTransactionUseCases(get(), get(), get(), get(), get()) }
     single { CreateMealBook(get()) }
     single { CreateMealBookEntry(get()) }
     single { GetMealBooks(get()) }

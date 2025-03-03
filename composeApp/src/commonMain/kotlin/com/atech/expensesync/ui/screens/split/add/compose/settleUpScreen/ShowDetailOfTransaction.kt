@@ -41,8 +41,8 @@ import com.aay.compose.baseComponents.model.LegendPosition
 import com.aay.compose.donutChart.DonutChart
 import com.aay.compose.donutChart.model.PieChartData
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.room.split.ExpenseGroupMembers
-import com.atech.expensesync.database.room.split.ExpenseTransactions
+import com.atech.expensesync.database.room.split.SplitGroupMembers
+import com.atech.expensesync.database.room.split.SplitTransactions
 import com.atech.expensesync.database.room.split.TransactionSplit
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
@@ -53,8 +53,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ShowDetailOfTransaction(
     modifier: Modifier = Modifier,
-    transaction: ExpenseTransactions,
-    groupMembers: List<ExpenseGroupMembers>,
+    transaction: SplitTransactions,
+    groupMembers: List<SplitGroupMembers>,
     split: List<TransactionSplit>,
     onAddPhotoClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
@@ -139,7 +139,7 @@ private fun TransactionDetailItem(
 @Composable
 private fun CreateDonutChar(
     modifier: Modifier = Modifier,
-    groupMembers: List<ExpenseGroupMembers>,
+    groupMembers: List<SplitGroupMembers>,
     split: List<TransactionSplit>
 ) {
     val colorList = generateHarmonizedColors(split.size)
@@ -170,8 +170,8 @@ private fun CreateDonutChar(
 
 @Composable
 private fun ShowTreeStructure(
-    transaction: ExpenseTransactions,
-    groupMembers: List<ExpenseGroupMembers>,
+    transaction: SplitTransactions,
+    groupMembers: List<SplitGroupMembers>,
     splits: List<TransactionSplit>
 ) {
     val paidBy = groupMembers.first { it.key == transaction.paidByKey }
@@ -230,28 +230,28 @@ private fun TreeNode(
 private fun SettleUpScreenPreview() {
     ExpenseSyncTheme {
         ShowDetailOfTransaction(
-            transaction = ExpenseTransactions(
+            transaction = SplitTransactions(
                 transactionId = "transactionID123",
                 groupId = "sdf",
                 amount = 300.0,
                 description = "Test",
                 paidByKey = "xvz$23",
             ), groupMembers = listOf(
-                ExpenseGroupMembers(
+                SplitGroupMembers(
                     uid = "xyz",
                     name = "Ayaan",
                     key = "xvz$23",
                     email = "ayaan@expanseSyncTest",
                     pic = "https://www.google.com",
                     groupId = "sdf"
-                ), ExpenseGroupMembers(
+                ), SplitGroupMembers(
                     uid = "abc",
                     name = "Anshu",
                     key = "abc$56",
                     email = "anshu@expanseSyncTest",
                     pic = "https://www.google.com",
                     groupId = "sdf"
-                ), ExpenseGroupMembers(
+                ), SplitGroupMembers(
                     uid = "abx",
                     name = "Jai",
                     key = "xvz$60",

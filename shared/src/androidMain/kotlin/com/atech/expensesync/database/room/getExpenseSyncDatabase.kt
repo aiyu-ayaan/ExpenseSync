@@ -4,14 +4,13 @@ import android.content.Context
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 
-fun getExpenseSyncDatabase(context: Context): ExpenseSyncDatabase {
+fun getExpenseSyncDatabase(context: Context): SplitSyncDatabase {
     val dbFile = context.getDatabasePath("expense_sync.db")
-    return Room.databaseBuilder<ExpenseSyncDatabase>(
+    return Room.databaseBuilder<SplitSyncDatabase>(
         context.applicationContext,
         name = dbFile.absolutePath,
     ).setDriver(
         BundledSQLiteDriver()
     ).fallbackToDestructiveMigration(false)
-        .addMigrations(ExpenseSyncDatabase.MIGRATION_2_3)
         .build()
 }

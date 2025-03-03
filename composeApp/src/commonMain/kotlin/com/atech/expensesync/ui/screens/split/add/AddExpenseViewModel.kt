@@ -6,12 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
-import com.atech.expensesync.database.room.split.ExpenseGroupMembers
-import com.atech.expensesync.database.room.split.ExpenseTransactions
+import com.atech.expensesync.database.room.split.SplitGroupMembers
+import com.atech.expensesync.database.room.split.SplitTransactions
 import com.atech.expensesync.database.room.split.TransactionSplit
 import com.atech.expensesync.navigation.ViewExpanseBookArgs
-import com.atech.expensesync.usecases.ExpanseGroupMemberUseCases
-import com.atech.expensesync.usecases.ExpenseTransactionUseCases
+import com.atech.expensesync.usecases.SplitGroupMemberUseCases
+import com.atech.expensesync.usecases.SplitTransactionUseCases
 import com.atech.expensesync.utils.fromJson
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class AddExpenseViewModel(
-    private val expanseGroupMemberUseCases: ExpanseGroupMemberUseCases,
-    private val expenseTransactionUseCases: ExpenseTransactionUseCases,
+    private val expanseGroupMemberUseCases: SplitGroupMemberUseCases,
+    private val expenseTransactionUseCases: SplitTransactionUseCases,
     private val prefManager: PrefManager
 ) : ViewModel() {
     var viewExpanseBookArgs: ViewExpanseBookArgs? = null
@@ -28,14 +28,14 @@ class AddExpenseViewModel(
     private val _viewExpenseBookState = mutableStateOf<ViewExpenseBookState>(ViewExpenseBookState())
     val viewExpenseBookState: State<ViewExpenseBookState> get() = _viewExpenseBookState
 
-    private val _grpMembers = mutableStateOf<List<ExpenseGroupMembers>>(emptyList())
-    val grpMembers: State<List<ExpenseGroupMembers>> get() = _grpMembers
+    private val _grpMembers = mutableStateOf<List<SplitGroupMembers>>(emptyList())
+    val grpMembers: State<List<SplitGroupMembers>> get() = _grpMembers
 
     private val _getTransactionWithUser =
-        mutableStateOf<Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>>(
+        mutableStateOf<Map<SplitTransactions, List<Pair<TransactionSplit, SplitGroupMembers>>>>(
             emptyMap()
         )
-    val getTransactionWithUser: State<Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>>
+    val getTransactionWithUser: State<Map<SplitTransactions, List<Pair<TransactionSplit, SplitGroupMembers>>>>
         get() = _getTransactionWithUser
 
     private val _createExpenseState = mutableStateOf<CreateExpenseState>(
@@ -119,7 +119,7 @@ class AddExpenseViewModel(
     ) = viewModelScope.launch {
         val randomWord = ('a'..'z').toList().shuffled().subList(0, 5).joinToString("")
         expanseGroupMemberUseCases.insert(
-            data = ExpenseGroupMembers(
+            data = SplitGroupMembers(
                 groupId = groupId,
                 uid = UUID.randomUUID().toString(),
                 name = "Test $randomWord",

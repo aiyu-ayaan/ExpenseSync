@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.atech.expensesync.component.DatePickerModal
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.room.split.ExpenseGroupMembers
+import com.atech.expensesync.database.room.split.SplitGroupMembers
 import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
 import com.atech.expensesync.ui.screens.split.add.CreateExpenseState
 import com.atech.expensesync.ui.screens.split.add.ViewExpenseBookState
@@ -68,7 +68,7 @@ fun AddExpenseScreen(
     title: AddExpenseScreenTitle = AddExpenseScreenTitle.ADD,
     viewExpenseBookState: ViewExpenseBookState,
     state: CreateExpenseState,
-    groupMembers: List<ExpenseGroupMembers>,
+    groupMembers: List<SplitGroupMembers>,
     onNavigationClick: () -> Unit,
     onEvent: (AddExpenseEvents) -> Unit
 ) {

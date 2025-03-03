@@ -40,6 +40,11 @@ enum class Category(val displayName: String) {
     OTHER_EXPENSES("Other Expenses");
 }
 
+enum class TransactionType {
+    IN,
+    OUT
+}
+
 @Entity(
     tableName = "expense_book",
     indices = [
@@ -48,7 +53,7 @@ enum class Category(val displayName: String) {
     ]
 )
 @Keep
-data class ExpenseBook(
+data class BudgetBook(
     val bookName: String,
     val description: String = "",
     val totalAmount: Double = 0.0,
@@ -68,16 +73,18 @@ data class ExpenseBook(
     ],
     foreignKeys = [
         androidx.room.ForeignKey(
-            entity = ExpenseBook::class,
+            entity = BudgetBook::class,
             parentColumns = ["bookId"],
             childColumns = ["bookId"],
             onDelete = androidx.room.ForeignKey.CASCADE
         )
     ]
 )
-data class ExpenseBookEntry(
+@Keep
+data class BudgetBookEntry(
     val amount: Double,
     val bookId: String,
+    val transactionType: TransactionType,
     val remarks: String = "",
     val category: Category = Category.NONE,
     @PrimaryKey

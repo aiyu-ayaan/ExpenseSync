@@ -16,20 +16,20 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.atech.expensesync.database.room.split.ExpenseGroupMembers
-import com.atech.expensesync.database.room.split.ExpenseTransactions
+import com.atech.expensesync.database.room.split.SplitGroupMembers
+import com.atech.expensesync.database.room.split.SplitTransactions
 import com.atech.expensesync.database.room.split.TransactionSplit
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SettleUpScreen(
     modifier: Modifier = Modifier,
-    groupMembers: List<ExpenseGroupMembers>,
-    state: Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>,
-    onEditClick : (ExpenseTransactions) -> Unit,
+    groupMembers: List<SplitGroupMembers>,
+    state: Map<SplitTransactions, List<Pair<TransactionSplit, SplitGroupMembers>>>,
+    onEditClick : (SplitTransactions) -> Unit,
     onClick: (
-        transaction: ExpenseTransactions,
-        groupMembers: List<ExpenseGroupMembers>,
+        transaction: SplitTransactions,
+        groupMembers: List<SplitGroupMembers>,
         split: List<TransactionSplit>,
     ) -> Unit
 ) {
@@ -58,7 +58,7 @@ fun SettleUpScreen(
 private fun ShowTransactionItems(
     modifier: Modifier = Modifier,
     paidByName: String,
-    transaction: ExpenseTransactions,
+    transaction: SplitTransactions,
     onEditClick : () -> Unit,
     onClick: () -> Unit
 ) {
@@ -105,7 +105,7 @@ private fun ShowTransactionItems(
 @Composable
 private fun TransactionSplitItems(
     modifier: Modifier = Modifier,
-    model: Pair<TransactionSplit, ExpenseGroupMembers>
+    model: Pair<TransactionSplit, SplitGroupMembers>
 ) {
     val (transactionSplit, user) = model
     Column(

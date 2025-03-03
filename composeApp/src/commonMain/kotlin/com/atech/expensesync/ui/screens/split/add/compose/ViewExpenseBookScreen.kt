@@ -33,8 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.room.split.ExpenseGroupMembers
-import com.atech.expensesync.database.room.split.ExpenseTransactions
+import com.atech.expensesync.database.room.split.SplitGroupMembers
+import com.atech.expensesync.database.room.split.SplitTransactions
 import com.atech.expensesync.database.room.split.TransactionSplit
 import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
 import com.atech.expensesync.ui.screens.split.add.CreateExpenseState
@@ -55,8 +55,8 @@ fun ViewExpanseBookScreen(
     navHostController: NavHostController,
     state: ViewExpenseBookState,
     addExpenseBookState: CreateExpenseState,
-    members: List<ExpenseGroupMembers>,
-    transactionWithUser: State<Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>>,
+    members: List<SplitGroupMembers>,
+    transactionWithUser: State<Map<SplitTransactions, List<Pair<TransactionSplit, SplitGroupMembers>>>>,
     onEvent: (AddExpenseEvents) -> Unit
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
@@ -64,8 +64,8 @@ fun ViewExpanseBookScreen(
 //    groupMembers: List<ExpanseGroupMembers>,
 //    split: List<TransactionSplit>,
 
-    var clickedTranslation by remember { mutableStateOf<ExpenseTransactions?>(null) }
-    var clickedGroupMember by remember { mutableStateOf<List<ExpenseGroupMembers>?>(null) }
+    var clickedTranslation by remember { mutableStateOf<SplitTransactions?>(null) }
+    var clickedGroupMember by remember { mutableStateOf<List<SplitGroupMembers>?>(null) }
     var clickedTransactionSplit by remember { mutableStateOf<List<TransactionSplit>?>(null) }
 
 
@@ -183,14 +183,14 @@ private fun Screen(
     grpName: String,
     navigator: ThreePaneScaffoldNavigator<Nothing>,
     onExtraPaneChange: (ExtraPane) -> Unit,
-    transactionWithUser: State<Map<ExpenseTransactions, List<Pair<TransactionSplit, ExpenseGroupMembers>>>>,
-    members: List<ExpenseGroupMembers>,
+    transactionWithUser: State<Map<SplitTransactions, List<Pair<TransactionSplit, SplitGroupMembers>>>>,
+    members: List<SplitGroupMembers>,
     onNavigationClick: () -> Unit = {},
     onAddExpenseClick: () -> Unit = {},
     onGroupMembersClick: () -> Unit = {},
     onItemClick: (
-        transaction: ExpenseTransactions,
-        groupMembers: List<ExpenseGroupMembers>,
+        transaction: SplitTransactions,
+        groupMembers: List<SplitGroupMembers>,
         split: List<TransactionSplit>,
     ) -> Unit,
     onEvent: (AddExpenseEvents) -> Unit

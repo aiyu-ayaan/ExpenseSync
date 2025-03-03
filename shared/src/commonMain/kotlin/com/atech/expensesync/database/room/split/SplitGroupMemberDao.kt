@@ -8,16 +8,16 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ExpanseGroupMemberDao {
+interface SplitGroupMemberDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMember(member: ExpenseGroupMembers)
+    suspend fun insertMember(member: SplitGroupMembers)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMembers(data: List<ExpenseGroupMembers>)
+    suspend fun insertMembers(data: List<SplitGroupMembers>)
 
-    @Query("SELECT * FROM expanse_group_members WHERE groupId = :groupId")
-    fun getGroupMembers(groupId: String): Flow<List<ExpenseGroupMembers>>
+    @Query("SELECT * FROM split_group_members WHERE groupId = :groupId")
+    fun getGroupMembers(groupId: String): Flow<List<SplitGroupMembers>>
 
     @Delete
-    suspend fun removeMember(member: ExpenseGroupMembers)
+    suspend fun removeMember(member: SplitGroupMembers)
 }

@@ -1,8 +1,8 @@
 package com.atech.expensesync.ui.screens.split.add
 
 import com.atech.expensesync.database.models.User
-import com.atech.expensesync.database.room.split.ExpenseGroupMembers
-import com.atech.expensesync.database.room.split.ExpenseTransactions
+import com.atech.expensesync.database.room.split.SplitGroupMembers
+import com.atech.expensesync.database.room.split.SplitTransactions
 import com.atech.expensesync.database.room.split.SplitType
 import com.atech.expensesync.utils.EntityMapper
 import com.atech.expensesync.utils.convertToDateFormat
@@ -17,9 +17,9 @@ data class ViewExpenseBookState(
 data class CreateExpenseState(
     val description: String,
     val amount: Double,
-    val paidBy: ExpenseGroupMembers,
+    val paidBy: SplitGroupMembers,
     val splitType: SplitType = SplitType.EQUAL,
-    val splitTo: List<ExpenseGroupMembers> = emptyList(),
+    val splitTo: List<SplitGroupMembers> = emptyList(),
     val date: Long = System.currentTimeMillis(),
     val transactionId: String,
 ) {
@@ -33,7 +33,7 @@ data class CreateExpenseState(
         ) = CreateExpenseState(
             description = "",
             amount = 0.0,
-            paidBy = ExpenseGroupMembers(
+            paidBy = SplitGroupMembers(
                 uid = userModel.uid,
                 name = userModel.name,
                 email = userModel.email,
@@ -48,9 +48,9 @@ data class CreateExpenseState(
 }
 
 class CreateExpenseStateToExpanseTransactionsMapper :
-    EntityMapper<CreateExpenseState?, ExpenseTransactions> {
-    override fun mapFromEntity(entity: CreateExpenseState?): ExpenseTransactions =
-        ExpenseTransactions(
+    EntityMapper<CreateExpenseState?, SplitTransactions> {
+    override fun mapFromEntity(entity: CreateExpenseState?): SplitTransactions =
+        SplitTransactions(
             groupId = entity!!.paidBy.groupId,
             amount = entity.amount,
             description = entity.description,
@@ -64,11 +64,11 @@ class CreateExpenseStateToExpanseTransactionsMapper :
         )
 
 
-    override fun mapToEntity(domainModel: ExpenseTransactions): CreateExpenseState? = null
+    override fun mapToEntity(domainModel: SplitTransactions): CreateExpenseState? = null
 
     fun mapToCreateExpenseState(
-        domainModel: ExpenseTransactions,
-        splitTo: List<ExpenseGroupMembers>
+        domainModel: SplitTransactions,
+        splitTo: List<SplitGroupMembers>
     ): CreateExpenseState =
         CreateExpenseState(
             description = domainModel.description,
