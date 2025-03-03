@@ -23,5 +23,7 @@ fun getExpenseSyncDatabase(): ExpenseSyncDatabase {
     return Room.databaseBuilder<ExpenseSyncDatabase>(
         name = dbFile.absolutePath,
     ).setDriver(BundledSQLiteDriver())
+        .fallbackToDestructiveMigration(false)
+        .addMigrations(ExpenseSyncDatabase.MIGRATION_2_3)
         .build()
 }
