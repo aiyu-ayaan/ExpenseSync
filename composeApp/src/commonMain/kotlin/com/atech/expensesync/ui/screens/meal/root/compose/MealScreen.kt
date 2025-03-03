@@ -28,7 +28,8 @@ import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.navigation.ViewMealArgs
-import com.atech.expensesync.ui.screens.meal.editmealbook.EditMealBookDialog
+import com.atech.expensesync.ui.screens.meal.edit.EditMealBookDialog
+import com.atech.expensesync.ui.screens.meal.edit.EditMealDialog
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.screens.meal.root.MealScreenEvents
 import com.atech.expensesync.ui.screens.meal.root.MealViewModel
@@ -131,6 +132,44 @@ private fun MealListScreen(
     var price by remember { mutableStateOf(0.0.formatAmount()) }
     var currency by remember { mutableStateOf(Currency.INR) }
     var mealBookId: String? by remember { mutableStateOf(null) }
+    var yetEditModel: AddMealBookState? by remember { mutableStateOf(null) }
+    var isEditDialogVisible by remember { mutableStateOf(false) }
+
+
+    AnimatedVisibility(isEditDialogVisible) {
+        if (yetEditModel == null) return@AnimatedVisibility
+        EditMealDialog(
+            mealBook = yetEditModel!!,
+            onDismissRequest = {
+                isEditDialogVisible = false
+                yetEditModel = null
+            },
+            onDeleteItem = {
+                onEvent.invoke(
+                    MealScreenEvents.DeleteMealBook(
+                        mealBookId = yetEditModel!!.mealBookId,
+                        onComplete = {
+                            showToast("Meal Book deleted successfully")
+                            isEditDialogVisible = false
+                            yetEditModel = null
+                        }
+                    ))
+            },
+            confirmButton = {
+                onEvent.invoke(MealScreenEvents.UpdateMealBook(it) { res ->
+                    if (res < 0) {
+                        showToast("Failed to create Meal Book.Check Meal Book name and try again")
+                        return@UpdateMealBook
+                    }
+                    showToast("Meal Book updated successfully")
+                    isEditDialogVisible = false
+                    yetEditModel = null
+
+                })
+            }
+        )
+    }
+
     AnimatedVisibility(isPriceDialogVisible) {
         EditMealBookDialog(price = price, currency = currency, onDismissRequest = {
             isPriceDialogVisible = false
@@ -176,7 +215,17 @@ private fun MealListScreen(
                         isPriceDialogVisible = true
                         currency = it.defaultCurrency
                         price = it.defaultPrice.formatAmount()
-                    })
+                    },
+                    onlLongClick = {
+                        yetEditModel = AddMealBookState(
+                            mealBookId = it.mealBookId,
+                            name = it.name,
+                            defaultPrice = it.defaultPrice,
+                            defaultCurrency = it.defaultCurrency
+                        )
+                        isEditDialogVisible = true
+                    }
+                )
             }
         }
     }

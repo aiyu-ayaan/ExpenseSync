@@ -87,6 +87,21 @@ class MealViewModel(
                     useCases.createMealBookEntry.invoke(event.mealBookEntry)
                 )
             }
+
+            is MealScreenEvents.DeleteMealBook -> viewModelScope.launch {
+                useCases.deleteMealBook.invoke(event.mealBookId)
+                event.onComplete.invoke()
+            }
+
+            is MealScreenEvents.UpdateMealBook ->
+                viewModelScope.launch {
+                    event.onComplete(
+                        useCases.updateMealBook.invoke(
+                            mapper.mapFromEntity(event.model)
+                        )
+                    )
+                }
+
         }
     }
 }

@@ -10,4 +10,14 @@ sealed interface MealScreenEvents {
         val onComplete: (Long) -> Unit
     ) :
         MealScreenEvents
+
+    data class UpdateMealBook(
+        val model: AddMealBookState,
+        val onComplete: (Long) -> Unit
+    ) : MealScreenEvents
+
+    data class DeleteMealBook(
+        val mealBookId: String,
+        val onComplete: () -> Unit
+    ) : MealScreenEvents
 }

@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.screens.meal.editmealbook
+package com.atech.expensesync.ui.screens.meal.edit
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -75,6 +75,11 @@ fun EditMealBookDialog(
 
     AnimatedVisibility(isDeleteDialogVisible) {
         AlertDialog(
+            icon = {
+                Icon(
+                    imageVector = Icons.TwoTone.Delete, contentDescription = "Delete Meal"
+                )
+            },
             title = {
                 Text("Delete Meal Book")
             },
@@ -213,7 +218,7 @@ fun EditMealBookDialog(
                         )
                     )
                 }) {
-                Text("Add")
+                Text("Update")
             }
         },
         dismissButton = {

@@ -35,7 +35,7 @@ data class GetMealBookEntries(private val dao: MealDao) {
 }
 
 data class UpdateMealBook(private val dao: MealDao) {
-    suspend operator fun invoke(mealBook: MealBook) = dao.updateMealBook(mealBook)
+    suspend operator fun invoke(mealBook: MealBook) = dao.updateMealBook(mealBook).toLong()
 }
 
 data class UpdateMealBookEntry(private val dao: MealDao) {

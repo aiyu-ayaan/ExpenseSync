@@ -64,7 +64,7 @@ import com.atech.expensesync.component.DisplayCard
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.component.TitleComposable
 import com.atech.expensesync.database.room.meal.MealBookEntry
-import com.atech.expensesync.ui.screens.meal.editmealbook.EditMealBookDialog
+import com.atech.expensesync.ui.screens.meal.edit.EditMealBookDialog
 import com.atech.expensesync.ui.screens.meal.view.CalendarMonthInternal
 import com.atech.expensesync.ui.screens.meal.view.ViewMealEvents
 import com.atech.expensesync.ui.screens.meal.view.toInternal

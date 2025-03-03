@@ -1,6 +1,7 @@
 package com.atech.expensesync.ui.screens.meal.root.compose
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Checklist
@@ -20,7 +21,7 @@ import com.atech.expensesync.ui_utils.formatAmount
 import com.atech.expensesync.utils.getCurrentDayAndTotalDays
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun MealItem(
     modifier: Modifier = Modifier,
@@ -28,11 +29,15 @@ fun MealItem(
     totalPrice: Double = 0.0,
     lastMonthPrice: Double = 100.0,
     onMealItemClick: () -> Unit = {},
+    onlLongClick: () -> Unit = {},
     onActionClick: () -> Unit = {}
 ) {
     DefaultCard(
         modifier = Modifier
-            .clickable { onMealItemClick.invoke() }
+            .combinedClickable(
+                onClick = onMealItemClick,
+                onLongClick = onlLongClick
+            )
     ) {
         val (current, total) = getCurrentDayAndTotalDays()
         ListItem(

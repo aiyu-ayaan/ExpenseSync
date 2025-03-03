@@ -24,7 +24,7 @@ interface MealDao {
     fun getMealBookEntries(mealBookId: String): Flow<List<MealBookEntry>>
 
     @Update
-    suspend fun updateMealBook(mealBook: MealBook)
+    suspend fun updateMealBook(mealBook: MealBook) : Int
 
     @Update
     suspend fun updateMealBookEntry(mealBookEntry: MealBookEntry): Int
