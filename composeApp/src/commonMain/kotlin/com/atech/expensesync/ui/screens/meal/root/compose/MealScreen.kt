@@ -76,7 +76,8 @@ fun MealScreen(
                             name = it.name,
                             defaultPrice = it.defaultPrice.toString(),
                             defaultCurrency = it.defaultCurrency.name,
-                            description = it.description
+                            description = it.description,
+                            createdAt = it.created.toString()
                         )
                     )
                 }, onAddMealBookClick = {
@@ -225,7 +226,9 @@ private fun MealListScreen(
                             mealBookId = it.mealBookId,
                             name = it.name,
                             defaultPrice = it.defaultPrice,
-                            defaultCurrency = it.defaultCurrency
+                            defaultCurrency = it.defaultCurrency,
+                            createdAt = it.created,
+                            description = it.description
                         )
                         isEditDialogVisible = true
                     }

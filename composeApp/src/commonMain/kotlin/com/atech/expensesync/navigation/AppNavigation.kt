@@ -19,7 +19,6 @@ import com.atech.expensesync.ui_utils.animatedComposableEnh
 import com.atech.expensesync.ui_utils.koinViewModel
 import com.atech.expensesync.utils.Currency
 import kotlinx.serialization.Serializable
-import java.util.UUID
 
 sealed class AppNavigation(val route: String) {
     data object AppScreen : AppNavigation("app_screen")
@@ -39,6 +38,7 @@ data class ViewMealArgs(
     val description: String,
     val defaultCurrency: String,
     val mealBookId: String,
+    val createdAt: String
 )
 
 fun ViewMealArgs.toAddMealBookState() = AddMealBookState(
@@ -46,7 +46,8 @@ fun ViewMealArgs.toAddMealBookState() = AddMealBookState(
     defaultPrice = defaultPrice.toDoubleOrNull() ?: 0.0,
     description = description,
     defaultCurrency = Currency.valueOf(defaultCurrency),
-    mealBookId = mealBookId
+    mealBookId = mealBookId,
+    createdAt = createdAt.toLong()
 )
 
 fun NavGraphBuilder.appNavigation(

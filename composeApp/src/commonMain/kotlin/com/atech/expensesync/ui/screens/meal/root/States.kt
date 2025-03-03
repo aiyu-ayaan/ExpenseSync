@@ -11,6 +11,7 @@ data class AddMealBookState(
     val description: String = "",
     val defaultCurrency: Currency = Currency.INR,
     val mealBookId: String = UUID.randomUUID().toString(),
+    val createdAt: Long = System.currentTimeMillis()
 )
 
 
@@ -21,7 +22,8 @@ class AddMealBookStateTOMealBookMapper : EntityMapper<AddMealBookState, MealBook
             defaultPrice = entity.defaultPrice,
             description = entity.description,
             defaultCurrency = entity.defaultCurrency,
-            mealBookId = entity.mealBookId
+            mealBookId = entity.mealBookId,
+            created = entity.createdAt
         )
 
     override fun mapToEntity(domainModel: MealBook): AddMealBookState =
@@ -30,7 +32,8 @@ class AddMealBookStateTOMealBookMapper : EntityMapper<AddMealBookState, MealBook
             defaultPrice = domainModel.defaultPrice,
             description = domainModel.description,
             defaultCurrency = domainModel.defaultCurrency,
-            mealBookId = domainModel.mealBookId
+            mealBookId = domainModel.mealBookId,
+            createdAt = domainModel.created
         )
 
 }
