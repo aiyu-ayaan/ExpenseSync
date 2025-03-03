@@ -3,14 +3,18 @@ package com.atech.expensesync.ui.screens.app
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AttachMoney
+import androidx.compose.material.icons.twotone.Build
 import androidx.compose.material.icons.twotone.CalendarMonth
 import androidx.compose.material.icons.twotone.Fastfood
 import androidx.compose.material.icons.twotone.Payments
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
@@ -29,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.atech.expensesync.LocalDataStore
+import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.ui.screens.meal.root.compose.MealScreen
 import com.atech.expensesync.ui.screens.split.root.compose.SplitScreen
 import com.atech.expensesync.ui_utils.BackHandler
@@ -39,8 +45,8 @@ enum class BaseAppScreen(
     val label: String, val icon: ImageVector
 ) {
     Split("Split", Icons.TwoTone.Payments),
-    Budget("Budget", Icons.TwoTone.AttachMoney),
     MessTrack("Mess Track", Icons.TwoTone.Fastfood),
+    Budget("Budget", Icons.TwoTone.AttachMoney),
     Calender("History", Icons.TwoTone.CalendarMonth)
 }
 
@@ -49,7 +55,14 @@ enum class BaseAppScreen(
 fun AppScreen(
     navHostController: NavHostController
 ) {
-    var currentDestination by rememberSaveable { mutableStateOf(BaseAppScreen.Split) }
+    var isLogIn = LocalDataStore.current
+        .getString(PrefKeys.USER_ID).isNotBlank()
+    val startDestination = if (isLogIn) BaseAppScreen.Split else BaseAppScreen.MessTrack
+    var currentDestination by rememberSaveable {
+        mutableStateOf(
+            startDestination
+        )
+    }
     val adaptiveInfo = currentWindowAdaptiveInfo()
     var showNavigation by remember { mutableStateOf(true) }
     val customNavSuiteType = with(adaptiveInfo) {
@@ -67,8 +80,8 @@ fun AppScreen(
             else -> NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
         }
     }
-    BackHandler(currentDestination != BaseAppScreen.Split) {
-        currentDestination = BaseAppScreen.Split
+    BackHandler(currentDestination != startDestination) {
+        currentDestination = startDestination
     }
     SystemUiController(
         bottomNavigationBarColor = BottomAppBarDefaults.containerColor,
@@ -80,7 +93,9 @@ fun AppScreen(
         ),
         layoutType = customNavSuiteType,
         navigationSuiteItems = {
-            BaseAppScreen.entries.forEach { item ->
+            BaseAppScreen.entries.filter {
+                if (!isLogIn) it != BaseAppScreen.Split else true
+            }.forEach { item ->
                 navItemEntry(
                     item = item,
                     selected = item == currentDestination,
@@ -110,7 +125,21 @@ fun AppScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Budget")
+                        Icon(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(.5f),
+                            imageVector = Icons.TwoTone.Build,
+                            contentDescription = "Budget"
+                        )
+                        Text(
+                            "Budget",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            "Work in Progress",
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
                 }
 
@@ -127,7 +156,21 @@ fun AppScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Calender")
+                        Icon(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(.5f),
+                            imageVector = Icons.TwoTone.Build,
+                            contentDescription = "Budget"
+                        )
+                        Text(
+                            "Calender",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            "Work in Progress",
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
                 }
             }
