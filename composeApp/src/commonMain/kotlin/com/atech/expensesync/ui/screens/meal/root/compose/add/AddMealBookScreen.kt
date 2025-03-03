@@ -108,7 +108,12 @@ fun AddMealBookScreen(
                     keyboardType = androidx.compose.ui.text.input.KeyboardType.Text,
                     imeAction = androidx.compose.ui.text.input.ImeAction.Next,
                     capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Sentences
-                )
+                ),
+                clearIconClick = {
+                    onEvent.invoke(
+                        MealScreenEvents.OnMealScreenStateChange(state.copy(name = ""))
+                    )
+                }
             )
             EditTextEnhance(
                 modifier = Modifier.fillMaxWidth(),
@@ -137,6 +142,12 @@ fun AddMealBookScreen(
                         )
                     }
                 },
+                clearIconClick = {
+                    price = ""
+                    onEvent.invoke(
+                        MealScreenEvents.OnMealScreenStateChange(state.copy(defaultPrice = 0.0))
+                    )
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal,
                     imeAction = androidx.compose.ui.text.input.ImeAction.Done
@@ -160,7 +171,12 @@ fun AddMealBookScreen(
                     keyboardType = androidx.compose.ui.text.input.KeyboardType.Text,
                     imeAction = androidx.compose.ui.text.input.ImeAction.Done,
                     capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Sentences
-                )
+                ),
+                clearIconClick = {
+                    onEvent.invoke(
+                        MealScreenEvents.OnMealScreenStateChange(state.copy(description = ""))
+                    )
+                }
             )
         }
     }

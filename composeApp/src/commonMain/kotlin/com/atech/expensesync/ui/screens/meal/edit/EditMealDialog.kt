@@ -78,7 +78,10 @@ fun EditMealDialog(
                         keyboardType = androidx.compose.ui.text.input.KeyboardType.Text,
                         imeAction = androidx.compose.ui.text.input.ImeAction.Next,
                         capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Sentences
-                    )
+                    ),
+                    clearIconClick = {
+                        state = state.copy(name = "")
+                    }
                 )
                 EditTextEnhance(
                     modifier = Modifier.fillMaxWidth(),
@@ -105,7 +108,11 @@ fun EditMealDialog(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal,
                         imeAction = androidx.compose.ui.text.input.ImeAction.Done
-                    )
+                    ),
+                    clearIconClick = {
+                        price = ""
+                        state = state.copy(defaultPrice = 0.0)
+                    }
                 )
                 EditTextEnhance(
                     modifier = Modifier.fillMaxWidth(),
@@ -123,7 +130,10 @@ fun EditMealDialog(
                         keyboardType = androidx.compose.ui.text.input.KeyboardType.Text,
                         imeAction = androidx.compose.ui.text.input.ImeAction.Done,
                         capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Sentences
-                    )
+                    ),
+                    clearIconClick = {
+                        state = state.copy(description = "")
+                    }
                 )
                 if (canShowDeleteOption)
                     TextButton(
