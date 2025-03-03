@@ -134,7 +134,11 @@ fun EditMealBookDialog(
                     endIcon = Icons.TwoTone.Today,
                     onClick = {
                         isDatePickerVisible = !isDatePickerVisible
-                    })
+                    },
+                    onEndIconClick = {
+                        isDatePickerVisible = !isDatePickerVisible
+                    }
+                )
                 EditTextEnhance(
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = "Per meal cost",

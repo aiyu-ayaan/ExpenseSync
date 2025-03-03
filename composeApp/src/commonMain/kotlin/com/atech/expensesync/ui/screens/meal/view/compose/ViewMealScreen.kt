@@ -235,6 +235,21 @@ fun ViewMealScreen(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             TitleComposable(
+                title = "Description",
+            )
+            Text(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(
+                        start = MaterialTheme.spacing.small
+                    ),
+                text = mealBookState.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(
+                    alpha = .8f
+                )
+            )
+
+            TitleComposable(
                 title = "Calender",
             )
             val calenderModifier = when (getDisplayType()) {
