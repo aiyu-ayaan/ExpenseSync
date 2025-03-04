@@ -35,6 +35,7 @@ import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.database.pref.PrefKeys
+import com.atech.expensesync.ui.screens.expense.root.compose.ExpenseScreen
 import com.atech.expensesync.ui.screens.meal.root.compose.MealScreen
 import com.atech.expensesync.ui.screens.split.root.compose.SplitScreen
 import com.atech.expensesync.ui_utils.BackHandler
@@ -46,7 +47,7 @@ enum class BaseAppScreen(
 ) {
     Split("Split", Icons.TwoTone.Payments),
     MessTrack("Mess Track", Icons.TwoTone.Fastfood),
-    Budget("Budget", Icons.TwoTone.AttachMoney),
+    Expense("Expense", Icons.TwoTone.AttachMoney),
     Calender("History", Icons.TwoTone.CalendarMonth)
 }
 
@@ -119,28 +120,13 @@ fun AppScreen(
                     )
                 }
 
-                BaseAppScreen.Budget -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(.5f),
-                            imageVector = Icons.TwoTone.Build,
-                            contentDescription = "Budget"
-                        )
-                        Text(
-                            "Budget",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        Text(
-                            "Work in Progress",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
+                BaseAppScreen.Expense -> {
+                    ExpenseScreen(
+                        navHostController = navHostController,
+                        canShowAppBar = {
+                            showNavigation = it
+                        }
+                    )
                 }
 
                 BaseAppScreen.MessTrack -> MealScreen(
