@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,14 +31,10 @@ import com.atech.expensesync.ui.theme.spacing
 
 @Composable
 fun TitleComposable(
-    title: String,
-    modifier: Modifier = Modifier,
-    padding: Dp = MaterialTheme.spacing.default
+    title: String, modifier: Modifier = Modifier, padding: Dp = MaterialTheme.spacing.default
 ) {
     Text(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(padding),
+        modifier = modifier.fillMaxWidth().padding(padding),
         text = title,
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.captionColor
@@ -46,36 +45,29 @@ fun TitleComposable(
 fun TextItem(
     modifier: Modifier = Modifier,
     text: String,
-    containerColor : Color = MaterialTheme.colorScheme.surface,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
     onClick: () -> Unit = {},
     endIcon: ImageVector? = null,
     onEndIconClick: (() -> Unit)? = null
 ) {
     Surface(
-        modifier = Modifier
-            .background(containerColor)
-            .clickable { onClick() }
-    ) {
+        modifier = Modifier.background(containerColor).clickable { onClick() }) {
         Row(
-            modifier = Modifier
-                .background(containerColor)
-                .fillMaxWidth(),
+            modifier = Modifier.background(containerColor).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                modifier = modifier
-                    .padding(MaterialTheme.spacing.medium),
+                modifier = modifier.padding(MaterialTheme.spacing.medium),
                 text = text,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            if (endIcon != null)
-                IconButton(onClick = { onEndIconClick?.invoke() }) {
-                    Icon(imageVector = endIcon, contentDescription = null)
-                }
+            if (endIcon != null) IconButton(onClick = { onEndIconClick?.invoke() }) {
+                Icon(imageVector = endIcon, contentDescription = null)
+            }
         }
     }
 }
@@ -88,19 +80,43 @@ fun DisplayCard(
     content: @Composable ColumnScope.() -> Unit = {}
 ) {
     Surface(
-        modifier = modifier
-            .clickable { onClick.invoke() }) {
+        modifier = modifier.clickable { onClick.invoke() }) {
         OutlinedCard(
-            modifier = Modifier
-                .fillMaxWidth(),
-            border = border
+            modifier = Modifier.fillMaxWidth(), border = border
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(MaterialTheme.spacing.medium),
+                modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.medium),
                 content = content
             )
         }
+    }
+}
+
+/**
+ * Bottom padding
+ * This is a bottom padding that is used to add padding to the bottom
+ */
+@Composable
+fun BottomPadding(
+    padding: Dp = MaterialTheme.spacing.bottomPadding
+) {
+    Spacer(
+        modifier = Modifier.height(
+            padding
+        )
+    )
+}
+
+
+/**
+ * Bottom padding lazy
+ * This is a bottom padding lazy that is used to add padding to the bottom
+ * @param key String key
+ */
+fun LazyListScope.bottomPaddingLazy(key: String = "bottom_padding") {
+    item(
+        key = key
+    ) {
+        BottomPadding()
     }
 }

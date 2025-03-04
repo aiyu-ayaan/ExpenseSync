@@ -4,7 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Book
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,6 +14,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
@@ -19,12 +22,15 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NavHostController
+import com.atech.expensesync.component.BottomPadding
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.navigation.ViewMealArgs
@@ -121,6 +127,18 @@ fun MealScreen(
     )
 }
 
+@Composable
+fun LazyListState.handelFabState(): Boolean {
+    val firstVisibleItemIndex by remember { derivedStateOf { this.firstVisibleItemIndex } }
+    val firstItemScrollOffset by remember { derivedStateOf { this.firstVisibleItemScrollOffset } }
+    val isFabExpanded by remember {
+        derivedStateOf {
+            // Expanded when at the top of the list
+            firstVisibleItemIndex == 0 && firstItemScrollOffset == 0
+        }
+    }
+    return isFabExpanded
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -133,13 +151,15 @@ private fun MealListScreen(
     onEvent: (MealScreenEvents) -> Unit = {},
     onItemClick: (MealBook) -> Unit = {}
 ) {
+    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val lazyListState = rememberLazyListState()
+
     var isPriceDialogVisible by remember { mutableStateOf(false) }
     var price by remember { mutableStateOf(0.0.formatAmount()) }
     var currency by remember { mutableStateOf(Currency.INR) }
     var mealBookId: String? by remember { mutableStateOf(null) }
     var yetEditModel: AddMealBookState? by remember { mutableStateOf(null) }
     var isEditDialogVisible by remember { mutableStateOf(false) }
-
 
     AnimatedVisibility(isEditDialogVisible) {
         if (yetEditModel == null) return@AnimatedVisibility
@@ -195,16 +215,26 @@ private fun MealListScreen(
         })
     }
     MainContainer(
-        modifier = modifier, title = "Meal", floatingActionButton = {
+        modifier = modifier
+            .nestedScroll(
+                topAppBarScrollBehavior.nestedScrollConnection
+            ),
+        title = "Meal",
+        scrollBehavior = topAppBarScrollBehavior,
+        floatingActionButton = {
             ExtendedFloatingActionButton(
-                text = { Text("Add Meal") }, icon = {
+                text = { Text("Add Meal") },
+                expanded = lazyListState.handelFabState(),
+                icon = {
                     Icon(Icons.TwoTone.Book, contentDescription = "Add Meal")
                 }, onClick = onAddMealBookClick
             )
         }) { paddingValues ->
         LazyColumn(
-            modifier = Modifier.padding(MaterialTheme.spacing.medium),
+            modifier = Modifier
+                .padding(MaterialTheme.spacing.medium),
             contentPadding = paddingValues,
+            state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             items(state) {
@@ -232,6 +262,11 @@ private fun MealListScreen(
                         )
                         isEditDialogVisible = true
                     }
+                )
+            }
+            item {
+                BottomPadding(
+                    padding = MaterialTheme.spacing.bottomPadding * 2
                 )
             }
         }
