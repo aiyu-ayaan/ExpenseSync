@@ -55,6 +55,7 @@ enum class TransactionType {
 @Keep
 data class ExpenseBook(
     val bookName: String,
+    val icon: String = "",
     val description: String = "",
     val totalAmount: Double = 0.0,
     val totalIn: Double = 0.0,

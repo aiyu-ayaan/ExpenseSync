@@ -23,6 +23,7 @@ fun getExpenseSyncDatabase(): SplitSyncDatabase {
     return Room.databaseBuilder<SplitSyncDatabase>(
         name = dbFile.absolutePath,
     ).setDriver(BundledSQLiteDriver())
+        .addMigrations(SplitSyncDatabase.MIGRATION_1_2)
         .fallbackToDestructiveMigration(false)
         .build()
 }

@@ -2,6 +2,9 @@ package com.atech.expensesync.database.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 import com.atech.expensesync.database.room.expense.ExpenseBook
 import com.atech.expensesync.database.room.expense.ExpenseBookDao
 import com.atech.expensesync.database.room.expense.ExpenseBookEntry
@@ -29,7 +32,7 @@ import com.atech.expensesync.database.room.split.TransactionSplitDao
         ExpenseBook::class,
         ExpenseBookEntry::class
     ],
-    version = 1
+    version = 2
 )
 abstract class SplitSyncDatabase : RoomDatabase() {
     abstract val splitGroupDao: SplitGroupDao
@@ -38,4 +41,21 @@ abstract class SplitSyncDatabase : RoomDatabase() {
     abstract val transactionSplitDao: TransactionSplitDao
     abstract val mealDao: MealDao
     abstract val expenseBookDao: ExpenseBookDao
+
+    companion object {
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(connection: SQLiteConnection) {
+                connection.execSQL(
+                    """
+                        ALTER TABLE meal_book ADD COLUMN icon TEXT NOT NULL DEFAULT ""
+                    """.trimIndent()
+                )
+                connection.execSQL(
+                    """
+                        ALTER TABLE expense_book ADD COLUMN icon TEXT NOT NULL DEFAULT ""
+                    """.trimIndent()
+                )
+            }
+        }
+    }
 }

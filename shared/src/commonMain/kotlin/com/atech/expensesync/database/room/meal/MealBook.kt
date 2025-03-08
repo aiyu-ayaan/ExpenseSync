@@ -48,6 +48,7 @@ data class MealBookEntry(
 )
 data class MealBook(
     val name: String,
+    var icon: String = "",
     val defaultPrice: Double,
     val defaultCurrency: Currency = Currency.INR,
     val description: String = "",

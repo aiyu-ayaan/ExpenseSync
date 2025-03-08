@@ -12,5 +12,6 @@ fun getExpenseSyncDatabase(context: Context): SplitSyncDatabase {
     ).setDriver(
         BundledSQLiteDriver()
     ).fallbackToDestructiveMigration(false)
+        .addMigrations(SplitSyncDatabase.MIGRATION_1_2)
         .build()
 }
