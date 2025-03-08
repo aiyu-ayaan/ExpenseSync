@@ -53,11 +53,13 @@ import androidx.compose.material.icons.twotone.Work
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class IconItem(val icon: ImageVector, val displayName: String)
@@ -121,7 +123,7 @@ fun ChooseIconBottomSheet(
     sheetState: SheetState,
     isForFood: Boolean = false,
     onDismissRequest: () -> Unit = {},
-    onIconClick: (ImageVector) -> Unit = {}
+    onIconClick: (IconItem) -> Unit = {}
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -135,8 +137,11 @@ fun ChooseIconBottomSheet(
             (if (isForFood) mealIcons else expenseIcons)
                 .forEach {
                     ListItem(
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent
+                        ),
                         modifier = Modifier.clickable {
-                            onIconClick(it.icon)
+                            onIconClick(it)
                             onDismissRequest()
                         },
                         headlineContent = {

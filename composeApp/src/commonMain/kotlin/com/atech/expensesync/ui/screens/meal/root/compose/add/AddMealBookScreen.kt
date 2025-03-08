@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Book
 import androidx.compose.material.icons.twotone.Description
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,8 +25,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.ChooseCurrencyBottomSheet
+import com.atech.expensesync.component.ChooseIconBottomSheet
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.component.mealIcons
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.screens.meal.root.MealScreenEvents
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
@@ -48,6 +49,7 @@ fun AddMealBookScreen(
 ) {
     var price by remember { mutableStateOf(state.defaultPrice.formatAmount()) }
     var showCurrencyBottomSheet by remember { mutableStateOf(false) }
+    var showIconBottomSheet by remember { mutableStateOf(false) }
 
 
     val sheetState = rememberModalBottomSheetState()
@@ -87,6 +89,27 @@ fun AddMealBookScreen(
             }
         }
 
+        AnimatedVisibility(showIconBottomSheet) {
+            ChooseIconBottomSheet(
+                modifier = Modifier,
+                sheetState = sheetState,
+                isForFood = true,
+                onDismissRequest = {
+                    scope.launch {
+                        sheetState.hide()
+                        showIconBottomSheet = false
+                    }
+                }
+            ) {
+//               TODO:// Handel this screen to also update data
+                onEvent.invoke(
+                    MealScreenEvents.OnMealScreenStateChange(
+                        state.copy(icon = it.displayName)
+                    )
+                )
+            }
+        }
+
         Column(
             modifier = Modifier.padding(paddingValues).padding(MaterialTheme.spacing.medium),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
@@ -101,9 +124,13 @@ fun AddMealBookScreen(
                     )
                 },
                 leadingIcon = {
-                    Icon(
-                        imageVector = Icons.TwoTone.Book, contentDescription = null
-                    )
+                    val icon =
+                        (mealIcons.find { it.displayName == state.icon } ?: mealIcons.first()).icon
+                    IconButton(onClick = {
+                        showIconBottomSheet = !showIconBottomSheet
+                    }) {
+                        Icon(imageVector = icon, contentDescription = null)
+                    }
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = androidx.compose.ui.text.input.KeyboardType.Text,
@@ -114,8 +141,7 @@ fun AddMealBookScreen(
                     onEvent.invoke(
                         MealScreenEvents.OnMealScreenStateChange(state.copy(name = ""))
                     )
-                }
-            )
+                })
             EditTextEnhance(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = "Per meal cost",
@@ -177,8 +203,7 @@ fun AddMealBookScreen(
                     onEvent.invoke(
                         MealScreenEvents.OnMealScreenStateChange(state.copy(description = ""))
                     )
-                }
-            )
+                })
         }
     }
 }

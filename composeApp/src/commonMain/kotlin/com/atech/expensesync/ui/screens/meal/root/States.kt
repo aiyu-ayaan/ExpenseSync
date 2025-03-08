@@ -7,6 +7,7 @@ import java.util.UUID
 
 data class AddMealBookState(
     val name: String = "",
+    val icon: String = "",
     val defaultPrice: Double = 0.0,
     val description: String = "",
     val defaultCurrency: Currency = Currency.INR,
@@ -23,7 +24,8 @@ class AddMealBookStateTOMealBookMapper : EntityMapper<AddMealBookState, MealBook
             description = entity.description,
             defaultCurrency = entity.defaultCurrency,
             mealBookId = entity.mealBookId,
-            created = entity.createdAt
+            created = entity.createdAt,
+            icon = entity.icon
         )
 
     override fun mapToEntity(domainModel: MealBook): AddMealBookState =
@@ -33,7 +35,8 @@ class AddMealBookStateTOMealBookMapper : EntityMapper<AddMealBookState, MealBook
             description = domainModel.description,
             defaultCurrency = domainModel.defaultCurrency,
             mealBookId = domainModel.mealBookId,
-            createdAt = domainModel.created
+            createdAt = domainModel.created,
+            icon = domainModel.icon
         )
 
 }
