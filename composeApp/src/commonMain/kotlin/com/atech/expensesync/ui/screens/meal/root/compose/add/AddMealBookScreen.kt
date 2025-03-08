@@ -49,6 +49,7 @@ fun AddMealBookScreen(
     var price by remember { mutableStateOf(state.defaultPrice.formatAmount()) }
     var showCurrencyBottomSheet by remember { mutableStateOf(false) }
 
+
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     MainContainer(
