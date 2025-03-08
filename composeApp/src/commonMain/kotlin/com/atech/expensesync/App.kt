@@ -13,6 +13,7 @@ import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.navigation.ExpanseSyncNavigation
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 
 val LocalDataStore = staticCompositionLocalOf<PrefManager> { error("No DataStore provided") }
@@ -23,23 +24,25 @@ val LocalDataStore = staticCompositionLocalOf<PrefManager> { error("No DataStore
 fun App(
     navHostController: NavHostController = rememberNavController()
 ) {
-    ExpenseSyncTheme {
-        val pref = koinInject<PrefManager>()
-        CompositionLocalProvider(
-            LocalDataStore provides pref
-        ) {
-            val isLoggedInSkipped = pref.getBoolean(PrefKeys.IS_LOG_IN_SKIP)
-            val userId = pref.getString(PrefKeys.USER_ID)
-            ExpanseSyncNavigation(
-                modifier = Modifier.padding(
-                ),
-                navHostController = navHostController,
-                startDestination = if (isLoggedInSkipped || userId.isNotEmpty())
-                    ExpanseSyncNavigation.AppScreens.route
-                else
-                    ExpanseSyncNavigation.LogInScreen.route
+    KoinContext {
+        ExpenseSyncTheme {
+            val pref = koinInject<PrefManager>()
+            CompositionLocalProvider(
+                LocalDataStore provides pref
+            ) {
+                val isLoggedInSkipped = pref.getBoolean(PrefKeys.IS_LOG_IN_SKIP)
+                val userId = pref.getString(PrefKeys.USER_ID)
+                ExpanseSyncNavigation(
+                    modifier = Modifier.padding(
+                    ),
+                    navHostController = navHostController,
+                    startDestination = if (isLoggedInSkipped || userId.isNotEmpty())
+                        ExpanseSyncNavigation.AppScreens.route
+                    else
+                        ExpanseSyncNavigation.LogInScreen.route
 
-            )
+                )
+            }
         }
     }
 }

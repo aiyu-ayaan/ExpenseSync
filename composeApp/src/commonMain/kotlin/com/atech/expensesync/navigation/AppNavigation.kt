@@ -16,9 +16,10 @@ import com.atech.expensesync.ui.screens.split.add.AddExpenseViewModel
 import com.atech.expensesync.ui.screens.split.add.compose.ViewExpanseBookScreen
 import com.atech.expensesync.ui_utils.animatedComposable
 import com.atech.expensesync.ui_utils.animatedComposableEnh
-import com.atech.expensesync.ui_utils.koinViewModel
 import com.atech.expensesync.utils.Currency
 import kotlinx.serialization.Serializable
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
 sealed class AppNavigation(val route: String) {
     data object AppScreen : AppNavigation("app_screen")
@@ -50,6 +51,7 @@ fun ViewMealArgs.toAddMealBookState() = AddMealBookState(
     createdAt = createdAt.toLong()
 )
 
+@OptIn(KoinExperimentalAPI::class)
 fun NavGraphBuilder.appNavigation(
     navHostController: NavHostController,
 ) {

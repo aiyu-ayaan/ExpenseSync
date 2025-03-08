@@ -38,7 +38,6 @@ class ViewMealViewModel(
     ) {
         when (onEvent) {
             is ViewMealEvents.SetMealBookId -> {
-                if (_mealBookId != null) return
                 _mealBookId = onEvent.mealBookId
                 _mealBookState.value = onEvent.state
                 loadData()

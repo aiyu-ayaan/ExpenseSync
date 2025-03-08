@@ -36,9 +36,10 @@ import com.atech.expensesync.ui.screens.split.root.SplitViewModel
 import com.atech.expensesync.ui.screens.split.root.compose.add_group.AddGroupScreen
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
-import com.atech.expensesync.ui_utils.koinViewModel
 import com.atech.expensesync.ui_utils.runWithDeviceCompose
 import kotlinx.coroutines.flow.Flow
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
 
 private enum class DetailScreen {
@@ -48,7 +49,9 @@ private enum class DetailScreen {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class,
+    KoinExperimentalAPI::class
+)
 @Composable
 fun SplitScreen(
     modifier: Modifier = Modifier,

@@ -28,12 +28,16 @@ import com.atech.expensesync.ui.screens.scan.ScanEvents
 import com.atech.expensesync.ui.screens.scan.ScanViewModel
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
-import com.atech.expensesync.ui_utils.koinViewModel
 import com.atech.expensesync.utils.ResponseDataState
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.devices
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class,
+    KoinExperimentalAPI::class
+)
 @Composable
 fun ScanScreen(
     modifier: Modifier = Modifier, navHostController: NavHostController

@@ -6,14 +6,16 @@ import androidx.navigation.navigation
 import com.atech.expensesync.ui.screens.login.LogInViewModel
 import com.atech.expensesync.ui.screens.login.compose.LogInScreen
 import com.atech.expensesync.ui_utils.fadeThroughComposable
-import com.atech.expensesync.ui_utils.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
 
 sealed class LogInNavigation(val routes: String) {
-    object LogInScreen : LogInNavigation("login_screen")
+    data object LogInScreen : LogInNavigation("login_screen")
 }
 
 
+@OptIn(KoinExperimentalAPI::class)
 fun NavGraphBuilder.logInScreenNavigation(
     navHostController: NavHostController
 ) {
@@ -28,7 +30,7 @@ fun NavGraphBuilder.logInScreenNavigation(
             LogInScreen(
                 navHostController = navHostController,
                 onEvent = viewModel::onEvent,
-                userState =  viewModel.user.value
+                userState = viewModel.user.value
             )
         }
     }

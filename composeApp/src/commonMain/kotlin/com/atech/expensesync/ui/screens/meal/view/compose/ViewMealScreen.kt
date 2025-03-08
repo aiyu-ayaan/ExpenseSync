@@ -117,6 +117,7 @@ fun ViewMealScreen(
     defaultCurrency: Currency = Currency.INR,
     state: List<MealBookEntry>,
     calenderMonth: CalendarMonthInternal,
+    onDeleteClear: () -> Unit = {},
     onEvent: (ViewMealEvents) -> Unit = {},
     onNavigateUp: () -> Unit = {}
 ) {
@@ -150,23 +151,19 @@ fun ViewMealScreen(
     var isEditDialogVisible by remember { mutableStateOf(false) }
 
     AnimatedVisibility(isEditDialogVisible) {
-        EditMealDialog(
-            mealBook = mealBookState,
-            onDismissRequest = {
+        EditMealDialog(mealBook = mealBookState, onDismissRequest = {
+            isEditDialogVisible = false
+        }, canShowDeleteOption = false, confirmButton = {
+            onEvent.invoke(ViewMealEvents.UpdateMealBook(it) { res ->
+                if (res < 0) {
+                    showToast("Failed to create Meal Book.Check Meal Book name and try again")
+                    return@UpdateMealBook
+                }
+                showToast("Meal Book updated successfully")
                 isEditDialogVisible = false
-            },
-            canShowDeleteOption = false,
-            confirmButton = {
-                onEvent.invoke(ViewMealEvents.UpdateMealBook(it) { res ->
-                    if (res < 0) {
-                        showToast("Failed to create Meal Book.Check Meal Book name and try again")
-                        return@UpdateMealBook
-                    }
-                    showToast("Meal Book updated successfully")
-                    isEditDialogVisible = false
-                })
-            }
-        )
+                onDeleteClear.invoke()
+            })
+        })
     }
 
     AnimatedVisibility(deleteWarningDialogVisible) {
@@ -242,10 +239,9 @@ fun ViewMealScreen(
                         title = "Description",
                     )
                     Text(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(
-                                start = MaterialTheme.spacing.small
-                            ),
+                        modifier = Modifier.fillMaxWidth().padding(
+                            start = MaterialTheme.spacing.small
+                        ),
                         text = mealBookState.description,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(
@@ -388,7 +384,13 @@ fun ShowLineChart(
                 )
             )
             LineChart(
-                modifier = modifier.fillMaxSize().aspectRatio(1f),
+                modifier = when (getDisplayType()) {
+                    DeviceType.MOBILE -> modifier.fillMaxWidth().aspectRatio(1f)
+
+                    else -> modifier.fillMaxWidth(
+                        .5f
+                    ).aspectRatio(1f)
+                },
                 linesParameters = lineChartData,
                 isGrid = false,
                 xAxisData = List(monthCurr.size) { index -> "Week ${index + 1}" },

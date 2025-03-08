@@ -34,40 +34,49 @@ import com.atech.expensesync.component.BottomPadding
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.navigation.ViewMealArgs
+import com.atech.expensesync.navigation.toAddMealBookState
 import com.atech.expensesync.ui.screens.meal.edit.EditMealBookDialog
 import com.atech.expensesync.ui.screens.meal.edit.EditMealDialog
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.screens.meal.root.MealScreenEvents
 import com.atech.expensesync.ui.screens.meal.root.MealViewModel
 import com.atech.expensesync.ui.screens.meal.root.compose.add.AddMealBookScreen
+import com.atech.expensesync.ui.screens.meal.view.ViewMealEvents
+import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
+import com.atech.expensesync.ui.screens.meal.view.compose.ViewMealScreen
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 import com.atech.expensesync.ui_utils.formatAmount
-import com.atech.expensesync.ui_utils.koinViewModel
 import com.atech.expensesync.ui_utils.showToast
 import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.checkIts1stDayOfMonth
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
 //private enum class DetailsScreenType {
 //    AddMealBook, None
 //}
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, KoinExperimentalAPI::class)
 @Composable
 fun MealScreen(
     modifier: Modifier = Modifier,
     canShowAppBar: (Boolean) -> Unit,
+    viewModel: MealViewModel = koinViewModel(),
     navHostController: NavHostController
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
-    val viewModel = koinViewModel<MealViewModel>()
+    val mealViewModel = koinViewModel<ViewMealViewModel>()
     val mealBookItems by viewModel.mealBooks.collectAsState(emptyList())
+
+    val lazyListState = rememberLazyListState()
     navigator.backHandlerThreePane(backAction = {
-//        detailsScreenType = DetailsScreenType.None
         viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(null))
     })
+
+    var viewMealArgs: ViewMealArgs? by remember { mutableStateOf(null) }
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
@@ -75,9 +84,14 @@ fun MealScreen(
         listPane = {
             AnimatedPane {
                 canShowAppBar.invoke(true)
-                MealListScreen(onItemClick = {
-                    navHostController.navigate(
-                        ViewMealArgs(
+                MealListScreen(
+                    listState = lazyListState,
+                    onDeleteClear = {
+                        viewMealArgs = null
+                    },
+                    onItemClick = {
+                        /*navHostController.navigate(*/
+                        viewMealArgs = ViewMealArgs(
                             mealBookId = it.mealBookId,
                             name = it.name,
                             defaultPrice = it.defaultPrice.toString(),
@@ -85,19 +99,23 @@ fun MealScreen(
                             description = it.description,
                             createdAt = it.created.toString()
                         )
-                    )
-                }, onAddMealBookClick = {
-                    viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(AddMealBookState()))
-                    navigator.navigateTo(ListDetailPaneScaffoldRole.Extra)
-                }, state = mealBookItems, onEvent = viewModel::onEvent, calculateTotalPrice = {
-                    val value by viewModel.calculateTotalForCurrentMonth(it).collectAsState(0.0)
-                    value
-                }, calculateTotalLastMonthPrice = {
-                    if (checkIts1stDayOfMonth()) {
-                        val value by viewModel.calculateTotalForLastMonth(it).collectAsState(0.0)
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.Detail
+                        )
+//                    )
+                    }, onAddMealBookClick = {
+                        viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(AddMealBookState()))
+                        navigator.navigateTo(ListDetailPaneScaffoldRole.Extra)
+                    }, state = mealBookItems, onEvent = viewModel::onEvent, calculateTotalPrice = {
+                        val value by viewModel.calculateTotalForCurrentMonth(it).collectAsState(0.0)
                         value
-                    } else 0.0
-                })
+                    }, calculateTotalLastMonthPrice = {
+                        if (checkIts1stDayOfMonth()) {
+                            val value by viewModel.calculateTotalForLastMonth(it)
+                                .collectAsState(0.0)
+                            value
+                        } else 0.0
+                    })
             }
         },
         extraPane = {
@@ -113,17 +131,36 @@ fun MealScreen(
                     })
             }
         },
-        detailPane = {}/* when (detailsScreenType) {
-            DetailsScreenType.AddMealBook -> {
-                {
-
-                }
+        detailPane = {
+            if (viewMealArgs == null) return@ListDetailPaneScaffold
+            AnimatedPane {
+                canShowAppBar.invoke(false)
+                val arg = viewMealArgs!!.toAddMealBookState()
+                mealViewModel.onEvent(
+                    ViewMealEvents.SetMealBookId(
+                        viewMealArgs!!.mealBookId,
+                        arg
+                    )
+                )
+                val calenderMonth by mealViewModel.calenderMonth
+                val mealBookEntryState by mealViewModel.mealBookEntryState
+                ViewMealScreen(
+                    mealBookState = mealViewModel.mealBookState.value
+                        ?: arg,
+                    state = mealBookEntryState,
+                    calenderMonth = calenderMonth,
+                    onEvent = mealViewModel::onEvent,
+                    onNavigateUp = {
+                        navigator.navigateBack()
+                        viewMealArgs = null
+                    },
+                    onDeleteClear = {
+                        viewMealArgs = null
+                        navigator.navigateBack()
+                    }
+                )
             }
-
-            DetailsScreenType.None -> {
-                {}
-            }
-        }*/
+        }
     )
 }
 
@@ -146,13 +183,15 @@ private fun MealListScreen(
     modifier: Modifier = Modifier,
     onAddMealBookClick: () -> Unit = {},
     state: List<MealBook>,
+    listState: LazyListState,
+    onDeleteClear: () -> Unit = {},
     calculateTotalPrice: @Composable (String) -> Double,
     calculateTotalLastMonthPrice: @Composable (String) -> Double = { 0.0 },
     onEvent: (MealScreenEvents) -> Unit = {},
     onItemClick: (MealBook) -> Unit = {}
 ) {
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val lazyListState = rememberLazyListState()
+
 
     var isPriceDialogVisible by remember { mutableStateOf(false) }
     var price by remember { mutableStateOf(0.0.formatAmount()) }
@@ -170,6 +209,7 @@ private fun MealListScreen(
                 yetEditModel = null
             },
             onDeleteItem = {
+                onDeleteClear.invoke()
                 onEvent.invoke(
                     MealScreenEvents.DeleteMealBook(
                         mealBookId = yetEditModel!!.mealBookId,
@@ -224,7 +264,7 @@ private fun MealListScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text("Add Meal") },
-                expanded = lazyListState.handelFabState(),
+                expanded = listState.handelFabState(),
                 icon = {
                     Icon(Icons.TwoTone.Book, contentDescription = "Add Meal")
                 }, onClick = onAddMealBookClick
@@ -234,7 +274,7 @@ private fun MealListScreen(
             modifier = Modifier
                 .padding(MaterialTheme.spacing.medium),
             contentPadding = paddingValues,
-            state = lazyListState,
+            state = listState,
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             items(state) {
@@ -278,6 +318,8 @@ private fun MealListScreen(
 private fun MealScreenPreview() {
     ExpenseSyncTheme {
         MealListScreen(
-            state = emptyList(), calculateTotalPrice = { 0.0 })
+            state = emptyList(), calculateTotalPrice = { 0.0 },
+            listState = rememberLazyListState()
+        )
     }
 }
