@@ -77,7 +77,7 @@ kotlin {
             implementation(libs.landscapist.coil3)
 
             implementation(libs.chart)
-            implementation(libs.kotlinx.datetime.v062)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.calendar)
             implementation(libs.jetlime)
         }
