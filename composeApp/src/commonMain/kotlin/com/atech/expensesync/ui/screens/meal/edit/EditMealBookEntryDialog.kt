@@ -45,7 +45,7 @@ import kotlinx.datetime.TimeZone
 import java.util.Calendar
 
 @Composable
-fun EditMealBookDialog(
+fun EditMealBookEntryDialog(
     modifier: Modifier = Modifier,
     isEdit: Boolean = false,
     price: String,

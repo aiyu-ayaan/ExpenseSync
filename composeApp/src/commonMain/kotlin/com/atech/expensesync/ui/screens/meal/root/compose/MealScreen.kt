@@ -33,9 +33,7 @@ import androidx.navigation.NavHostController
 import com.atech.expensesync.component.BottomPadding
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.meal.MealBook
-import com.atech.expensesync.navigation.ViewMealArgs
-import com.atech.expensesync.navigation.toAddMealBookState
-import com.atech.expensesync.ui.screens.meal.edit.EditMealBookDialog
+import com.atech.expensesync.ui.screens.meal.edit.EditMealBookEntryDialog
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.screens.meal.root.MealScreenEvents
 import com.atech.expensesync.ui.screens.meal.root.MealViewModel
@@ -71,11 +69,8 @@ fun MealScreen(
     val mealBookItems by viewModel.mealBooks.collectAsState(emptyList())
 
     val lazyListState = rememberLazyListState()
-    navigator.backHandlerThreePane(backAction = {
-        viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(null))
-    })
+    navigator.backHandlerThreePane()
 
-    var viewMealArgs: ViewMealArgs? by remember { mutableStateOf(null) }
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
@@ -87,13 +82,18 @@ fun MealScreen(
                     listState = lazyListState,
                     onItemClick = {
                         /*navHostController.navigate(*/
-                        viewMealArgs = ViewMealArgs(
-                            mealBookId = it.mealBookId,
-                            name = it.name,
-                            defaultPrice = it.defaultPrice.toString(),
-                            defaultCurrency = it.defaultCurrency.name,
-                            description = it.description,
-                            createdAt = it.created.toString()
+                        viewModel.onEvent(
+                            MealScreenEvents.SetMealBookEntry(
+                                AddMealBookState(
+                                    icon = it.icon,
+                                    mealBookId = it.mealBookId,
+                                    name = it.name,
+                                    defaultPrice = it.defaultPrice,
+                                    defaultCurrency = it.defaultCurrency,
+                                    createdAt = it.created,
+                                    description = it.description,
+                                )
+                            )
                         )
                         navigator.navigateTo(
                             ListDetailPaneScaffoldRole.Detail
@@ -135,42 +135,52 @@ fun MealScreen(
                     state = viewModel.addMealState.value ?: return@AnimatedPane,
                     onEvent = viewModel::onEvent,
                     onNavigationClick = {
-                        viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(null))
                         navigator.navigateBack()
-//                        detailsScreenType = DetailsScreenType.None
                     })
             }
         },
-        detailPane = {
-            if (viewMealArgs == null) return@ListDetailPaneScaffold
-            AnimatedPane {
-                canShowAppBar.invoke(false)
-                val arg = viewMealArgs!!.toAddMealBookState()
-                mealViewModel.onEvent(
-                    ViewMealEvents.SetMealBookId(
-                        viewMealArgs!!.mealBookId,
-                        arg
-                    )
-                )
-                val calenderMonth by mealViewModel.calenderMonth
-                val mealBookEntryState by mealViewModel.mealBookEntryState
-                ViewMealScreen(
-                    mealBookState = mealViewModel.mealBookState.value
-                        ?: arg,
-                    state = mealBookEntryState,
-                    calenderMonth = calenderMonth,
-                    onEvent = mealViewModel::onEvent,
-                    onNavigateUp = {
-                        navigator.navigateBack()
-                        viewMealArgs = null
-                    },
-                    onDeleteClear = {
-                        viewMealArgs = null
-                        navigator.navigateBack()
+        detailPane =
+            if (viewModel.addMealState.value != null) {
+                {
+                    val arg = viewModel.addMealState.value
+                    AnimatedPane {
+                        canShowAppBar.invoke(false)
+                        mealViewModel.onEvent(
+                            ViewMealEvents.SetMealBookId(
+                                arg!!.mealBookId,
+                                arg
+                            )
+                        )
+                        val calenderMonth by mealViewModel.calenderMonth
+                        val mealBookEntryState by mealViewModel.mealBookEntryState
+                        ViewMealScreen(
+                            mealBookState = mealViewModel.mealBookState.value
+                                ?: arg,
+                            state = mealBookEntryState,
+                            calenderMonth = calenderMonth,
+                            onEvent = mealViewModel::onEvent,
+                            onNavigateUp = {
+                                navigator.navigateBack()
+                                viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(null))
+                            },
+                            onEditClick = {
+                                viewModel.onEvent(
+                                    MealScreenEvents.SetMealBookEntry(
+                                        arg.copy(
+                                            isEdit = true
+                                        )
+                                    )
+                                )
+                                navigator.navigateTo(
+                                    ListDetailPaneScaffoldRole.Extra
+                                )
+                            }
+                        )
                     }
-                )
+                }
+            } else {
+                {}
             }
-        }
     )
 }
 
@@ -210,7 +220,7 @@ private fun MealListScreen(
 
 
     AnimatedVisibility(isPriceDialogVisible) {
-        EditMealBookDialog(price = price, currency = currency, onDismissRequest = {
+        EditMealBookEntryDialog(price = price, currency = currency, onDismissRequest = {
             isPriceDialogVisible = false
             price = 0.0.formatAmount()
             mealBookId = null
@@ -218,7 +228,7 @@ private fun MealListScreen(
             onEvent.invoke(
                 MealScreenEvents.AddMealBookEntry(
                     mealBookEntry = it.copy(
-                        mealBookId = mealBookId ?: return@EditMealBookDialog,
+                        mealBookId = mealBookId ?: return@EditMealBookEntryDialog,
                     ), onComplete = {
                         showToast(
                             "Meal Book Entry created successfully"

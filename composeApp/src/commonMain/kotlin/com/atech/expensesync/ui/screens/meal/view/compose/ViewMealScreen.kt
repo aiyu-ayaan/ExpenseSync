@@ -65,8 +65,7 @@ import com.atech.expensesync.component.DisplayCard
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.component.TitleComposable
 import com.atech.expensesync.database.room.meal.MealBookEntry
-import com.atech.expensesync.ui.screens.meal.edit.EditMealBookDialog
-import com.atech.expensesync.ui.screens.meal.edit.EditMealDialog
+import com.atech.expensesync.ui.screens.meal.edit.EditMealBookEntryDialog
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.screens.meal.view.CalendarMonthInternal
 import com.atech.expensesync.ui.screens.meal.view.ViewMealEvents
@@ -118,6 +117,7 @@ fun ViewMealScreen(
     state: List<MealBookEntry>,
     calenderMonth: CalendarMonthInternal,
     onDeleteClear: () -> Unit = {},
+    onEditClick: (AddMealBookState) -> Unit = {},
     onEvent: (ViewMealEvents) -> Unit = {},
     onNavigateUp: () -> Unit = {}
 ) {
@@ -148,23 +148,7 @@ fun ViewMealScreen(
     var showHistoryBottomSheet by remember { mutableStateOf(false) }
     var deleteWarningDialogVisible by remember { mutableStateOf(false) }
 
-    var isEditDialogVisible by remember { mutableStateOf(false) }
 
-    AnimatedVisibility(isEditDialogVisible) {
-        EditMealDialog(mealBook = mealBookState, onDismissRequest = {
-            isEditDialogVisible = false
-        }, canShowDeleteOption = false, confirmButton = {
-            onEvent.invoke(ViewMealEvents.UpdateMealBook(it) { res ->
-                if (res < 0) {
-                    showToast("Failed to create Meal Book.Check Meal Book name and try again")
-                    return@UpdateMealBook
-                }
-                showToast("Meal Book updated successfully")
-                isEditDialogVisible = false
-                onDeleteClear.invoke()
-            })
-        })
-    }
 
     AnimatedVisibility(deleteWarningDialogVisible) {
         AlertDialog(title = {
@@ -200,8 +184,9 @@ fun ViewMealScreen(
         actions = {
             IconButton(
                 onClick = {
-                    isEditDialogVisible = !isEditDialogVisible
-
+                    onEditClick.invoke(
+                        mealBookState
+                    )
                 }) {
                 Icon(imageVector = Icons.TwoTone.Edit, contentDescription = null)
             }
@@ -304,7 +289,7 @@ fun ViewMealScreen(
         AnimatedVisibility(
             isPriceDialogVisible && mealBookEntry != null
         ) {
-            EditMealBookDialog(
+            EditMealBookEntryDialog(
                 isEdit = true,
                 price = mealBookEntry?.price?.formatAmount() ?: 0.0.formatAmount(),
                 currency = defaultCurrency,
@@ -317,7 +302,7 @@ fun ViewMealScreen(
                     onEvent.invoke(
                         ViewMealEvents.UpdateMealBookEntry(
                             oldMealBookEntry = mealBookEntry, mealBookEntry = it.copy(
-                                mealBookId = mealBookEntry?.mealBookId ?: return@EditMealBookDialog,
+                                mealBookId = mealBookEntry?.mealBookId ?: return@EditMealBookEntryDialog,
                             ), onComplete = { request ->
                                 if (request < 0) {
                                     showToast(
@@ -336,7 +321,7 @@ fun ViewMealScreen(
                 onDeleteItem = {
                     onEvent.invoke(
                         ViewMealEvents.OnDeleteMealBookEntry(
-                            mealBookEntry = mealBookEntry ?: return@EditMealBookDialog
+                            mealBookEntry = mealBookEntry ?: return@EditMealBookEntryDialog
                         )
                     )
                     isPriceDialogVisible = false
