@@ -18,7 +18,7 @@ class MealViewModel(
 
     val mealBooks = useCases.getMealBooks.invoke()
 
-    val mapper by lazy { AddMealBookStateTOMealBookMapper() }
+    private val mapper by lazy { AddMealBookStateTOMealBookMapper() }
 
     fun calculateTotalForCurrentMonth(
         mealBookId: String
@@ -102,6 +102,8 @@ class MealViewModel(
                     )
                 }
 
+            is MealScreenEvents.SetMealBookEntry ->
+                _addMealState.value = event.mealBookEntry
         }
     }
 }

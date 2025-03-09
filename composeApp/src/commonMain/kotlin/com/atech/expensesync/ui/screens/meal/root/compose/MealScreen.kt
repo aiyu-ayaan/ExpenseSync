@@ -36,7 +36,6 @@ import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.navigation.ViewMealArgs
 import com.atech.expensesync.navigation.toAddMealBookState
 import com.atech.expensesync.ui.screens.meal.edit.EditMealBookDialog
-import com.atech.expensesync.ui.screens.meal.edit.EditMealDialog
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.screens.meal.root.MealScreenEvents
 import com.atech.expensesync.ui.screens.meal.root.MealViewModel
@@ -86,9 +85,6 @@ fun MealScreen(
                 canShowAppBar.invoke(true)
                 MealListScreen(
                     listState = lazyListState,
-                    onDeleteClear = {
-                        viewMealArgs = null
-                    },
                     onItemClick = {
                         /*navHostController.navigate(*/
                         viewMealArgs = ViewMealArgs(
@@ -115,7 +111,21 @@ fun MealScreen(
                                 .collectAsState(0.0)
                             value
                         } else 0.0
-                    })
+                    },
+                    onLongClick = {
+                        if (navigator.currentDestination?.pane == ListDetailPaneScaffoldRole.Detail) {
+                            return@MealListScreen
+                        }
+                        viewModel.onEvent(
+                            MealScreenEvents.SetMealBookEntry(
+                                it
+                            )
+                        )
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.Extra
+                        )
+                    }
+                )
             }
         },
         extraPane = {
@@ -184,7 +194,7 @@ private fun MealListScreen(
     onAddMealBookClick: () -> Unit = {},
     state: List<MealBook>,
     listState: LazyListState,
-    onDeleteClear: () -> Unit = {},
+    onLongClick: (AddMealBookState) -> Unit = {},
     calculateTotalPrice: @Composable (String) -> Double,
     calculateTotalLastMonthPrice: @Composable (String) -> Double = { 0.0 },
     onEvent: (MealScreenEvents) -> Unit = {},
@@ -197,43 +207,7 @@ private fun MealListScreen(
     var price by remember { mutableStateOf(0.0.formatAmount()) }
     var currency by remember { mutableStateOf(Currency.INR) }
     var mealBookId: String? by remember { mutableStateOf(null) }
-    var yetEditModel: AddMealBookState? by remember { mutableStateOf(null) }
-    var isEditDialogVisible by remember { mutableStateOf(false) }
 
-    AnimatedVisibility(isEditDialogVisible) {
-        if (yetEditModel == null) return@AnimatedVisibility
-        EditMealDialog(
-            mealBook = yetEditModel!!,
-            onDismissRequest = {
-                isEditDialogVisible = false
-                yetEditModel = null
-            },
-            onDeleteItem = {
-                onDeleteClear.invoke()
-                onEvent.invoke(
-                    MealScreenEvents.DeleteMealBook(
-                        mealBookId = yetEditModel!!.mealBookId,
-                        onComplete = {
-                            showToast("Meal Book deleted successfully")
-                            isEditDialogVisible = false
-                            yetEditModel = null
-                        }
-                    ))
-            },
-            confirmButton = {
-                onEvent.invoke(MealScreenEvents.UpdateMealBook(it) { res ->
-                    if (res < 0) {
-                        showToast("Failed to create Meal Book.Check Meal Book name and try again")
-                        return@UpdateMealBook
-                    }
-                    showToast("Meal Book updated successfully")
-                    isEditDialogVisible = false
-                    yetEditModel = null
-
-                })
-            }
-        )
-    }
 
     AnimatedVisibility(isPriceDialogVisible) {
         EditMealBookDialog(price = price, currency = currency, onDismissRequest = {
@@ -292,15 +266,18 @@ private fun MealListScreen(
                         price = it.defaultPrice.formatAmount()
                     },
                     onlLongClick = {
-                        yetEditModel = AddMealBookState(
-                            mealBookId = it.mealBookId,
-                            name = it.name,
-                            defaultPrice = it.defaultPrice,
-                            defaultCurrency = it.defaultCurrency,
-                            createdAt = it.created,
-                            description = it.description
+                        onLongClick.invoke(
+                            AddMealBookState(
+                                icon = it.icon,
+                                mealBookId = it.mealBookId,
+                                name = it.name,
+                                defaultPrice = it.defaultPrice,
+                                defaultCurrency = it.defaultCurrency,
+                                createdAt = it.created,
+                                description = it.description,
+                                isEdit = true
+                            )
                         )
-                        isEditDialogVisible = true
                     }
                 )
             }

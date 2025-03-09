@@ -3,16 +3,20 @@ package com.atech.expensesync.ui.screens.meal.root.compose.add
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material.icons.twotone.Description
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,7 +54,7 @@ fun AddMealBookScreen(
     var price by remember { mutableStateOf(state.defaultPrice.formatAmount()) }
     var showCurrencyBottomSheet by remember { mutableStateOf(false) }
     var showIconBottomSheet by remember { mutableStateOf(false) }
-
+    var isDeleteDialogVisible by remember { mutableStateOf(false) }
 
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -60,16 +64,27 @@ fun AddMealBookScreen(
         onNavigationClick = onNavigationClick,
         actions = {
             AppButton(
-                text = "Create",
+                text = if (state.isEdit) "Update" else "Add",
                 enable = state.defaultPrice != 0.0 && state.name.isNotEmpty(),
                 onClick = {
-                    onEvent.invoke(MealScreenEvents.OnAddMeal {
-                        if (it > 0) {
-                            showToast("Meal Book created successfully")
-                            onNavigationClick()
-                        } else {
+                    if (state.isEdit.not()) {
+                        onEvent.invoke(MealScreenEvents.OnAddMeal {
+                            if (it > 0) {
+                                showToast("Meal Book created successfully")
+                                onNavigationClick()
+                            } else {
+                                showToast("Failed to create Meal Book.Check Meal Book name and try again")
+                            }
+                        })
+                        return@AppButton
+                    }
+                    onEvent.invoke(MealScreenEvents.UpdateMealBook(state) { res ->
+                        if (res < 0) {
                             showToast("Failed to create Meal Book.Check Meal Book name and try again")
+                            return@UpdateMealBook
                         }
+                        onNavigationClick()
+                        showToast("Meal Book updated successfully")
                     })
                 })
         }) { paddingValues ->
@@ -91,17 +106,12 @@ fun AddMealBookScreen(
 
         AnimatedVisibility(showIconBottomSheet) {
             ChooseIconBottomSheet(
-                modifier = Modifier,
-                sheetState = sheetState,
-                isForFood = true,
-                onDismissRequest = {
+                modifier = Modifier, sheetState = sheetState, isForFood = true, onDismissRequest = {
                     scope.launch {
                         sheetState.hide()
                         showIconBottomSheet = false
                     }
-                }
-            ) {
-//               TODO:// Handel this screen to also update data
+                }) {
                 onEvent.invoke(
                     MealScreenEvents.OnMealScreenStateChange(
                         state.copy(icon = it.displayName)
@@ -204,6 +214,53 @@ fun AddMealBookScreen(
                         MealScreenEvents.OnMealScreenStateChange(state.copy(description = ""))
                     )
                 })
+            if (state.isEdit) TextButton(
+                modifier = Modifier.fillMaxWidth(), onClick = {
+                    isDeleteDialogVisible = true
+                }) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.TwoTone.Delete, contentDescription = null
+                    )
+                    Text(
+                        "Delete"
+                    )
+                }
+            }
+        }
+
+        if (isDeleteDialogVisible) {
+            AlertDialog(icon = {
+                Icon(
+                    imageVector = Icons.TwoTone.Delete, contentDescription = "Delete Meal"
+                )
+            }, onDismissRequest = { isDeleteDialogVisible = false }, title = {
+                Text("Delete Meal Book")
+            }, text = {
+                Text("Are you sure you want to delete this meal book?")
+            }, confirmButton = {
+                TextButton(onClick = {
+                    onEvent.invoke(
+                        MealScreenEvents.DeleteMealBook(
+                            mealBookId = state.mealBookId, onComplete = {
+                                showToast("Meal Book deleted successfully")
+                                isDeleteDialogVisible = false
+                                onNavigationClick()
+                            })
+                    )
+
+                }) {
+                    Text("Delete")
+                }
+            }, dismissButton = {
+                TextButton(onClick = { isDeleteDialogVisible = false }) {
+                    Text("Cancel")
+                }
+            })
         }
     }
 }

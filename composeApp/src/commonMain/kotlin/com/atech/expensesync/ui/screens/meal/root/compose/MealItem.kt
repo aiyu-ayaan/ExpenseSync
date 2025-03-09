@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.atech.expensesync.component.DefaultCard
+import com.atech.expensesync.component.mealIcons
 import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui_utils.formatAmount
@@ -65,8 +66,10 @@ fun MealItem(
                 Text("${current}/${total}")
             },
             leadingContent = {
+                val icon =
+                    (mealIcons.find { it.displayName == state.icon } ?: mealIcons.first()).icon
                 Icon(
-                    imageVector = Icons.TwoTone.EmojiFoodBeverage,
+                    imageVector = icon,
                     contentDescription = "Meal Book"
                 )
             },

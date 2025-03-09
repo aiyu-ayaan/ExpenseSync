@@ -12,7 +12,9 @@ data class AddMealBookState(
     val description: String = "",
     val defaultCurrency: Currency = Currency.INR,
     val mealBookId: String = UUID.randomUUID().toString(),
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+//    just for edit
+    val isEdit: Boolean = false
 )
 
 

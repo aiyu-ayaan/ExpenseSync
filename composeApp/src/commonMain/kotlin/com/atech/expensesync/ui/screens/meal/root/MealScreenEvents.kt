@@ -11,6 +11,10 @@ sealed interface MealScreenEvents {
     ) :
         MealScreenEvents
 
+    data class SetMealBookEntry(
+        val mealBookEntry: AddMealBookState?,
+    ) : MealScreenEvents
+
     data class UpdateMealBook(
         val model: AddMealBookState,
         val onComplete: (Long) -> Unit
