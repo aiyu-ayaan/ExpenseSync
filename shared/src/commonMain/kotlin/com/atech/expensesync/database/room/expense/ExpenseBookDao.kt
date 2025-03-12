@@ -16,21 +16,21 @@ interface ExpenseBookDao {
     suspend fun insertExpense(expense: ExpenseBook): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertExpenses(expenses: ExpenseBookEntry): Long
+    suspend fun insertExpenseEntry(expenses: ExpenseBookEntry): Long
 
 
     @Update
     suspend fun updateExpense(expense: ExpenseBook): Int
 
     @Update
-    suspend fun updateExpenses(expenses: ExpenseBookEntry): Int
+    suspend fun updateExpenseEntry(expenses: ExpenseBookEntry): Int
 
 
     @Delete
     suspend fun deleteExpense(expense: ExpenseBook): Int
 
     @Delete
-    suspend fun deleteExpenses(expenses: ExpenseBookEntry): Int
+    suspend fun deleteExpenseEntry(expenses: ExpenseBookEntry): Int
 
 
     @Query("SELECT * FROM expense_book order by createdAt desc")
@@ -56,7 +56,7 @@ interface ExpenseBookDao {
     suspend fun addTransaction(
         expenseBookEntry: ExpenseBookEntry
     ) {
-        insertExpenses(expenseBookEntry)
+        insertExpenseEntry(expenseBookEntry)
         if (expenseBookEntry.transactionType == TransactionType.IN)
             updateTotalIn(expenseBookEntry.bookId, expenseBookEntry.amount)
         else

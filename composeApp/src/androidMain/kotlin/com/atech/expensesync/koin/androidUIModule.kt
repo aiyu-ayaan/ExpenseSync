@@ -1,5 +1,6 @@
 package com.atech.expensesync.koin
 
+import com.atech.expensesync.ui.screens.expense.root.ExpenseViewModel
 import com.atech.expensesync.ui.screens.login.LogInViewModel
 import com.atech.expensesync.ui.screens.meal.root.MealViewModel
 import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
@@ -16,4 +17,5 @@ val androidUIModule = module {
     viewModel { AddExpenseViewModel(get(), get(), get()) }
     viewModel { MealViewModel(get()) }
     viewModel { ViewMealViewModel(get()) }
+    viewModel { ExpenseViewModel(get()) }
 }
