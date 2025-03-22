@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -46,7 +48,12 @@ fun AddEditScreen(
                 clearIconClick = {
                     onEvent(ExpanseEvents.OnExpenseBookChange(state.copy(bookName = "")))
                 },
-                placeholder = "Enter Book Name"
+                placeholder = "Enter Book Name",
+                keyboardOptions = KeyboardOptions(
+                    imeAction = androidx.compose.ui.text.input.ImeAction.Done,
+                    keyboardType = androidx.compose.ui.text.input.KeyboardType.Text,
+                    capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Words
+                )
             )
             Spacer(
                 modifier = Modifier.padding(MaterialTheme.spacing.medium)
@@ -55,7 +62,17 @@ fun AddEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Save",
                 enable = state.bookName.isNotEmpty(),
-            )
+                onClick = {
+                    onEvent(ExpanseEvents.OnSaveExpense {
+                        if (it > 0) {
+                            onNavigateClick()
+                            return@OnSaveExpense
+                        }
+                        com.atech.expensesync.ui_utils.showToast(
+                            "Failed to save expense", com.atech.expensesync.ui_utils.Duration.LONG
+                        )
+                    })
+                })
         }
     }
 }

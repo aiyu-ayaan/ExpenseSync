@@ -8,4 +8,8 @@ sealed interface ExpanseEvents {
     ) : ExpanseEvents
 
     data object ResetStates : ExpanseEvents
+
+    data class OnSaveExpense(
+        val onComplete: (Long) -> Unit
+    ) : ExpanseEvents
 }
