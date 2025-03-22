@@ -87,17 +87,19 @@ fun ExpenseScreen(
         },
         detailPane = if (viewModel.clickedExpenseBook.value != null) {
             {
-                canShowAppBar.invoke(false)
-                ExpenseDetailsScreen(
-                    state = viewModel.clickedExpenseBook.value!!,
-                    onNavigateBack = {
-                        viewModel.onEvent(
-                            ExpanseEvents.ResetStates
-                        )
-                        navigator.navigateBack()
-                    },
-                    onEvent = viewModel::onEvent
-                )
+                AnimatedPane {
+                    canShowAppBar.invoke(false)
+                    ExpenseDetailsScreen(
+                        state = viewModel.clickedExpenseBook.value!!,
+                        onNavigateBack = {
+                            viewModel.onEvent(
+                                ExpanseEvents.ResetStates
+                            )
+                            navigator.navigateBack()
+                        },
+                        onEvent = viewModel::onEvent
+                    )
+                }
             }
         } else {
             {}
