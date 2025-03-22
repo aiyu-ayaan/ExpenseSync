@@ -10,15 +10,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
-import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.atech.expensesync.utils.Currency
 
@@ -41,14 +43,17 @@ fun ChooseCurrencyBottomSheet(
         ) {
             Currency.entries.toList().forEach {
                 ListItem(
+                    colors = ListItemDefaults.colors(
+                        containerColor = Color.Transparent
+                    ),
                     modifier = Modifier.clickable {
                         onCurrencyClick(it)
                         onDismissRequest()
                     },
-                    text = {
+                    headlineContent = {
                         Text(it.name)
                     },
-                    icon = {
+                    leadingContent = {
                         Box(
                             modifier = Modifier.size(34.dp)
                                 .background(
