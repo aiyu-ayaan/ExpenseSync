@@ -18,6 +18,8 @@ class ExpenseViewModel(
     )
     val expenseBook: State<ExpenseBook> get() = _expenseBook
 
+    val expenseBooks = useCase.getAllExpenses()
+
     fun onEvent(
         event: ExpanseEvents
     ) {

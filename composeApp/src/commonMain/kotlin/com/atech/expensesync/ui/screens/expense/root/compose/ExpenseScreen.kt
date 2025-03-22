@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
@@ -18,9 +19,12 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.room.expense.ExpenseBook
 import com.atech.expensesync.ui.screens.expense.root.ExpanseEvents
 import com.atech.expensesync.ui.screens.expense.root.ExpenseViewModel
 import com.atech.expensesync.ui.screens.expense.root.compose.add_edit.AddEditScreen
@@ -43,6 +47,8 @@ fun ExpenseScreen(
     val lazyListState = rememberLazyListState()
     val viewModel = koinViewModel<ExpenseViewModel>()
 
+    val expenseBooks by viewModel.expenseBooks.collectAsState(emptyList())
+
     navigator.backHandlerThreePane(
         {
             viewModel.onEvent(
@@ -63,7 +69,8 @@ fun ExpenseScreen(
                         navigator.navigateTo(
                             ListDetailPaneScaffoldRole.Extra
                         )
-                    }
+                    },
+                    expenseBook = expenseBooks
                 )
             }
         },
@@ -94,6 +101,7 @@ fun ExpenseScreen(
 private fun MainScreen(
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
+    expenseBook: List<ExpenseBook> = emptyList(),
     onAddMealBookClick: () -> Unit = {}
 ) {
     MainContainer(
@@ -115,8 +123,10 @@ private fun MainScreen(
             state = listState,
             contentPadding = paddingValues,
         ) {
-            item {
-                Text("Expense Screen")
+            items(expenseBook) {
+                ExpenseItem(
+                    expenseBook = it
+                )
             }
         }
     }

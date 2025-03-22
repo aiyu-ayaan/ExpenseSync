@@ -2,6 +2,7 @@ package com.atech.expensesync.database.room.expense
 
 import androidx.annotation.Keep
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.atech.expensesync.utils.Currency
@@ -65,7 +66,11 @@ data class ExpenseBook(
     val updatedAt: Long? = null,
     @PrimaryKey(autoGenerate = false)
     val bookId: String = UUID.randomUUID().toString(),
-)
+) {
+    @get:Ignore
+    val netBalance: Double
+        get() = totalIn - totalOut
+}
 
 
 @Entity(
