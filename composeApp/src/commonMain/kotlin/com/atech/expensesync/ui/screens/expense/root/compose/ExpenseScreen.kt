@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.screens.expense.root.compose
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -150,6 +151,9 @@ private fun MainScreen(
                 .padding(MaterialTheme.spacing.medium),
             state = listState,
             contentPadding = paddingValues,
+            verticalArrangement = Arrangement.spacedBy(
+                MaterialTheme.spacing.medium
+            )
         ) {
             items(expenseBook) {
                 ExpenseItem(
