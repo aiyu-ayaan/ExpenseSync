@@ -24,6 +24,7 @@ fun getExpenseSyncDatabase(): SplitSyncDatabase {
         name = dbFile.absolutePath,
     ).setDriver(BundledSQLiteDriver())
         .addMigrations(SplitSyncDatabase.MIGRATION_1_2)
+        .addMigrations(SplitSyncDatabase.MIGRATION_2_3)
         .fallbackToDestructiveMigration(false)
         .build()
 }

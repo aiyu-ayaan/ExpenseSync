@@ -32,7 +32,7 @@ import com.atech.expensesync.database.room.split.TransactionSplitDao
         ExpenseBook::class,
         ExpenseBookEntry::class
     ],
-    version = 2
+    version = 3
 )
 abstract class SplitSyncDatabase : RoomDatabase() {
     abstract val splitGroupDao: SplitGroupDao
@@ -53,6 +53,15 @@ abstract class SplitSyncDatabase : RoomDatabase() {
                 connection.execSQL(
                     """
                         ALTER TABLE expense_book ADD COLUMN icon TEXT NOT NULL DEFAULT ""
+                    """.trimIndent()
+                )
+            }
+        }
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(connection: SQLiteConnection) {
+                connection.execSQL(
+                    """
+                        ALTER TABLE expense_book ADD COLUMN updatedAt INTEGER NULL DEFAULT NULL
                     """.trimIndent()
                 )
             }

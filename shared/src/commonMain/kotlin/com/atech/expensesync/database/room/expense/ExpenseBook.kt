@@ -62,6 +62,7 @@ data class ExpenseBook(
     val totalOut: Double = 0.0,
     val defaultCurrency: Currency = Currency.INR,
     val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long? = null,
     @PrimaryKey(autoGenerate = false)
     val bookId: String = UUID.randomUUID().toString(),
 )
