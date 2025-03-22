@@ -20,6 +20,10 @@ class ExpenseViewModel(
 
     val expenseBooks = useCase.getAllExpenses()
 
+
+    private val _clickedExpenseBook = mutableStateOf<ExpenseBook?>(null)
+    val clickedExpenseBook: State<ExpenseBook?> get() = _clickedExpenseBook
+
     fun onEvent(
         event: ExpanseEvents
     ) {
@@ -32,6 +36,7 @@ class ExpenseViewModel(
                 _expenseBook.value = ExpenseBook(
                     bookName = ""
                 )
+                _clickedExpenseBook.value = null
             }
 
             is ExpanseEvents.OnSaveExpense -> viewModelScope.launch {
@@ -40,6 +45,10 @@ class ExpenseViewModel(
                         _expenseBook.value
                     )
                 )
+            }
+
+            is ExpanseEvents.OnExpenseBookClick -> {
+                _clickedExpenseBook.value = event.expenseBook
             }
         }
     }

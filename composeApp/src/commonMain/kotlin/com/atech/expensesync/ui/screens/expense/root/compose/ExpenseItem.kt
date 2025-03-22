@@ -1,6 +1,7 @@
 package com.atech.expensesync.ui.screens.expense.root.compose
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -21,10 +22,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ExpenseItem(
     modifier: Modifier = Modifier,
-    expenseBook: ExpenseBook
+    expenseBook: ExpenseBook,
+    onClick: () -> Unit = {}
 ) {
     DefaultCard(
         modifier = modifier.fillMaxWidth()
+            .clickable {
+                onClick()
+            },
     ) {
         ListItem(
             modifier = Modifier,

@@ -12,4 +12,8 @@ sealed interface ExpanseEvents {
     data class OnSaveExpense(
         val onComplete: (Long) -> Unit
     ) : ExpanseEvents
+
+    data class OnExpenseBookClick(
+        val expenseBook: ExpenseBook?
+    ) : ExpanseEvents
 }

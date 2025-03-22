@@ -39,6 +39,7 @@ fun AppButton(
     modifier: Modifier = Modifier,
     text: String,
     enable: Boolean = true,
+    shape: Shape = ButtonDefaults.shape,
     innerPadding: Dp = 0.dp,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     onClick: () -> Unit = {}
@@ -47,12 +48,49 @@ fun AppButton(
         modifier = modifier,
         onClick = onClick,
         colors = colors,
-        enabled = enable
+        enabled = enable,
+        shape = shape
     ) {
         Text(
             text,
             modifier = Modifier.padding(innerPadding)
         )
+    }
+}
+
+
+@Composable
+fun AppButtonWithIcon(
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector,
+    enable: Boolean = true,
+    shape: Shape = ButtonDefaults.shape,
+    innerPadding: Dp = 0.dp,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    onClick: () -> Unit = {}
+) {
+    Button(
+        modifier = modifier,
+        onClick = onClick,
+        colors = colors,
+        enabled = enable,
+        shape = shape
+    ) {
+        Row(
+            modifier = Modifier.padding(innerPadding),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null
+            )
+            Text(
+                text,
+                modifier = Modifier
+            )
+        }
     }
 }
 

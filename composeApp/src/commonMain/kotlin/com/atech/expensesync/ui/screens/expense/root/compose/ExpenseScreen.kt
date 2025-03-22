@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.expense.ExpenseBook
+import com.atech.expensesync.ui.screens.expense.detail.compose.ExpenseDetailsScreen
 import com.atech.expensesync.ui.screens.expense.root.ExpanseEvents
 import com.atech.expensesync.ui.screens.expense.root.ExpenseViewModel
 import com.atech.expensesync.ui.screens.expense.root.compose.add_edit.AddEditScreen
@@ -70,12 +71,36 @@ fun ExpenseScreen(
                             ListDetailPaneScaffoldRole.Extra
                         )
                     },
-                    expenseBook = expenseBooks
+                    expenseBook = expenseBooks,
+                    onMealBookItemClick = {
+                        viewModel.onEvent(
+                            ExpanseEvents.OnExpenseBookClick(
+                                it
+                            )
+                        )
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.Detail
+                        )
+                    }
                 )
             }
         },
-        detailPane = {
-            canShowAppBar.invoke(false)
+        detailPane = if (viewModel.clickedExpenseBook.value != null) {
+            {
+                canShowAppBar.invoke(false)
+                ExpenseDetailsScreen(
+                    state = viewModel.clickedExpenseBook.value!!,
+                    onNavigateBack = {
+                        viewModel.onEvent(
+                            ExpanseEvents.ResetStates
+                        )
+                        navigator.navigateBack()
+                    },
+                    onEvent = viewModel::onEvent
+                )
+            }
+        } else {
+            {}
         },
         extraPane = {
             AnimatedPane {
@@ -102,7 +127,8 @@ private fun MainScreen(
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
     expenseBook: List<ExpenseBook> = emptyList(),
-    onAddMealBookClick: () -> Unit = {}
+    onAddMealBookClick: () -> Unit = {},
+    onMealBookItemClick: (ExpenseBook) -> Unit = {}
 ) {
     MainContainer(
         modifier = modifier,
@@ -125,7 +151,10 @@ private fun MainScreen(
         ) {
             items(expenseBook) {
                 ExpenseItem(
-                    expenseBook = it
+                    expenseBook = it,
+                    onClick = {
+                        onMealBookItemClick(it)
+                    }
                 )
             }
         }

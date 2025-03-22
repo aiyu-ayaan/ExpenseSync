@@ -11,6 +11,14 @@ val ColorScheme.captionColor: Color
     @Composable
     get() = onSurface.copy(alpha = 0.6f)
 
+val ColorScheme.appGreen: Color
+    @Composable
+    get() = Color(0xFF127E40)
+
+val ColorScheme.appRed: Color
+    @Composable
+    get() = Color(0xFFC73B3A)
+
 @Composable
 fun ExpenseSyncTheme(
     content: @Composable () -> Unit
