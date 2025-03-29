@@ -12,15 +12,11 @@ import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material.icons.twotone.Today
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.atech.expensesync.component.DatePickerModal
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.TextItem
 import com.atech.expensesync.database.room.meal.MealBookEntry
@@ -41,8 +38,6 @@ import com.atech.expensesync.ui_utils.isValidDecimalInput
 import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.DatePattern
 import com.atech.expensesync.utils.convertToDateFormat
-import kotlinx.datetime.TimeZone
-import java.util.Calendar
 
 @Composable
 fun EditMealBookEntryDialog(
@@ -233,44 +228,3 @@ fun EditMealBookEntryDialog(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerModal(
-    onDateSelected: (Long?) -> Unit, onDismiss: () -> Unit
-) {
-    val datePickerState = rememberDatePickerState()
-
-    DatePickerDialog(onDismissRequest = onDismiss, confirmButton = {
-        TextButton(onClick = {
-            val selectedDateMillis = datePickerState.selectedDateMillis
-            val dateWithCurrentTime = selectedDateMillis?.let { getDateWithCurrentTime(it) }
-
-            onDateSelected(dateWithCurrentTime)
-            onDismiss()
-        }) {
-            Text("OK")
-        }
-    }, dismissButton = {
-        TextButton(onClick = onDismiss) {
-            Text("Cancel")
-        }
-    }) {
-        DatePicker(state = datePickerState)
-    }
-}
-
-private fun getDateWithCurrentTime(dateMillis: Long): Long {
-    val timeZone = TimeZone.currentSystemDefault().id
-    val selectedDate = Calendar.getInstance(java.util.TimeZone.getTimeZone(timeZone)).apply {
-        timeInMillis = dateMillis
-    }
-
-    val currentTime = Calendar.getInstance(java.util.TimeZone.getTimeZone(timeZone))
-
-    selectedDate.set(Calendar.HOUR_OF_DAY, currentTime.get(Calendar.HOUR_OF_DAY))
-    selectedDate.set(Calendar.MINUTE, currentTime.get(Calendar.MINUTE))
-    selectedDate.set(Calendar.SECOND, currentTime.get(Calendar.SECOND))
-    selectedDate.set(Calendar.MILLISECOND, currentTime.get(Calendar.MILLISECOND))
-
-    return selectedDate.timeInMillis
-}

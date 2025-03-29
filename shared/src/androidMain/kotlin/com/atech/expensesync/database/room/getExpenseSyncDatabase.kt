@@ -14,5 +14,6 @@ fun getExpenseSyncDatabase(context: Context): SplitSyncDatabase {
     ).fallbackToDestructiveMigration(false)
         .addMigrations(SplitSyncDatabase.MIGRATION_1_2)
         .addMigrations(SplitSyncDatabase.MIGRATION_2_3)
+        .addMigrations(SplitSyncDatabase.MIGRATION_3_4)
         .build()
 }

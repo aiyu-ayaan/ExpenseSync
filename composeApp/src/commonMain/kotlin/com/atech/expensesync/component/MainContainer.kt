@@ -44,6 +44,7 @@ fun Toolbar(
     title: String = "",
     onNavigationClick: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
+    titleColor: Color = MaterialTheme.colorScheme.onBackground,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     color: Color = MaterialTheme.colorScheme.background
 ) {
@@ -61,14 +62,17 @@ fun Toolbar(
 
     TopAppBar(
         title = {
-            Text(text = title)
+            Text(
+                text = title,
+                color = titleColor,
+            )
         },
         modifier = modifier,
         actions = actions,
         scrollBehavior = scrollBehavior,
         navigationIcon = icon,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = color
+            containerColor = color,
         )
     )
 }
@@ -103,6 +107,7 @@ fun MainContainer(
     enableTopBar: Boolean = true,
     customTopBar: (@Composable () -> Unit)? = null,
     title: String = "",
+    titleColor: Color = MaterialTheme.colorScheme.onBackground,
     appBarColor: Color = MaterialTheme.colorScheme.background,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     state: PullToRefreshState = rememberPullToRefreshState(),
@@ -127,6 +132,7 @@ fun MainContainer(
             {
                 Toolbar(
                     title = title,
+                    titleColor = titleColor,
                     onNavigationClick = onNavigationClick,
                     actions = actions,
                     scrollBehavior = scrollBehavior,

@@ -576,7 +576,7 @@ fun VerticalEventContent(
                             }
                         } else null, trailingContent = {
                             Text(
-                                text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_A),
+                                text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_12),
                                 style = MaterialTheme.typography.labelMedium,
                                 maxLines = 1
                             )

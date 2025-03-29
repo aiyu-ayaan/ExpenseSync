@@ -22,17 +22,8 @@ import com.atech.expensesync.database.room.split.TransactionSplitDao
 
 
 @Database(
-    entities = [
-        SplitGroupMembers::class,
-        SplitTransactions::class,
-        TransactionSplit::class,
-        SplitGroup::class,
-        MealBook::class,
-        MealBookEntry::class,
-        ExpenseBook::class,
-        ExpenseBookEntry::class
-    ],
-    version = 3
+    entities = [SplitGroupMembers::class, SplitTransactions::class, TransactionSplit::class, SplitGroup::class, MealBook::class, MealBookEntry::class, ExpenseBook::class, ExpenseBookEntry::class],
+    version = 4
 )
 abstract class SplitSyncDatabase : RoomDatabase() {
     abstract val splitGroupDao: SplitGroupDao
@@ -62,6 +53,15 @@ abstract class SplitSyncDatabase : RoomDatabase() {
                 connection.execSQL(
                     """
                         ALTER TABLE expense_book ADD COLUMN updatedAt INTEGER NULL DEFAULT NULL
+                    """.trimIndent()
+                )
+            }
+        }
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(connection: SQLiteConnection) {
+                connection.execSQL(
+                    """
+                        ALTER TABLE expense_book_entry ADD COLUMN paymentMethod TEXT NOT NULL DEFAULT "CASH"
                     """.trimIndent()
                 )
             }

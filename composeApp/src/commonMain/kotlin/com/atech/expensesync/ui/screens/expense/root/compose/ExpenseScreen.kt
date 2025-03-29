@@ -22,10 +22,15 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.expense.ExpenseBook
+import com.atech.expensesync.ui.screens.expense.detail.compose.CashInOutScreen
+import com.atech.expensesync.ui.screens.expense.detail.compose.CashType
 import com.atech.expensesync.ui.screens.expense.detail.compose.ExpenseDetailsScreen
 import com.atech.expensesync.ui.screens.expense.root.ExpanseEvents
 import com.atech.expensesync.ui.screens.expense.root.ExpenseViewModel
@@ -37,6 +42,12 @@ import com.atech.expensesync.ui_utils.backHandlerThreePane
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
+
+
+internal enum class ExtraScreenType {
+    ADD,
+    CASH_IN_OUT
+}
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, KoinExperimentalAPI::class)
 @Composable
@@ -50,12 +61,15 @@ fun ExpenseScreen(
     val viewModel = koinViewModel<ExpenseViewModel>()
 
     val expenseBooks by viewModel.expenseBooks.collectAsState(emptyList())
+    var extraScreenType by remember { mutableStateOf(ExtraScreenType.ADD) }
+    var cashInOutType by remember { mutableStateOf(CashType.CASH_IN) }
 
     navigator.backHandlerThreePane(
         {
-            viewModel.onEvent(
-                ExpanseEvents.ResetStates
-            )
+            if (extraScreenType == ExtraScreenType.ADD)
+                viewModel.onEvent(
+                    ExpanseEvents.ResetStates
+                )
         }
     )
     ListDetailPaneScaffold(
@@ -68,6 +82,7 @@ fun ExpenseScreen(
                 MainScreen(
                     listState = lazyListState,
                     onAddMealBookClick = {
+                        extraScreenType = ExtraScreenType.ADD
                         navigator.navigateTo(
                             ListDetailPaneScaffoldRole.Extra
                         )
@@ -98,6 +113,13 @@ fun ExpenseScreen(
                             )
                             navigator.navigateBack()
                         },
+                        cashInOutClick = {
+                            extraScreenType = ExtraScreenType.CASH_IN_OUT
+                            cashInOutType = it
+                            navigator.navigateTo(
+                                ListDetailPaneScaffoldRole.Extra
+                            )
+                        },
                         onEvent = viewModel::onEvent
                     )
                 }
@@ -105,19 +127,37 @@ fun ExpenseScreen(
         } else {
             {}
         },
-        extraPane = {
-            AnimatedPane {
-                canShowAppBar.invoke(false)
-                AddEditScreen(
-                    state = viewModel.expenseBook.value,
-                    onEvent = viewModel::onEvent,
-                    onNavigateClick = {
-                        viewModel.onEvent(
-                            ExpanseEvents.ResetStates
+        extraPane = when (extraScreenType) {
+            ExtraScreenType.ADD -> {
+                {
+                    AnimatedPane {
+                        canShowAppBar.invoke(false)
+                        AddEditScreen(
+                            state = viewModel.expenseBook.value,
+                            onEvent = viewModel::onEvent,
+                            onNavigateClick = {
+                                viewModel.onEvent(
+                                    ExpanseEvents.ResetStates
+                                )
+                                navigator.navigateBack()
+                            }
                         )
-                        navigator.navigateBack()
                     }
-                )
+                }
+            }
+
+            ExtraScreenType.CASH_IN_OUT -> {
+                {
+                    AnimatedPane {
+                        canShowAppBar.invoke(false)
+                        CashInOutScreen(
+                            cashType = cashInOutType,
+                            onNavigationClick = {
+                                navigator.navigateBack()
+                            }
+                        )
+                    }
+                }
             }
         }
     )

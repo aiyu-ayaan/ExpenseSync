@@ -39,6 +39,7 @@ fun ExpenseDetailsScreen(
     modifier: Modifier = Modifier,
     state: ExpenseBook,
     onNavigateBack: () -> Unit = {},
+    cashInOutClick: (CashType) -> Unit = {},
     onEvent: (ExpanseEvents) -> Unit = {}
 ) {
     MainContainer(
@@ -64,7 +65,10 @@ fun ExpenseDetailsScreen(
                                 contentColor = Color.White
                             ),
                         shape = RoundedCornerShape(MaterialTheme.spacing.medium),
-                        innerPadding = MaterialTheme.spacing.small
+                        innerPadding = MaterialTheme.spacing.small,
+                        onClick = {
+                            cashInOutClick(CashType.CASH_IN)
+                        }
                     )
                     AppButtonWithIcon(
                         modifier = Modifier.weight(1f),
@@ -76,7 +80,10 @@ fun ExpenseDetailsScreen(
                                 contentColor = Color.White
                             ),
                         shape = RoundedCornerShape(MaterialTheme.spacing.medium),
-                        innerPadding = MaterialTheme.spacing.small
+                        innerPadding = MaterialTheme.spacing.small,
+                        onClick = {
+                            cashInOutClick(CashType.CASH_OUT)
+                        }
                     )
                 }
             }
@@ -107,7 +114,7 @@ fun TopNetBalanceView(
 ) {
     DefaultCard(
         modifier = modifier.fillMaxWidth()
-            /*.padding(MaterialTheme.spacing.medium)*/
+        /*.padding(MaterialTheme.spacing.medium)*/
     ) {
         ListItem(
             modifier = modifier,

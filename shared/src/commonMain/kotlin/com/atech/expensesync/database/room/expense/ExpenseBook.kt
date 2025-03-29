@@ -46,6 +46,16 @@ enum class TransactionType {
     OUT
 }
 
+enum class PaymentMethod {
+    CASH,
+    CREDIT_CARD,
+    DEBIT_CARD,
+    BANK_TRANSFER,
+    UPI,
+    PAYPAL,
+    OTHER
+}
+
 @Entity(
     tableName = "expense_book",
     indices = [
@@ -94,6 +104,7 @@ data class ExpenseBookEntry(
     val transactionType: TransactionType,
     val remarks: String = "",
     val category: Category = Category.NONE,
+    val paymentMethod: PaymentMethod = PaymentMethod.CASH,
     @PrimaryKey
     val createdAt: Long = System.currentTimeMillis(),
 )
