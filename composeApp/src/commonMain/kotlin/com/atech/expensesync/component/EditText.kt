@@ -7,17 +7,28 @@
 
 package com.atech.expensesync.component
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
@@ -30,12 +41,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.IntSize
 import com.atech.expensesync.ui_utils.formatAmount
 import com.atech.expensesync.ui_utils.isValidDecimalInput
 
@@ -181,9 +196,9 @@ fun EditTextEnhance(
 
     OutlinedTextField(
         modifier = modifier.let {
-            if (focusRequester == null) it
-            else it.focusRequester(focusRequester)
-        },
+        if (focusRequester == null) it
+        else it.focusRequester(focusRequester)
+    },
         value = value,
         maxLines = maxLines,
         onValueChange = onValueChange,
@@ -342,4 +357,106 @@ fun EditTextPrice(
         interactionSource = interactionSource,
         singleLine = singleLine
     )
+}
+
+
+@Composable
+fun DropdownMenu(
+    modifier: Modifier = Modifier,
+    selectedOption: String,
+    placeholder: String,
+    options: List<String>,
+    onOptionSelected: (String) -> Unit,
+    isError: Boolean = false,
+    supportingText: @Composable (() -> Unit)? = null,
+    enable: Boolean = true,
+    colors: TextFieldColors = textFieldColors(),
+    leadingIcon: (@Composable () -> Unit)? = null,
+    readOnly: Boolean = true,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val rotationState by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f, label = "rotation"
+    )
+
+    // Use this to track the text field's size
+    val textFieldSize = remember { mutableStateOf(IntSize.Zero) }
+
+    Box(modifier = modifier) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth().onGloballyPositioned { coordinates ->
+                textFieldSize.value = coordinates.size
+            },
+            value = selectedOption,
+            onValueChange = { },
+            readOnly = readOnly,
+            label = {
+                Text(text = placeholder)
+            },
+            leadingIcon = leadingIcon,
+            trailingIcon = {
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = "Dropdown arrow",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.rotate(rotationState)
+                    )
+                }
+            },
+            colors = colors,
+            isError = isError,
+            supportingText = supportingText,
+            enabled = enable,
+            interactionSource = interactionSource,
+            singleLine = true
+        )
+
+        // Transparent clickable overlay
+        if (enable) {
+            Box(
+                modifier = Modifier.matchParentSize().clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }) {
+                    expanded = !expanded
+                })
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.width(with(LocalDensity.current) {
+                    textFieldSize.value.width.toDp()
+                }).background(MaterialTheme.colorScheme.surface)
+        ) {
+            options.forEach { option ->
+                Column {
+                    DropdownMenuItem(
+                        text = { Text(option) }, onClick = {
+                        onOptionSelected(option)
+                        expanded = false
+                    }, colors = MenuDefaults.itemColors(
+                        textColor = MaterialTheme.colorScheme.onSurface,
+                        leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.38f
+                        ),
+                        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.38f
+                        )
+                    )
+                    )
+                    if (option != options.last()) {
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+                        )
+                    }
+                }
+            }
+        }
+    }
 }

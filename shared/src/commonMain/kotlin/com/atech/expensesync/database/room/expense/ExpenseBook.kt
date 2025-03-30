@@ -46,14 +46,14 @@ enum class TransactionType {
     OUT
 }
 
-enum class PaymentMethod {
-    CASH,
-    CREDIT_CARD,
-    DEBIT_CARD,
-    BANK_TRANSFER,
-    UPI,
-    PAYPAL,
-    OTHER
+enum class PaymentMethod(val displayName: String) {
+    CASH("Cash"),
+    CREDIT_CARD("Credit Card"),
+    DEBIT_CARD("Debit Card"),
+    BANK_TRANSFER("Bank Transfer"),
+    UPI("UPI"),
+    PAYPAL("PayPal"),
+    OTHER("Other"),
 }
 
 @Entity(

@@ -151,9 +151,14 @@ fun ExpenseScreen(
                     AnimatedPane {
                         canShowAppBar.invoke(false)
                         CashInOutScreen(
+                            bookId = viewModel.clickedExpenseBook.value?.bookId
+                                ?: return@AnimatedPane,
                             cashType = cashInOutType,
                             onNavigationClick = {
                                 navigator.navigateBack()
+                            },
+                            onSave = {
+
                             }
                         )
                     }
