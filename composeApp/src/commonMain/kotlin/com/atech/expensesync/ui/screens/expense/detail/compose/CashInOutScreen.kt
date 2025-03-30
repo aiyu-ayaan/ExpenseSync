@@ -24,9 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.atech.expensesync.component.DatePickerModal
 import com.atech.expensesync.component.EditTextEnhance
+import com.atech.expensesync.component.EditTextPrice
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.component.TimePickerDialog
 import com.atech.expensesync.component.setTimeToDate
+import com.atech.expensesync.component.textFieldColors
+import com.atech.expensesync.database.room.expense.ExpenseBookEntry
+import com.atech.expensesync.database.room.expense.TransactionType
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.appGreen
 import com.atech.expensesync.ui.theme.appRed
@@ -41,6 +45,7 @@ enum class CashType {
     CASH_OUT
 }
 
+@Suppress("MemberExtensionConflict")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CashInOutScreen(
@@ -48,15 +53,51 @@ fun CashInOutScreen(
     cashType: CashType = CashType.CASH_IN,
     onNavigationClick: () -> Unit = {},
 ) {
-    val textColor = if (cashType == CashType.CASH_IN) {
+    val textColor = if (cashType == CashType.CASH_IN)
         MaterialTheme.colorScheme.appGreen
-    } else {
+    else
         MaterialTheme.colorScheme.appRed
+
+    val transactionType = if (cashType == CashType.CASH_IN)
+        TransactionType.IN
+    else TransactionType.OUT
+
+    var amount: ExpenseBookEntry by remember {
+        mutableStateOf(
+            ExpenseBookEntry(
+                amount = 0.0,
+                transactionType = transactionType,
+                bookId = ""
+            )
+        )
     }
 
     var currentPickDate by remember { mutableStateOf(System.currentTimeMillis()) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
+    AnimatedVisibility(showDatePicker) {
+        DatePickerModal(
+            onDateSelected = {
+                currentPickDate = it ?: System.currentTimeMillis()
+            },
+            onDismiss = {
+                showDatePicker = !showDatePicker
+            }
+        )
+    }
+    AnimatedVisibility(showTimePicker) {
+        TimePickerDialog(
+            onConfirm = {
+                currentPickDate = setTimeToDate(
+                    currentPickDate,
+                    it
+                )
+            },
+            onDismiss = {
+                showTimePicker = !showTimePicker
+            }
+        )
+    }
     MainContainer(
         modifier = modifier,
         title = "Add ${if (cashType == CashType.CASH_IN) "Cash In" else "Cash Out"} Entry",
@@ -119,37 +160,44 @@ fun CashInOutScreen(
                 }
             }
 
-            EditTextEnhance(
+            EditTextPrice(
                 modifier = Modifier.fillMaxWidth(),
-                value = "",
-                onValueChange = {},
-                placeholder = "Enter Amount",
-            )
-        }
-
-        AnimatedVisibility(showDatePicker) {
-            DatePickerModal(
-                onDateSelected = {
-                    currentPickDate = it ?: System.currentTimeMillis()
-                },
-                onDismiss = {
-                    showDatePicker = !showDatePicker
-                }
-            )
-        }
-        AnimatedVisibility(showTimePicker) {
-            TimePickerDialog(
-                onConfirm = {
-                    currentPickDate = setTimeToDate(
-                        currentPickDate,
-                        it
+                value = amount.amount.toString(),
+                onValueChange = {
+                    amount = amount.copy(
+                        amount = it.toDouble()
                     )
                 },
-                onDismiss = {
-                    showTimePicker = !showTimePicker
+                placeholder = "Enter Amount *",
+                colors = textFieldColors()
+                    .copy(
+                        focusedTextColor = textColor,
+                        unfocusedTextColor = textColor
+                    ),
+                clearIconClick = {
+                    amount = amount.copy(
+                        amount = 0.0
+                    )
                 }
             )
+            AnimatedVisibility(
+                visible = amount.amount != 0.0
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    EditTextEnhance(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = "",
+                        onValueChange = {
+
+                        },
+                        placeholder = "Remark",
+                    )
+                }
+            }
         }
+
     }
 }
 

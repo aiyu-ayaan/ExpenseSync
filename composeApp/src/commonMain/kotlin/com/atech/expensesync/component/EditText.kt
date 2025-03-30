@@ -36,6 +36,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import com.atech.expensesync.ui_utils.formatAmount
+import com.atech.expensesync.ui_utils.isValidDecimalInput
 
 /**
  * Edit text
@@ -75,7 +77,8 @@ fun EditText(
     colors: TextFieldColors = textFieldColors(),
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = {
-        if (value.isNotBlank()) Icon(imageVector = Icons.Outlined.Clear,
+        if (value.isNotBlank()) Icon(
+            imageVector = Icons.Outlined.Clear,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable {
@@ -156,7 +159,8 @@ fun EditTextEnhance(
     colors: TextFieldColors = textFieldColors(),
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = {
-        if (value.isNotBlank()) Icon(imageVector = Icons.Outlined.Clear,
+        if (value.isNotBlank()) Icon(
+            imageVector = Icons.Outlined.Clear,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable {
@@ -167,7 +171,7 @@ fun EditTextEnhance(
     readOnly: Boolean = false,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    singleLine : Boolean = false
+    singleLine: Boolean = false
 ) {
 
     LaunchedEffect(focusRequester) {
@@ -234,17 +238,11 @@ fun PasswordEditTextCompose(
 ) {
     var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
     OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier,
-        placeholder = {
+        value = value, onValueChange = onValueChange, modifier = modifier, placeholder = {
             Text(placeholder)
-        },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password,
-            imeAction = imeAction
-        ),
-        trailingIcon = {
+        }, keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password, imeAction = imeAction
+        ), trailingIcon = {
             if (value.isNotBlank()) {
                 IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                     Icon(
@@ -253,8 +251,7 @@ fun PasswordEditTextCompose(
                     )
                 }
             }
-        },
-        visualTransformation = if (isPasswordVisible) VisualTransformation.None
+        }, visualTransformation = if (isPasswordVisible) VisualTransformation.None
         else PasswordVisualTransformation()
     )
 }
@@ -268,3 +265,81 @@ fun textFieldColors() = TextFieldDefaults.colors(
     focusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
     unfocusedContainerColor = MaterialTheme.colorScheme.surface
 )
+
+@Composable
+fun EditTextPrice(
+    modifier: Modifier = Modifier,
+    value: String,
+    placeholder: String,
+    onValueChange: (String) -> Unit = {},
+    clearIconClick: () -> Unit = {},
+    isError: Boolean = false,
+    supportingText: @Composable (() -> Unit)? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    focusRequester: FocusRequester? = null,
+    enable: Boolean = true,
+    colors: TextFieldColors = textFieldColors(),
+    leadingIcon: (@Composable () -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = {
+        if (value.isNotBlank()) Icon(
+            imageVector = Icons.Outlined.Clear,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clickable {
+                clearIconClick()
+            })
+    },
+    maxLines: Int = Int.MAX_VALUE,
+    readOnly: Boolean = false,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    singleLine: Boolean = false
+) {
+    var editablePrice by remember {
+        mutableStateOf(value.ifBlank { 0.0.formatAmount() })
+    }
+
+    // Update editablePrice when value changes from parent
+    LaunchedEffect(value) {
+        if (value != editablePrice && (value == "0.0" || value == "0")) {
+            editablePrice = value
+        }
+    }
+
+    EditTextEnhance(
+        modifier = modifier,
+        value = if (editablePrice == "0" || editablePrice == "0.0") "" else editablePrice,
+        placeholder = placeholder,
+        onValueChange = { newValue ->
+            if (newValue.isValidDecimalInput()) {
+                if (newValue.isBlank()) {
+                    editablePrice = 0.0.formatAmount()
+                    onValueChange("0.0")
+                    return@EditTextEnhance
+                }
+                editablePrice = newValue
+                onValueChange(newValue)
+            }
+        },
+        clearIconClick = {
+            editablePrice = ""  // Change this to directly set empty string
+            onValueChange("0.0")  // Still notify parent with the numeric value
+            clearIconClick.invoke()
+        },
+        isError = isError,
+        supportingText = supportingText,
+        keyboardOptions = keyboardOptions.copy(
+            keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done
+        ),
+        focusRequester = focusRequester,
+        enable = enable,
+        colors = colors,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        maxLines = maxLines,
+        readOnly = readOnly,
+        keyboardActions = keyboardActions,
+        interactionSource = interactionSource,
+        singleLine = singleLine
+    )
+}
