@@ -15,6 +15,8 @@ import com.atech.expensesync.component.DefaultCard
 import com.atech.expensesync.component.expenseIcons
 import com.atech.expensesync.database.room.expense.ExpenseBook
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
+import com.atech.expensesync.ui.theme.appGreen
+import com.atech.expensesync.ui.theme.appRed
 import com.atech.expensesync.ui_utils.formatAmount
 import com.atech.expensesync.utils.convertToDateFormat
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -52,9 +54,9 @@ fun ExpenseItem(
                     visible = expenseBook.totalAmount != 0.0
                 ) {
                     Text(
-                        text = "${expenseBook.totalAmount.formatAmount()} ${expenseBook.defaultCurrency.symbol}",
+                        text = "${expenseBook.netBalance.formatAmount()} ${expenseBook.defaultCurrency.symbol}",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if (expenseBook.netBalance >= 0) Color.Green else Color.Red
+                        color = if (expenseBook.netBalance >= 0) MaterialTheme.colorScheme.appGreen else MaterialTheme.colorScheme.appRed
                     )
                 }
             },

@@ -48,7 +48,17 @@ class ExpenseViewModel(
             }
 
             is ExpanseEvents.OnExpenseBookClick -> {
+//                TODO: add flows to observe the clicked expense book
                 _clickedExpenseBook.value = event.expenseBook
+            }
+
+            is ExpanseEvents.OnSaveExpenseBookEntry -> {
+                viewModelScope.launch {
+                    useCase.addTransaction.invoke(
+                        event.expenseBookEntry
+                    )
+                    event.onComplete()
+                }
             }
         }
     }

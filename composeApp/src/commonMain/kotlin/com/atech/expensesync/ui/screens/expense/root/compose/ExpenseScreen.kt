@@ -45,8 +45,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 
 
 internal enum class ExtraScreenType {
-    ADD,
-    CASH_IN_OUT
+    ADD, CASH_IN_OUT
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, KoinExperimentalAPI::class)
@@ -66,12 +65,10 @@ fun ExpenseScreen(
 
     navigator.backHandlerThreePane(
         {
-            if (extraScreenType == ExtraScreenType.ADD)
-                viewModel.onEvent(
-                    ExpanseEvents.ResetStates
-                )
-        }
-    )
+            if (extraScreenType == ExtraScreenType.ADD) viewModel.onEvent(
+                ExpanseEvents.ResetStates
+            )
+        })
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
@@ -79,26 +76,21 @@ fun ExpenseScreen(
         listPane = {
             AnimatedPane {
                 canShowAppBar.invoke(true)
-                MainScreen(
-                    listState = lazyListState,
-                    onAddMealBookClick = {
-                        extraScreenType = ExtraScreenType.ADD
-                        navigator.navigateTo(
-                            ListDetailPaneScaffoldRole.Extra
+                MainScreen(listState = lazyListState, onAddMealBookClick = {
+                    extraScreenType = ExtraScreenType.ADD
+                    navigator.navigateTo(
+                        ListDetailPaneScaffoldRole.Extra
+                    )
+                }, expenseBook = expenseBooks, onMealBookItemClick = {
+                    viewModel.onEvent(
+                        ExpanseEvents.OnExpenseBookClick(
+                            it
                         )
-                    },
-                    expenseBook = expenseBooks,
-                    onMealBookItemClick = {
-                        viewModel.onEvent(
-                            ExpanseEvents.OnExpenseBookClick(
-                                it
-                            )
-                        )
-                        navigator.navigateTo(
-                            ListDetailPaneScaffoldRole.Detail
-                        )
-                    }
-                )
+                    )
+                    navigator.navigateTo(
+                        ListDetailPaneScaffoldRole.Detail
+                    )
+                })
             }
         },
         detailPane = if (viewModel.clickedExpenseBook.value != null) {
@@ -140,8 +132,7 @@ fun ExpenseScreen(
                                     ExpanseEvents.ResetStates
                                 )
                                 navigator.navigateBack()
-                            }
-                        )
+                            })
                     }
                 }
             }
@@ -158,14 +149,20 @@ fun ExpenseScreen(
                                 navigator.navigateBack()
                             },
                             onSave = {
-
-                            }
-                        )
+                                viewModel.onEvent(
+                                    ExpanseEvents.OnSaveExpenseBookEntry(
+                                        it, onComplete = {
+                                            com.atech.expensesync.ui_utils.showToast(
+                                                "Entry saved successfully",
+                                            )
+                                            navigator.navigateBack()
+                                        })
+                                )
+                            })
                     }
                 }
             }
-        }
-    )
+        })
 }
 
 
@@ -179,21 +176,18 @@ private fun MainScreen(
     onMealBookItemClick: (ExpenseBook) -> Unit = {}
 ) {
     MainContainer(
-        modifier = modifier,
-        title = "Expenses",
-        floatingActionButton = {
+        modifier = modifier, title = "Expenses", floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text("Add New Book") },
                 expanded = listState.handelFabState(),
                 icon = {
                     Icon(Icons.TwoTone.Add, contentDescription = "Add New Book")
-                }, onClick = onAddMealBookClick
+                },
+                onClick = onAddMealBookClick
             )
-        }
-    ) { paddingValues ->
+        }) { paddingValues ->
         LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-                .padding(MaterialTheme.spacing.medium),
+            modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.medium),
             state = listState,
             contentPadding = paddingValues,
             verticalArrangement = Arrangement.spacedBy(
@@ -202,11 +196,9 @@ private fun MainScreen(
         ) {
             items(expenseBook) {
                 ExpenseItem(
-                    expenseBook = it,
-                    onClick = {
+                    expenseBook = it, onClick = {
                         onMealBookItemClick(it)
-                    }
-                )
+                    })
             }
         }
     }
