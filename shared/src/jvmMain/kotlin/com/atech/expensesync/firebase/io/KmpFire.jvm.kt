@@ -45,4 +45,34 @@ actual class KmpFire(
             close()
         }
     }
+
+    actual suspend inline fun <reified T : Any> fetchCollectionData(
+        collectionName: String,
+    ): Flow<FirebaseResponse<List<T>>> = callbackFlow {
+        trySend(FirebaseResponse.Loading)
+        try {
+            val collectionRef = firestore.collection(collectionName)
+
+            val listener = collectionRef.addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(FirebaseResponse.Error("Failed to listen for changes: ${error.message}"))
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val data = snapshot.toObjects(T::class.java)
+                    trySend(FirebaseResponse.Success(data))
+                } else {
+                    trySend(FirebaseResponse.Error("No data found"))
+                }
+            }
+
+            awaitClose {
+                listener.remove()
+            }
+        } catch (e: Exception) {
+            trySend(FirebaseResponse.Error("Failed to set up listener: ${e.message}"))
+            close()
+        }
+    }
 }

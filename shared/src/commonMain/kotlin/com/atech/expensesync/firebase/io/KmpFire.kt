@@ -9,4 +9,8 @@ expect class KmpFire {
         collectionName: String,
         documentName: String,
     ): Flow<FirebaseResponse<T>>
+
+    suspend inline fun <reified T : Any> fetchCollectionData(
+        collectionName: String,
+    ): Flow<FirebaseResponse<List<T>>>
 }
