@@ -29,12 +29,13 @@ import com.atech.expensesync.component.GoogleButton
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.database.pref.PrefKeys
+import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.login.toUser
 import com.atech.expensesync.navigation.ExpanseSyncRoutes
 import com.atech.expensesync.ui.screens.login.LogInEvents
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.runWithDeviceCompose
-import com.atech.expensesync.utils.ResponseDataState
+import com.atech.expensesync.utils.expenseSyncLogger
 import com.atech.expensesync.utils.runWithDevice
 import com.atech.expensesync.utils.toJson
 import expensesync.composeapp.generated.resources.Res
@@ -79,15 +80,15 @@ fun LogInScreen(
                     }
                     onEvent.invoke(LogInEvents.OnLogInClicked(logInState.toUser()) { model ->
                         when (model) {
-                            is ResponseDataState.Error -> {
+                            is FirebaseResponse.Error -> {
 //                        Todo: show error message
                                 canShowSnackBar = true to model.error
-                                com.atech.expensesync.utils.expenseSyncLogger(
+                                expenseSyncLogger(
                                     "Error: ${model.error}"
                                 )
                             }
 
-                            is ResponseDataState.Success<User> -> {
+                            is FirebaseResponse.Success<User> -> {
                                 pref.saveString(
                                     PrefKeys.USER_ID, model.data.uid
                                 )
@@ -100,6 +101,11 @@ fun LogInScreen(
                                         inclusive = true
                                     }
                                 }
+                            }
+
+                            FirebaseResponse.Loading -> {
+                                logInMessage = "Creating ..."
+                                hasClick = true
                             }
                         }
                     })

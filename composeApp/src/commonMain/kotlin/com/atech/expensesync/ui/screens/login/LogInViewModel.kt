@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.ktor.websocket.UserDataWebSocket
 import com.atech.expensesync.database.models.User
+import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
 import com.atech.expensesync.usecases.UserUseCases
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LogInViewModel(
-    private val userUseCases: UserUseCases, private val userDataWebSocket: UserDataWebSocket
+    private val userDataWebSocket: UserDataWebSocket,
+    private val firebaseUserUseCase: FirebaseUserUseCases
 ) : ViewModel() {
 
     private val _user = mutableStateOf<User?>(User())
@@ -22,7 +24,7 @@ class LogInViewModel(
     fun onEvent(events: LogInEvents) {
         when (events) {
             is LogInEvents.OnLogInClicked -> viewModelScope.launch {
-                events.onSuccess(userUseCases.createUserUseCase(events.model))
+                events.onSuccess(firebaseUserUseCase.createUser(events.model))
             }
 
             is LogInEvents.StartWebSocket -> viewModelScope.launch {

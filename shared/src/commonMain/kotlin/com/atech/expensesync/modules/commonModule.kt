@@ -5,6 +5,7 @@ import com.atech.expensesync.database.ktor.http.ExpenseSyncClientImp
 import com.atech.expensesync.database.ktor.httpClientEngineFactory
 import com.atech.expensesync.database.ktor.websocket.UserDataWebSocket
 import com.atech.expensesync.database.room.SplitSyncDatabase
+import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
 import com.atech.expensesync.usecases.AddTransactionUseCase
 import com.atech.expensesync.usecases.CreateMealBook
 import com.atech.expensesync.usecases.CreateMealBookEntry
@@ -128,6 +129,8 @@ val commonModule = module {
             get(),
         )
     }
+    single { com.atech.expensesync.firebase.usecase.CreateUserUseCase(get()) }
+    single { FirebaseUserUseCases(get()) }
 
 
 }

@@ -1,12 +1,12 @@
 package com.atech.expensesync.ui.screens.login
 
 import com.atech.expensesync.database.models.User
-import com.atech.expensesync.utils.ResponseDataState
+import com.atech.expensesync.firebase.util.FirebaseResponse
 
 sealed interface LogInEvents {
     data class OnLogInClicked(
         val model: User,
-        val onSuccess: (ResponseDataState<User>) -> Unit,
+        val onSuccess: (FirebaseResponse<User>) -> Unit,
     ) : LogInEvents
 
     data class StartWebSocket(
