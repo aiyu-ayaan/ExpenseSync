@@ -175,7 +175,7 @@ actual class KmpFire(
     }
 
     actual suspend inline fun <reified T : Any> updateDataMap(
-        collectionName: String, documentName: String, data: Map<String, Any>
+        collectionName: String, documentName: String, data: Map<String, Any?>
     ): FirebaseResponse<T> = try {
         val docRef = firestore.collection(collectionName).document(documentName)
         docRef.update(data).await()

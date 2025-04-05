@@ -40,6 +40,6 @@ expect class KmpFire {
     suspend inline fun <reified T : Any> updateDataMap(
         collectionName: String,
         documentName: String,
-        data: Map<String, Any>
+        data: Map<String, Any?>
     ): FirebaseResponse<T>
 }

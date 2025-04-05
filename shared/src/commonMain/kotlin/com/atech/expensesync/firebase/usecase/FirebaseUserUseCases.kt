@@ -13,7 +13,8 @@ data class FirebaseUserUseCases(
     val createUser: CreateUserUseCase,
     val logInToDesktopUseCase: LogInToDesktopUseCase,
     val observeLogInUsingOR: ObserveLogInUsingOR,
-    val getLogInDetails: GetLogInDetails
+    val getLogInDetails: GetLogInDetails,
+    val performDesktopLogOut: PerformDesktopLogOut
 )
 
 data class CreateUserUseCase(
@@ -81,5 +82,21 @@ data class GetLogInDetails(
         kmpFire.getObservedData(
             FirebaseCollectionPath.USER.path,
             uid
+        )
+}
+
+data class PerformDesktopLogOut(
+    private val kmpFire: KmpFire
+) {
+    suspend operator fun invoke(
+        uid: String,
+    ): FirebaseResponse<User> =
+        kmpFire.updateDataMap(
+            FirebaseCollectionPath.USER.path,
+            uid,
+            mapOf(
+                "systemUid" to null,
+                "desktopLogInDetails" to null
+            )
         )
 }

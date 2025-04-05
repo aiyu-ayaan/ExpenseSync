@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.screens.scan.compose
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,11 +10,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Devices
+import androidx.compose.material.icons.twotone.RemoveCircleOutline
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
@@ -58,6 +63,7 @@ fun ScanScreen(
     navigator.backHandlerThreePane()
     // Add state to control scanning
     var isScanning by remember { mutableStateOf(true) }
+    var isDialogVisible by remember { mutableStateOf(false) }
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
@@ -71,6 +77,42 @@ fun ScanScreen(
                         navHostController.popBackStack()
                     },
                 ) { paddingValue ->
+                    AnimatedVisibility(isDialogVisible) {
+                        AlertDialog(
+                            onDismissRequest = {
+                                isDialogVisible = false
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.TwoTone.RemoveCircleOutline,
+                                    contentDescription = "Delete Meal"
+                                )
+                            },
+                            title = {
+                                Text("Remove Device")
+                            },
+                            text = {
+                                Text("Are you sure you want to log out from this device?")
+                            },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    isDialogVisible = false
+                                    viewModel.onEvent(
+                                        ScanEvents.PerformLogOut
+                                    )
+                                }) {
+                                    Text("Delete")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = {
+                                    isDialogVisible = !isDialogVisible
+                                }) {
+                                    Text("Cancel")
+                                }
+                            }
+                        )
+                    }
                     Column(
                         modifier = Modifier.padding(paddingValue)
                             .padding(MaterialTheme.spacing.medium),
@@ -122,6 +164,16 @@ fun ScanScreen(
                                             text = "Logged in at ${data.longInAt.convertToDateFormat()}",
                                         )
                                     },
+                                    trailingContent = {
+                                        IconButton(onClick = {
+                                            isDialogVisible = !isDialogVisible
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.TwoTone.RemoveCircleOutline,
+                                                contentDescription = null
+                                            )
+                                        }
+                                    }
                                 )
                             }
                         }

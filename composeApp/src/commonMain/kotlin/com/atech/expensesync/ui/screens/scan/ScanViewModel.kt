@@ -59,6 +59,10 @@ class ScanViewModel(
                     )
                 )
             }
+
+            ScanEvents.PerformLogOut -> viewModelScope.launch {
+                useCases.performDesktopLogOut.invoke(uid)
+            }
         }
     }
 }
