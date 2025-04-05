@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.callbackFlow
 actual class KmpFire(
     val firestore: Firestore
 ) {
-    actual suspend inline fun <reified T : Any> fetchData(
+    actual suspend inline fun <reified T : Any> getObservedData(
         collectionName: String,
         documentName: String,
     ): Flow<FirebaseResponse<T>> = callbackFlow {
@@ -46,7 +46,7 @@ actual class KmpFire(
         }
     }
 
-    actual suspend inline fun <reified T : Any> fetchCollectionData(
+    actual suspend inline fun <reified T : Any> getObservedCollection(
         collectionName: String,
     ): Flow<FirebaseResponse<List<T>>> = callbackFlow {
         trySend(FirebaseResponse.Loading)
@@ -74,5 +74,40 @@ actual class KmpFire(
             trySend(FirebaseResponse.Error("Failed to set up listener: ${e.message}"))
             close()
         }
+    }
+
+    actual suspend inline fun <reified T : Any> getData(
+        collectionName: String,
+        documentName: String,
+    ): FirebaseResponse<T> = try {
+        val docRef = firestore.collection(collectionName).document(documentName)
+        val snapshot = docRef.get().get()
+        if (snapshot.exists()) {
+            val data = snapshot.toObject(T::class.java)
+            if (data != null) {
+                FirebaseResponse.Success(data)
+            } else {
+                FirebaseResponse.Error("Failed to convert data")
+            }
+        } else {
+            FirebaseResponse.Error("No data found")
+        }
+    } catch (e: Exception) {
+        FirebaseResponse.Error("Failed to get data: ${e.message}")
+    }
+
+    actual suspend inline fun <reified T : Any> insertData(
+        collectionName: String,
+        documentName: String?,
+        data: T
+    ): FirebaseResponse<T> = try {
+        val docRef = if (documentName != null)
+            firestore.collection(collectionName).document(documentName)
+        else
+            firestore.collection(collectionName).document()
+        docRef.set(data).get()
+        FirebaseResponse.Success(data)
+    } catch (e: Exception) {
+        FirebaseResponse.Error("Failed to insert data: ${e.message}")
     }
 }

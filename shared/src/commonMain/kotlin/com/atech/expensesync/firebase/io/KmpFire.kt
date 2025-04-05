@@ -5,12 +5,24 @@ import kotlinx.coroutines.flow.Flow
 
 expect class KmpFire {
 
-    suspend inline fun <reified T : Any> fetchData(
+    suspend inline fun <reified T : Any> getObservedData(
         collectionName: String,
         documentName: String,
     ): Flow<FirebaseResponse<T>>
 
-    suspend inline fun <reified T : Any> fetchCollectionData(
+    suspend inline fun <reified T : Any> getObservedCollection(
         collectionName: String,
     ): Flow<FirebaseResponse<List<T>>>
+
+    suspend inline fun <reified T : Any> getData(
+        collectionName: String,
+        documentName: String,
+    ): FirebaseResponse<T>
+
+
+    suspend inline fun <reified T : Any> insertData(
+        collectionName: String,
+        documentName: String?,
+        data: T
+    ): FirebaseResponse<T>
 }
