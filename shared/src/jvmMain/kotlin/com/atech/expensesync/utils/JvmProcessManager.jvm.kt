@@ -67,7 +67,7 @@ class JvmProcessManager(
             try {
                 if (isProcessRunning()) {
                     it.destroy()
-                    if (!it.waitFor(5, TimeUnit.SECONDS)) {
+                    if (!it.waitFor(500, TimeUnit.MILLISECONDS)) {
                         it.destroyForcibly()
                     }
                     println("JVM process stopped successfully")
@@ -89,7 +89,7 @@ class JvmProcessManager(
      */
     suspend fun restartJvmProcess(): Boolean {
         stopJvmProcess()
-        withContext(Dispatchers.IO) { Thread.sleep(1000) }
+        withContext(Dispatchers.IO) { Thread.sleep(500) }
         return startJvmProcess()
     }
 
