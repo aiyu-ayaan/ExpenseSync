@@ -2,8 +2,7 @@ package com.atech.expensesync.modules
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.atech.expensesync.database.ktor.DesktopClientEngineFactory
-import com.atech.expensesync.database.ktor.EngineFactory
+
 import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.pref.PrefManager.Companion.PREF_NAME
 import com.atech.expensesync.database.pref.PrefManagerImp
@@ -25,9 +24,6 @@ val jvmModule = module {
             Paths.get(appDataPath, PREF_NAME).toString()
         }
     }
-    single {
-        DesktopClientEngineFactory()
-    }.bind(EngineFactory::class)
     single { PrefManagerImp(get()) }.bind(PrefManager::class)
 
     single {

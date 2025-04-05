@@ -4,17 +4,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.atech.expensesync.database.ktor.websocket.UserDataWebSocket
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
-import com.atech.expensesync.usecases.UserUseCases
-import kotlinx.coroutines.flow.filter
+import com.atech.expensesync.firebase.util.getOrNull
+import com.atech.expensesync.firebase.util.isSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LogInViewModel(
-    private val userDataWebSocket: UserDataWebSocket,
     private val firebaseUserUseCase: FirebaseUserUseCases
 ) : ViewModel() {
 
@@ -28,15 +26,21 @@ class LogInViewModel(
             }
 
             is LogInEvents.StartWebSocket -> viewModelScope.launch {
-                userDataWebSocket.getStateStream(events.desktopUid)
-                    .filter { it?.uid?.isNotEmpty() == true }.onEach {
-                        _user.value = it
+                firebaseUserUseCase.observeLogInUsingOR(events.desktopUid)
+                    .onEach {
+                        if (it.isSuccess()) {
+                            _user.value = it.getOrNull()
+                        }
                     }.launchIn(viewModelScope)
+//                userDataWebSocket.getStateStream(events.desktopUid)
+//                    .filter { it?.uid?.isNotEmpty() == true }.onEach {
+//                        _user.value = it
+//                    }.launchIn(viewModelScope)
             }
 
 
             LogInEvents.StopWebSocket -> viewModelScope.launch {
-                userDataWebSocket.closeSession()
+//                userDataWebSocket.closeSession()
             }
 
         }

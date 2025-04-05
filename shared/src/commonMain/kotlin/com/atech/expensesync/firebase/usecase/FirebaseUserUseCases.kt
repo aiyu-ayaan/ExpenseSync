@@ -2,14 +2,17 @@ package com.atech.expensesync.firebase.usecase
 
 import com.atech.expensesync.database.models.DesktopLogInDetails
 import com.atech.expensesync.database.models.User
+import com.atech.expensesync.firebase.helper.FirebaseHelper
 import com.atech.expensesync.firebase.io.KmpFire
 import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.utils.FirebaseCollectionPath
+import kotlinx.coroutines.flow.Flow
 
 
 data class FirebaseUserUseCases(
     val createUser: CreateUserUseCase,
-    val logInToDesktopUseCase: LogInToDesktopUseCase
+    val logInToDesktopUseCase: LogInToDesktopUseCase,
+    val observeLogInUsingOR: ObserveLogInUsingOR
 )
 
 data class CreateUserUseCase(
@@ -52,4 +55,18 @@ data class LogInToDesktopUseCase(
             )
         )
 
+}
+
+data class ObserveLogInUsingOR(
+    private val kmpFire: KmpFire
+) {
+    suspend operator fun invoke(
+        desktopId: String,
+    ): Flow<FirebaseResponse<User>> =
+        kmpFire.getObservedDataWithQuery<User>(
+            FirebaseHelper(
+                collectionName = FirebaseCollectionPath.USER.path,
+                queries = "systemUid" to desktopId
+            )
+        )
 }

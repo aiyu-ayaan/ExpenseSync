@@ -10,7 +10,7 @@ import org.koin.dsl.module
 
 val jvmUIModule = module {
     single { SplitViewModel(get(), get()) }
-    single { LogInViewModel(get(), get()) }
+    single { LogInViewModel(get()) }
     single { AddExpenseViewModel(get(), get(), get()) }
     single { MealViewModel(get()) }
     single { ViewMealViewModel(get()) }

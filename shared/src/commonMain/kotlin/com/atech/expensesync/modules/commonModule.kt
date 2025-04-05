@@ -1,9 +1,5 @@
 package com.atech.expensesync.modules
 
-import com.atech.expensesync.database.ktor.http.ExpenseSyncClient
-import com.atech.expensesync.database.ktor.http.ExpenseSyncClientImp
-import com.atech.expensesync.database.ktor.httpClientEngineFactory
-import com.atech.expensesync.database.ktor.websocket.UserDataWebSocket
 import com.atech.expensesync.database.room.SplitSyncDatabase
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
 import com.atech.expensesync.usecases.AddTransactionUseCase
@@ -11,7 +7,6 @@ import com.atech.expensesync.usecases.CreateMealBook
 import com.atech.expensesync.usecases.CreateMealBookEntry
 import com.atech.expensesync.usecases.CreateNewGroupUseCase
 import com.atech.expensesync.usecases.CreateNewTransactionUseCase
-import com.atech.expensesync.usecases.CreateUserUseCase
 import com.atech.expensesync.usecases.DeleteExpenseEntryUseCase
 import com.atech.expensesync.usecases.DeleteExpenseUseCase
 import com.atech.expensesync.usecases.DeleteGroupUseCase
@@ -31,7 +26,6 @@ import com.atech.expensesync.usecases.GetTransactionsUseCase
 import com.atech.expensesync.usecases.InsertExpenseEntryUseCase
 import com.atech.expensesync.usecases.InsertExpenseUseCase
 import com.atech.expensesync.usecases.InsertMember
-import com.atech.expensesync.usecases.LogInToDesktopUseCase
 import com.atech.expensesync.usecases.MapTransactionWithSplitAndThenUser
 import com.atech.expensesync.usecases.MealBookUseCases
 import com.atech.expensesync.usecases.RemoveMember
@@ -47,9 +41,6 @@ import com.atech.expensesync.usecases.UpdateTotalAmountUseCase
 import com.atech.expensesync.usecases.UpdateTotalInUseCase
 import com.atech.expensesync.usecases.UpdateTotalOutUseCase
 import com.atech.expensesync.usecases.UpdateTransactionUseCase
-import com.atech.expensesync.usecases.UserUseCases
-import io.ktor.client.HttpClient
-import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val commonModule = module {
@@ -66,17 +57,6 @@ val commonModule = module {
     single { DeleteGroupUseCase(get()) }
 
     single { SplitUseCases(get(), get(), get(), get()) }
-    single<HttpClient> { httpClientEngineFactory().createEngine() }
-    single {
-        ExpenseSyncClientImp(
-            get()
-        )
-    }.bind(ExpenseSyncClient::class)
-
-    single { CreateUserUseCase(get()) }
-    single { LogInToDesktopUseCase(get()) }
-    single { UserUseCases(get(), get()) }
-    single { UserDataWebSocket(get()) }
 
     single { InsertMember(get()) }
     single { GetGroupMembers(get()) }
@@ -131,7 +111,8 @@ val commonModule = module {
     }
     single { com.atech.expensesync.firebase.usecase.CreateUserUseCase(get()) }
     single { com.atech.expensesync.firebase.usecase.LogInToDesktopUseCase(get()) }
-    single { FirebaseUserUseCases(get(), get()) }
+    single { com.atech.expensesync.firebase.usecase.ObserveLogInUsingOR(get()) }
+    single { FirebaseUserUseCases(get(), get(), get()) }
 
 
 }

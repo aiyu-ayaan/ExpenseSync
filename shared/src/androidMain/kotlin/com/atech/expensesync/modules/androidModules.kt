@@ -2,8 +2,6 @@ package com.atech.expensesync.modules
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.atech.expensesync.database.ktor.AndroidClientEngineFactory
-import com.atech.expensesync.database.ktor.EngineFactory
 import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.pref.PrefManager.Companion.PREF_NAME
 import com.atech.expensesync.database.pref.PrefManagerImp
@@ -25,9 +23,7 @@ val androidModules = module {
             Context.MODE_PRIVATE
         )
     }
-    single {
-        AndroidClientEngineFactory(get())
-    }.bind(EngineFactory::class)
+
     single { PrefManagerImp(get()) }.bind(PrefManager::class)
 
     single<FirebaseFirestore> { Firebase.firestore }

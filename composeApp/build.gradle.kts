@@ -69,8 +69,8 @@ kotlin {
             implementation(libs.navigation.compose)
             implementation(libs.material.navigation)
 
-            //            Ktor
-            implementation(libs.bundles.ktor)
+//            //            Ktor
+//            implementation(libs.bundles.ktor)
 
             //          Adaptive
             implementation(libs.bundles.adaptives)

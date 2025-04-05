@@ -1,6 +1,8 @@
 package com.atech.expensesync.firebase.io
 
+import com.atech.expensesync.firebase.helper.FirebaseHelper
 import com.atech.expensesync.firebase.util.FirebaseResponse
+import com.atech.expensesync.utils.expenseSyncLogger
 import com.google.cloud.firestore.Firestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -45,6 +47,47 @@ actual class KmpFire(
             close()
         }
     }
+
+    actual suspend inline fun <reified T : Any> getObservedDataWithQuery(
+        vararg firebaseHelper: FirebaseHelper,
+    ): Flow<FirebaseResponse<T>> = callbackFlow {
+        trySend(FirebaseResponse.Loading)
+        try {
+            // Build the collection reference using the provided FirebaseHelper instances
+            val collectionRef = buildCollectionRef(
+                *firebaseHelper, firestore = firestore
+            )
+
+            expenseSyncLogger(collectionRef.path)
+            val listenerRegistration = collectionRef.addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(FirebaseResponse.Error("Failed to listen for changes: ${error.message}"))
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.documents.isNotEmpty()) {
+                    val document = snapshot.documents.first()
+                    if (document != null) {
+                        val data = document.toObject(T::class.java)
+                        trySend(FirebaseResponse.Success(data))
+                    } else {
+                        trySend(FirebaseResponse.Error("Failed to convert data"))
+                    }
+                } else {
+                    trySend(FirebaseResponse.Error("No data found"))
+                }
+            }
+
+            // Cancel the listener when the Flow collection is stopped
+            awaitClose {
+                listenerRegistration.remove()
+            }
+        } catch (e: Exception) {
+            trySend(FirebaseResponse.Error("Failed to set up listener: ${e.message}"))
+            close()
+        }
+    }
+
 
     actual suspend inline fun <reified T : Any> getObservedCollection(
         collectionName: String,
@@ -97,14 +140,11 @@ actual class KmpFire(
     }
 
     actual suspend inline fun <reified T : Any> insertData(
-        collectionName: String,
-        documentName: String?,
-        data: T
+        collectionName: String, documentName: String?, data: T
     ): FirebaseResponse<T> = try {
-        val docRef = if (documentName != null)
-            firestore.collection(collectionName).document(documentName)
-        else
-            firestore.collection(collectionName).document()
+        val docRef =
+            if (documentName != null) firestore.collection(collectionName).document(documentName)
+            else firestore.collection(collectionName).document()
         docRef.set(data).get()
         FirebaseResponse.Success(data)
     } catch (e: Exception) {
@@ -112,28 +152,22 @@ actual class KmpFire(
     }
 
     actual suspend inline fun <reified T : Any> updateDataModel(
-        collectionName: String,
-        documentName: String,
-        data: T
-    ): FirebaseResponse<T> =
-        try {
-            val docRef = firestore.collection(collectionName).document(documentName)
-            docRef.set(data).get()
-            FirebaseResponse.Success(data)
-        } catch (e: Exception) {
-            FirebaseResponse.Error("Failed to update data: ${e.message}")
-        }
+        collectionName: String, documentName: String, data: T
+    ): FirebaseResponse<T> = try {
+        val docRef = firestore.collection(collectionName).document(documentName)
+        docRef.set(data).get()
+        FirebaseResponse.Success(data)
+    } catch (e: Exception) {
+        FirebaseResponse.Error("Failed to update data: ${e.message}")
+    }
 
     actual suspend inline fun <reified T : Any> updateDataMap(
-        collectionName: String,
-        documentName: String,
-        data: Map<String, Any>
-    ): FirebaseResponse<T> =
-        try {
-            val docRef = firestore.collection(collectionName).document(documentName)
-            docRef.update(data).get()
-            FirebaseResponse.Success(data as T)
-        } catch (e: Exception) {
-            FirebaseResponse.Error("Failed to update data: ${e.message}")
-        }
+        collectionName: String, documentName: String, data: Map<String, Any>
+    ): FirebaseResponse<T> = try {
+        val docRef = firestore.collection(collectionName).document(documentName)
+        docRef.update(data).get()
+        FirebaseResponse.Success(data as T)
+    } catch (e: Exception) {
+        FirebaseResponse.Error("Failed to update data: ${e.message}")
+    }
 }

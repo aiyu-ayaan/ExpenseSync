@@ -13,7 +13,7 @@ import org.koin.dsl.module
 
 val androidUIModule = module {
     viewModel { SplitViewModel(get(), get()) }
-    viewModel { LogInViewModel(get(), get()) }
+    viewModel { LogInViewModel(get()) }
     viewModel { ScanViewModel(get(), get()) }
     viewModel { AddExpenseViewModel(get(), get(), get()) }
     viewModel { MealViewModel(get()) }
