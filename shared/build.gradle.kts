@@ -43,7 +43,9 @@ kotlin {
 
 
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.firebase.firestore)
+
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.bundles.firebase)
         }
         jvmMain.dependencies {
             //            DataStore

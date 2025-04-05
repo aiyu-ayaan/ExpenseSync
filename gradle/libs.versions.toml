@@ -184,7 +184,8 @@ firebase = [
     "firebase-analytics",
     #    "firebase-crashlytics",
     "firebase-auth",
-    "firebase-message"
+    "firebase-message",
+    "firebase-firestore",
 ]
 credentials = [
     "androidx-credentials",

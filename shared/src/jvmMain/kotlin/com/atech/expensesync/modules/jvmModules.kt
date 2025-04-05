@@ -10,6 +10,8 @@ import com.atech.expensesync.database.pref.PrefManagerImp
 import com.atech.expensesync.database.pref.createDataStore
 import com.atech.expensesync.database.room.SplitSyncDatabase
 import com.atech.expensesync.database.room.getExpenseSyncDatabase
+import com.atech.expensesync.firebase.FirebaseInstance
+import com.atech.expensesync.firebase.io.KmpFire
 import com.atech.expensesync.utils.getAppDataPath
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -27,4 +29,10 @@ val jvmModule = module {
         DesktopClientEngineFactory()
     }.bind(EngineFactory::class)
     single { PrefManagerImp(get()) }.bind(PrefManager::class)
+
+    single {
+        FirebaseInstance.firestore
+    }
+
+    single { KmpFire(get()) }
 }
