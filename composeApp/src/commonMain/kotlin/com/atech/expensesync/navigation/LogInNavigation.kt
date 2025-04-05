@@ -17,7 +17,7 @@ sealed class LogInNavigation(val routes: String) {
 
 @OptIn(KoinExperimentalAPI::class)
 fun NavGraphBuilder.logInScreenNavigation(
-    navHostController: NavHostController
+    navHostController: NavHostController,
 ) {
     navigation(
         startDestination = LogInNavigation.LogInScreen.routes,
@@ -30,7 +30,9 @@ fun NavGraphBuilder.logInScreenNavigation(
             LogInScreen(
                 navHostController = navHostController,
                 onEvent = viewModel::onEvent,
-                userState = viewModel.user.value
+                userState = viewModel.user.value,
+                destroyViewModelObject = {
+                }
             )
         }
     }

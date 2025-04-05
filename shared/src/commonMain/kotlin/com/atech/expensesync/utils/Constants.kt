@@ -20,3 +20,5 @@ enum class ApiPaths(val path: String){
 enum class WebSocketPaths(val path: String){
     User("$WEB_SOCKET_PATH/user"),
 }
+
+const val FLAG_LOG_OUT = "log_out"

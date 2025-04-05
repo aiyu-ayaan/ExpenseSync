@@ -23,6 +23,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,20 +36,28 @@ import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.database.pref.PrefKeys
+import com.atech.expensesync.database.pref.PrefManager
+import com.atech.expensesync.firebase.usecase.ObserveLogInUsingOR
+import com.atech.expensesync.firebase.util.getOrNull
+import com.atech.expensesync.firebase.util.isError
+import com.atech.expensesync.firebase.util.isLoading
+import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.ui.screens.expense.root.compose.ExpenseScreen
 import com.atech.expensesync.ui.screens.meal.root.compose.MealScreen
 import com.atech.expensesync.ui.screens.split.root.compose.SplitScreen
 import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.SystemUiController
+import com.atech.expensesync.ui_utils.runWithDeviceCompose
+import org.koin.compose.koinInject
 
 
 enum class BaseAppScreen(
     val label: String, val icon: ImageVector
 ) {
-    Split("Split", Icons.TwoTone.Payments),
-    MessTrack("Mess Track", Icons.TwoTone.Fastfood),
-    Expense("Expense", Icons.TwoTone.AttachMoney),
-    Calender("History", Icons.TwoTone.CalendarMonth)
+    Split("Split", Icons.TwoTone.Payments), MessTrack(
+        "Mess Track", Icons.TwoTone.Fastfood
+    ),
+    Expense("Expense", Icons.TwoTone.AttachMoney), Calender("History", Icons.TwoTone.CalendarMonth)
 }
 
 
@@ -56,14 +65,33 @@ enum class BaseAppScreen(
 fun AppScreen(
     navHostController: NavHostController
 ) {
-    var isLogIn = LocalDataStore.current
-        .getString(PrefKeys.USER_ID).isNotBlank()
+    val isLogIn = LocalDataStore.current.getString(PrefKeys.USER_ID).isNotBlank()
+    val desktopId = LocalDataStore.current.getString(PrefKeys.DESKTOP_USER_UID)
     val startDestination = if (isLogIn) BaseAppScreen.Split else BaseAppScreen.MessTrack
     var currentDestination by rememberSaveable {
         mutableStateOf(
             startDestination
         )
     }
+    val observeLogInUsingOR = koinInject<ObserveLogInUsingOR>()
+    val pref = koinInject<PrefManager>()
+
+    runWithDeviceCompose(
+        onDesktop = {
+            LaunchedEffect(true) {
+                observeLogInUsingOR.invoke(desktopId).collect {
+                    if (it.isLoading()) return@collect
+                    if (it.isError()) return@collect
+                    if (it.isSuccess()) {
+                        if (it.getOrNull() != null && it.getOrNull()!!.systemUid != desktopId) {
+                            pref.clearAll()
+                            com.atech.expensesync.utils.restartApp()
+                        }
+                    }
+                }
+            }
+        })
+
     val adaptiveInfo = currentWindowAdaptiveInfo()
     var showNavigation by remember { mutableStateOf(true) }
     val customNavSuiteType = with(adaptiveInfo) {
@@ -98,12 +126,9 @@ fun AppScreen(
                 if (!isLogIn) it != BaseAppScreen.Split else true
             }.forEach { item ->
                 navItemEntry(
-                    item = item,
-                    selected = item == currentDestination,
-                    onClick = {
+                    item = item, selected = item == currentDestination, onClick = {
                         currentDestination = item
-                    }
-                )
+                    })
             }
         },
     ) {
@@ -113,28 +138,22 @@ fun AppScreen(
             when (destination) {
                 BaseAppScreen.Split -> {
                     SplitScreen(
-                        navHostController = navHostController,
-                        canShowAppBar = {
+                        navHostController = navHostController, canShowAppBar = {
                             showNavigation = it
-                        }
-                    )
+                        })
                 }
 
                 BaseAppScreen.Expense -> {
                     ExpenseScreen(
-                        navHostController = navHostController,
-                        canShowAppBar = {
+                        navHostController = navHostController, canShowAppBar = {
                             showNavigation = it
-                        }
-                    )
+                        })
                 }
 
                 BaseAppScreen.MessTrack -> MealScreen(
-                    navHostController = navHostController,
-                    canShowAppBar = {
+                    navHostController = navHostController, canShowAppBar = {
                         showNavigation = it
-                    }
-                )
+                    })
 
                 BaseAppScreen.Calender -> {
                     Column(
@@ -143,19 +162,15 @@ fun AppScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(.5f),
+                            modifier = Modifier.fillMaxWidth().fillMaxHeight(.5f),
                             imageVector = Icons.TwoTone.Build,
                             contentDescription = "Budget"
                         )
                         Text(
-                            "Calender",
-                            style = MaterialTheme.typography.titleLarge
+                            "Calender", style = MaterialTheme.typography.titleLarge
                         )
                         Text(
-                            "Work in Progress",
-                            style = MaterialTheme.typography.bodySmall
+                            "Work in Progress", style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
@@ -165,10 +180,7 @@ fun AppScreen(
 }
 
 fun NavigationSuiteScope.navItemEntry(
-    modifier: Modifier = Modifier,
-    item: BaseAppScreen,
-    selected: Boolean,
-    onClick: () -> Unit
+    modifier: Modifier = Modifier, item: BaseAppScreen, selected: Boolean, onClick: () -> Unit
 ) {
     item(
         modifier = modifier, selected = selected, onClick = onClick, label = {

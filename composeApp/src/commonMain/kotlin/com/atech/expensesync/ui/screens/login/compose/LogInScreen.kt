@@ -51,6 +51,7 @@ fun LogInScreen(
     navHostController: NavHostController,
     userState: User? = null,
     onEvent: (LogInEvents) -> Unit,
+    destroyViewModelObject: @Composable () -> Unit = {},
 ) {
     val pref = LocalDataStore.current
     var logInMessage by rememberSaveable { mutableStateOf("Creating ...") }
@@ -71,7 +72,7 @@ fun LogInScreen(
                 com.atech.expensesync.login.InvokeLogInWithGoogle { logInState ->
                     if (logInState.errorMessage != null) {
 //                Todo: show error message
-                        com.atech.expensesync.utils.expenseSyncLogger(
+                        expenseSyncLogger(
                             "Error: ${logInState.errorMessage}"
                         )
                         canShowSnackBar = true to logInState.errorMessage
@@ -203,6 +204,7 @@ fun LogInScreen(
                     onDesktop = {
                         if (userState != null && userState.uid.isNotEmpty()
                             && userState.systemUid != null
+                            && userState.desktopLogInDetails != null
                             && userState.systemUid == pref.getString(PrefKeys.DESKTOP_USER_UID)
                         ) {
                             pref.saveString(
@@ -217,6 +219,7 @@ fun LogInScreen(
                                     inclusive = true
                                 }
                             }
+                            destroyViewModelObject.invoke()
                         }
                         onEvent.invoke(
                             LogInEvents.ObserveLogInData(

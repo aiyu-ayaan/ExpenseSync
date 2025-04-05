@@ -16,7 +16,7 @@ class LogInViewModel(
     private val firebaseUserUseCase: FirebaseUserUseCases
 ) : ViewModel() {
 
-    private val _user = mutableStateOf<User?>(User())
+    private val _user = mutableStateOf<User?>(null)
     val user: State<User?> get() = _user
 
     fun onEvent(events: LogInEvents) {
@@ -26,12 +26,17 @@ class LogInViewModel(
             }
 
             is LogInEvents.ObserveLogInData -> viewModelScope.launch {
-                firebaseUserUseCase.observeLogInUsingOR(events.desktopUid)
+                firebaseUserUseCase
+                    .observeLogInUsingOR(events.desktopUid)
                     .onEach {
                         if (it.isSuccess()) {
                             _user.value = it.getOrNull()
                         }
                     }.launchIn(viewModelScope)
+            }
+
+            LogInEvents.ResetData -> viewModelScope.launch {
+                _user.value = null
             }
         }
     }

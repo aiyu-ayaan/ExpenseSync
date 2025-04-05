@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import org.koin.core.scope.Scope
 
 
 enum class ExpanseSyncRoutes(val route: String) {
@@ -31,6 +32,8 @@ fun ExpanseSyncNavigation(
         startDestination = startDestination
     ) {
         logInScreenNavigation(navHostController)
-        appNavigation(navHostController)
+        appNavigation(
+            navHostController,
+        )
     }
 }

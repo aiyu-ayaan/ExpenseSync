@@ -13,5 +13,6 @@ sealed interface LogInEvents {
         val desktopUid: String,
     ) : LogInEvents
 
+    data object ResetData : LogInEvents
 
 }
