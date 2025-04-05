@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Devices
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -26,10 +30,15 @@ import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.models.DesktopLogInDetails
 import com.atech.expensesync.firebase.util.FirebaseResponse
+import com.atech.expensesync.firebase.util.getOrNull
+import com.atech.expensesync.firebase.util.isError
+import com.atech.expensesync.firebase.util.isLoading
+import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.ui.screens.scan.ScanEvents
 import com.atech.expensesync.ui.screens.scan.ScanViewModel
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
+import com.atech.expensesync.utils.convertToDateFormat
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.devices
 import org.koin.compose.viewmodel.koinViewModel
@@ -86,13 +95,35 @@ fun ScanScreen(
                                 innerPadding = MaterialTheme.spacing.small
                             )
                         }
+                        val logInDetails by viewModel.logInDetails
                         Column(
                             modifier = Modifier.fillMaxWidth().fillMaxHeight()
                         ) {
-                            Text(
-                                text = "Devices",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
+                            if (logInDetails.isError() || logInDetails.isLoading()) {
+                                Text(
+                                    text = "Devices",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                            if (logInDetails.isSuccess()) {
+                                val data = logInDetails.getOrNull() ?: return@Column
+                                ListItem(
+                                    headlineContent = {
+                                        Text(data.systemName)
+                                    },
+                                    leadingContent = {
+                                        Icon(
+                                            imageVector = Icons.TwoTone.Devices,
+                                            contentDescription = null,
+                                        )
+                                    },
+                                    supportingContent = {
+                                        Text(
+                                            text = "Logged in at ${data.longInAt.convertToDateFormat()}",
+                                        )
+                                    },
+                                )
+                            }
                         }
                     }
                 }

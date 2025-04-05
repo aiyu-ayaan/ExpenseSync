@@ -25,24 +25,14 @@ class LogInViewModel(
                 events.onSuccess(firebaseUserUseCase.createUser(events.model))
             }
 
-            is LogInEvents.StartWebSocket -> viewModelScope.launch {
+            is LogInEvents.ObserveLogInData -> viewModelScope.launch {
                 firebaseUserUseCase.observeLogInUsingOR(events.desktopUid)
                     .onEach {
                         if (it.isSuccess()) {
                             _user.value = it.getOrNull()
                         }
                     }.launchIn(viewModelScope)
-//                userDataWebSocket.getStateStream(events.desktopUid)
-//                    .filter { it?.uid?.isNotEmpty() == true }.onEach {
-//                        _user.value = it
-//                    }.launchIn(viewModelScope)
             }
-
-
-            LogInEvents.StopWebSocket -> viewModelScope.launch {
-//                userDataWebSocket.closeSession()
-            }
-
         }
     }
 }

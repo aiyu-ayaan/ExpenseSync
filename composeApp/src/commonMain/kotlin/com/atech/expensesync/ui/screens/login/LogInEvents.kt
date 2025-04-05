@@ -9,9 +9,9 @@ sealed interface LogInEvents {
         val onSuccess: (FirebaseResponse<User>) -> Unit,
     ) : LogInEvents
 
-    data class StartWebSocket(
+    data class ObserveLogInData(
         val desktopUid: String,
     ) : LogInEvents
 
-    data object StopWebSocket : LogInEvents
+
 }

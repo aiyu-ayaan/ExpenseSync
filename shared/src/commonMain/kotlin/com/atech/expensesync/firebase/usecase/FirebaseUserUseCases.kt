@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.Flow
 data class FirebaseUserUseCases(
     val createUser: CreateUserUseCase,
     val logInToDesktopUseCase: LogInToDesktopUseCase,
-    val observeLogInUsingOR: ObserveLogInUsingOR
+    val observeLogInUsingOR: ObserveLogInUsingOR,
+    val getLogInDetails: GetLogInDetails
 )
 
 data class CreateUserUseCase(
@@ -68,5 +69,17 @@ data class ObserveLogInUsingOR(
                 collectionName = FirebaseCollectionPath.USER.path,
                 queries = "systemUid" to desktopId
             )
+        )
+}
+
+data class GetLogInDetails(
+    private val kmpFire: KmpFire
+) {
+    suspend operator fun invoke(
+        uid: String,
+    ): Flow<FirebaseResponse<User>> =
+        kmpFire.getObservedData(
+            FirebaseCollectionPath.USER.path,
+            uid
         )
 }

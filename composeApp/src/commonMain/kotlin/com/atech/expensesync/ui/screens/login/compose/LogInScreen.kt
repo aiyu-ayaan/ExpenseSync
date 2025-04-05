@@ -211,9 +211,6 @@ fun LogInScreen(
                             pref.saveString(
                                 PrefKeys.USER_MODEL, userState.toJson()
                             )
-                            onEvent.invoke(
-                                LogInEvents.StopWebSocket
-                            )
                             navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
                                 launchSingleTop = true
                                 popUpTo(ExpanseSyncRoutes.LOGIN.route) {
@@ -222,7 +219,7 @@ fun LogInScreen(
                             }
                         }
                         onEvent.invoke(
-                            LogInEvents.StartWebSocket(
+                            LogInEvents.ObserveLogInData(
                                 pref.getString(PrefKeys.DESKTOP_USER_UID)
                             )
                         )
