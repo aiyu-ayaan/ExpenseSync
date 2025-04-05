@@ -43,6 +43,7 @@ kotlin {
 
 
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.firebase.firestore)
         }
         jvmMain.dependencies {
             //            DataStore
@@ -52,6 +53,10 @@ kotlin {
 
             implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.okhttp)
+
+            implementation(libs.firebase.admin)
+            implementation(libs.perfmark.api)
+            implementation(libs.perfmark.impl)
         }
     }
 }

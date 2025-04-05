@@ -24,6 +24,7 @@ val LocalDataStore = staticCompositionLocalOf<PrefManager> { error("No DataStore
 fun App(
     navHostController: NavHostController = rememberNavController()
 ) {
+    com.atech.expensesync.firebase.initFirebase() // init firebase
     KoinContext {
         ExpenseSyncTheme {
             val pref = koinInject<PrefManager>()
