@@ -25,4 +25,16 @@ expect class KmpFire {
         documentName: String?,
         data: T
     ): FirebaseResponse<T>
+
+    suspend inline fun <reified T : Any> updateDataModel(
+        collectionName: String,
+        documentName: String,
+        data: T
+    ): FirebaseResponse<T>
+
+    suspend inline fun <reified T : Any> updateDataMap(
+        collectionName: String,
+        documentName: String,
+        data: Map<String, Any>
+    ): FirebaseResponse<T>
 }

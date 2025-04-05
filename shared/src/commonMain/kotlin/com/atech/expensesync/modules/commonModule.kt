@@ -130,7 +130,8 @@ val commonModule = module {
         )
     }
     single { com.atech.expensesync.firebase.usecase.CreateUserUseCase(get()) }
-    single { FirebaseUserUseCases(get()) }
+    single { com.atech.expensesync.firebase.usecase.LogInToDesktopUseCase(get()) }
+    single { FirebaseUserUseCases(get(), get()) }
 
 
 }

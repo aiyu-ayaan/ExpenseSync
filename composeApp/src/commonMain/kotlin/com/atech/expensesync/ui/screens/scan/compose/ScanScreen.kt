@@ -24,18 +24,20 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.models.DesktopLogInDetails
+import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.ui.screens.scan.ScanEvents
 import com.atech.expensesync.ui.screens.scan.ScanViewModel
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
-import com.atech.expensesync.utils.ResponseDataState
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.devices
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3AdaptiveApi::class,
     KoinExperimentalAPI::class
 )
 @Composable
@@ -98,28 +100,28 @@ fun ScanScreen(
         },
         detailPane = {
             AnimatedPane {
-                CameraScreen(
-                    isScanning = isScanning,
-                    isScanningChanged = {
-                        isScanning = it
-                    },
-                    onNavigateUpClick = {
-                        navigator.navigateBack()
-                    },
-                    onLinkScanned = { data ->
-                        viewModel.onEvent(ScanEvents.OnScanSuccess(data) { state ->
-                            when (state) {
-                                is ResponseDataState.Error -> {
-                                    //TODO Handle error
-                                }
-
-                                is ResponseDataState.Success<String> -> {
-
-                                }
+                CameraScreen(isScanning = isScanning, isScanningChanged = {
+                    isScanning = it
+                }, onNavigateUpClick = {
+                    navigator.navigateBack()
+                }, onLinkScanned = { data ->
+                    viewModel.onEvent(ScanEvents.OnScanSuccess(data) { state ->
+                        when (state) {
+                            is FirebaseResponse.Error -> {
+                                com.atech.expensesync.utils.expenseSyncLogger(
+                                    "Error: ${state.error}"
+                                )
                             }
-                        })
-                    }
-                )
+
+                            FirebaseResponse.Loading -> {}
+                            is FirebaseResponse.Success<DesktopLogInDetails> -> {
+                                com.atech.expensesync.utils.expenseSyncLogger(
+                                    "${state.data.systemUid} ${state.data.systemName}"
+                                )
+                            }
+                        }
+                    })
+                })
             }
         })
 }

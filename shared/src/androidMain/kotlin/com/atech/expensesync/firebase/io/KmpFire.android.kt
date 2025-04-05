@@ -116,4 +116,30 @@ actual class KmpFire(
     }
 
 
+    actual suspend inline fun <reified T : Any> updateDataModel(
+        collectionName: String,
+        documentName: String,
+        data: T
+    ): FirebaseResponse<T> =
+        try {
+            val docRef = firestore.collection(collectionName).document(documentName)
+            docRef.set(data).await()
+            FirebaseResponse.Success(data)
+        } catch (e: Exception) {
+            FirebaseResponse.Error("Failed to update data: ${e.message}")
+        }
+
+    actual suspend inline fun <reified T : Any> updateDataMap(
+        collectionName: String,
+        documentName: String,
+        data: Map<String, Any>
+    ): FirebaseResponse<T> =
+        try {
+            val docRef = firestore.collection(collectionName).document(documentName)
+            docRef.update(data).await()
+            FirebaseResponse.Success(data as T)
+        } catch (e: Exception) {
+            FirebaseResponse.Error("Failed to update data: ${e.message}")
+        }
+
 }

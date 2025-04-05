@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.models.DesktopLogInDetails
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
-import com.atech.expensesync.usecases.LogInToDesktopUseCase
+import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
 import kotlinx.coroutines.launch
 
 class ScanViewModel(
-    private val useCases: LogInToDesktopUseCase,
+    private val useCases: FirebaseUserUseCases,
     private val prefManager: PrefManager
 ) : ViewModel() {
     fun onEvent(event: ScanEvents) {
@@ -23,7 +23,7 @@ class ScanViewModel(
                     systemName = os
                 )
                 event.onDone(
-                    useCases.invoke(
+                    useCases.logInToDesktopUseCase.invoke(
                         uid = uid,
                         model = model
                     )
