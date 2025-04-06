@@ -76,14 +76,14 @@ val commonModule = module {
     single { DeleteTransactionUseCase(get()) }
     single { MapTransactionWithSplitAndThenUser(get()) }
     single { SplitTransactionUseCases(get(), get(), get(), get(), get()) }
-    single { CreateMealBook(get()) }
-    single { CreateMealBookEntry(get()) }
+    single { CreateMealBook(get(), get()) }
+    single { CreateMealBookEntry(get(), get()) }
     single { GetMealBooks(get()) }
     single { GetMealBookEntries(get()) }
-    single { UpdateMealBook(get()) }
-    single { UpdateMealBookEntry(get()) }
-    single { DeleteMealBook(get()) }
-    single { DeleteMealBookEntry(get()) }
+    single { UpdateMealBook(get(), get()) }
+    single { UpdateMealBookEntry(get(), get()) }
+    single { DeleteMealBook(get(), get()) }
+    single { DeleteMealBookEntry(get(), get()) }
     single { GetTotalPrice(get()) }
     single { MealBookUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { InsertExpenseUseCase(get()) }

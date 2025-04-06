@@ -19,7 +19,13 @@ data class InsertUploadUseCases(
     suspend operator fun invoke(
         uploadModule: UploadModel
     ) {
-        dao.insertUploadModel(
+        val lastUploaded = dao.getUnUploadModelByType(uploadModule.updatedType.name)
+        if (lastUploaded != null) dao.updateUploadModel(
+            lastUploaded.copy(
+                isUpdated = false, updatedTime = System.currentTimeMillis()
+            )
+        )
+        else dao.insertUploadModel(
             uploadModule
         )
     }

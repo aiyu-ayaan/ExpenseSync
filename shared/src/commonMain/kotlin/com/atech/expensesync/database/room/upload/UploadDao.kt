@@ -17,7 +17,7 @@ interface UploadDao {
     suspend fun updateUploadModel(uploadModel: UploadModel)
 
     @Query("SELECT * FROM upload_table ORDER BY createdAt DESC")
-    suspend fun getAll(): Flow<List<UploadModel>>
+    fun getAll(): Flow<List<UploadModel>>
 
     @Query("SELECT * FROM upload_table WHERE isUpdated = false")
     suspend fun getAllUnUploadModel(): List<UploadModel>
