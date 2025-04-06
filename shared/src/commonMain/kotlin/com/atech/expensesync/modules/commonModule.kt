@@ -15,6 +15,9 @@ import com.atech.expensesync.usecases.DeleteMealBookEntry
 import com.atech.expensesync.usecases.DeleteTransactionUseCase
 import com.atech.expensesync.usecases.ExpenseUseCases
 import com.atech.expensesync.usecases.GetAllExpensesUseCase
+import com.atech.expensesync.usecases.GetAllUnUploadByTypeUseCases
+import com.atech.expensesync.usecases.GetAllUnUploadUseCases
+import com.atech.expensesync.usecases.GetAllUseCases
 import com.atech.expensesync.usecases.GetExpenseBookEntryUseCase
 import com.atech.expensesync.usecases.GetExpenseByIdUseCase
 import com.atech.expensesync.usecases.GetGroupMembers
@@ -26,6 +29,7 @@ import com.atech.expensesync.usecases.GetTransactionsUseCase
 import com.atech.expensesync.usecases.InsertExpenseEntryUseCase
 import com.atech.expensesync.usecases.InsertExpenseUseCase
 import com.atech.expensesync.usecases.InsertMember
+import com.atech.expensesync.usecases.InsertUploadUseCases
 import com.atech.expensesync.usecases.MapTransactionWithSplitAndThenUser
 import com.atech.expensesync.usecases.MealBookUseCases
 import com.atech.expensesync.usecases.RemoveMember
@@ -41,6 +45,8 @@ import com.atech.expensesync.usecases.UpdateTotalAmountUseCase
 import com.atech.expensesync.usecases.UpdateTotalInUseCase
 import com.atech.expensesync.usecases.UpdateTotalOutUseCase
 import com.atech.expensesync.usecases.UpdateTransactionUseCase
+import com.atech.expensesync.usecases.UpdateUploadUseCases
+import com.atech.expensesync.usecases.UploadUseCases
 import org.koin.dsl.module
 
 val commonModule = module {
@@ -51,6 +57,7 @@ val commonModule = module {
     single { get<SplitSyncDatabase>().splitTransactionDao }
     single { get<SplitSyncDatabase>().mealDao }
     single { get<SplitSyncDatabase>().expenseBookDao }
+    single { get<SplitSyncDatabase>().updateDao }
     single { CreateNewGroupUseCase(get()) }
     single { UpdateGroupUseCase(get()) }
     single { GetGroupsUseCase(get()) }
@@ -115,6 +122,12 @@ val commonModule = module {
     single { com.atech.expensesync.firebase.usecase.GetLogInDetails(get()) }
     single { com.atech.expensesync.firebase.usecase.PerformDesktopLogOut(get()) }
     single { FirebaseUserUseCases(get(), get(), get(), get(), get()) }
+    single { InsertUploadUseCases(get()) }
+    single { UpdateUploadUseCases(get()) }
+    single { GetAllUnUploadByTypeUseCases(get()) }
+    single { GetAllUnUploadUseCases(get()) }
+    single { GetAllUseCases(get()) }
+    single { UploadUseCases(get(), get(), get(), get(), get()) }
 
 
 }
