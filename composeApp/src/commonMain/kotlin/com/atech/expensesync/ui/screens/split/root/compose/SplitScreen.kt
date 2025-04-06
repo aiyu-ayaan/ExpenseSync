@@ -27,10 +27,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.GroupItems
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.room.split.SplitGroup
 import com.atech.expensesync.navigation.AppNavigation
+import com.atech.expensesync.navigation.ExpanseSyncNavigation
 import com.atech.expensesync.navigation.ViewExpanseBookArgs
 import com.atech.expensesync.ui.screens.split.root.SplitViewModel
 import com.atech.expensesync.ui.screens.split.root.compose.add_group.AddGroupScreen
@@ -49,7 +52,8 @@ private enum class DetailScreen {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class,
     KoinExperimentalAPI::class
 )
 @Composable
@@ -62,6 +66,7 @@ fun SplitScreen(
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     navigator.backHandlerThreePane()
     val viewModel: SplitViewModel = koinViewModel()
+    val isLogIn = LocalDataStore.current.getString(PrefKeys.USER_ID).isNotBlank()
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
@@ -79,7 +84,11 @@ fun SplitScreen(
                         )
                     },
                     linkedDeviceScreenClick = {
-                        navHostController.navigate(AppNavigation.ScanScreen.route)
+                        if (isLogIn) {
+                            navHostController.navigate(AppNavigation.ScanScreen.route)
+                        } else navHostController.navigate(
+                            ExpanseSyncNavigation.LogInScreen.route
+                        )
                     },
                     navHostController = navHostController
                 )

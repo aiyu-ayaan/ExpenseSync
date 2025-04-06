@@ -72,9 +72,8 @@ enum class BaseAppScreen(
 fun AppScreen(
     navHostController: NavHostController
 ) {
-    val isLogIn = LocalDataStore.current.getString(PrefKeys.USER_ID).isNotBlank()
     val desktopId = LocalDataStore.current.getString(PrefKeys.DESKTOP_USER_UID)
-    val startDestination = if (isLogIn) BaseAppScreen.Split else BaseAppScreen.MessTrack
+    val startDestination = BaseAppScreen.Split
     val uploadData by UploadDataDelegate.lazy()
     var currentDestination by rememberSaveable {
         mutableStateOf(
@@ -164,9 +163,7 @@ fun AppScreen(
         ),
         layoutType = customNavSuiteType,
         navigationSuiteItems = {
-            BaseAppScreen.entries.filter {
-                if (!isLogIn) it != BaseAppScreen.Split else true
-            }.forEach { item ->
+            BaseAppScreen.entries.forEach { item ->
                 navItemEntry(
                     item = item, selected = item == currentDestination, onClick = {
                         currentDestination = item
