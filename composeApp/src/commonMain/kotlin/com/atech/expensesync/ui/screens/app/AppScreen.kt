@@ -23,6 +23,7 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +48,8 @@ import com.atech.expensesync.ui.screens.meal.root.compose.MealScreen
 import com.atech.expensesync.ui.screens.split.root.compose.SplitScreen
 import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.SystemUiController
+import com.atech.expensesync.ui_utils.lifecycler.LifeCycle
+import com.atech.expensesync.ui_utils.lifecycler.LifecycleObserver
 import com.atech.expensesync.ui_utils.runWithDeviceCompose
 import org.koin.compose.koinInject
 
@@ -75,6 +78,20 @@ fun AppScreen(
     }
     val observeLogInUsingOR = koinInject<ObserveLogInUsingOR>()
     val pref = koinInject<PrefManager>()
+    val lifecycleRegistry = com.atech.expensesync.ui_utils.lifecycler.rememberLifecycleRegistry()
+    DisposableEffect(lifecycleRegistry) {
+        val observer = object : LifecycleObserver {
+            override fun onStateChanged(state: LifeCycle) {
+                com.atech.expensesync.utils.expenseSyncLogger("Lifecycle state changed to: $state")
+            }
+        }
+
+        lifecycleRegistry.addObserver(observer)
+
+        onDispose {
+            lifecycleRegistry.removeObserver(observer)
+        }
+    }
 
     runWithDeviceCompose(
         onDesktop = {

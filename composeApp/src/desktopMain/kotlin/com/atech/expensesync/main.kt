@@ -1,5 +1,6 @@
 package com.atech.expensesync
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -9,10 +10,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.koin.KoinInitializer
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
-import org.koin.compose.koinInject
+import com.atech.expensesync.ui_utils.lifecycler.LocalWindowState
+import com.atech.expensesync.ui_utils.lifecycler.rememberLifecycleRegistry
+import com.atech.expensesync.ui_utils.lifecycler.trackDesktopWindowEvents
 import org.koin.core.context.stopKoin
 import java.awt.Dimension
 import java.awt.Toolkit
@@ -32,20 +34,24 @@ fun main() = application {
     val windowState = rememberWindowState(
         size = calculateWindowSize(screenSize)
     )
-    ExpenseSyncTheme {
-        Window(
-            state = windowState,
-            onCloseRequest = {
-                if (isKoinInitialized) {
-                    stopKoin()
-                }
-                exitApplication()
-            },
-            title = "Research Hub",
-            /*icon = painterResource(Res.drawable.app_logo),*/
-        ) {
-            App(
-            )
+    CompositionLocalProvider(LocalWindowState provides windowState) {
+        ExpenseSyncTheme {
+            Window(
+                state = windowState,
+                onCloseRequest = {
+                    if (isKoinInitialized) {
+                        stopKoin()
+                    }
+                    exitApplication()
+                },
+                title = "Research Hub",
+                /*icon = painterResource(Res.drawable.app_logo),*/
+            ) {
+                val lifecycleRegistry = rememberLifecycleRegistry()
+                trackDesktopWindowEvents(lifecycleRegistry)
+                App(
+                )
+            }
         }
     }
 }
