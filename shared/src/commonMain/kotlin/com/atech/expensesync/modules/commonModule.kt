@@ -2,6 +2,7 @@ package com.atech.expensesync.modules
 
 import com.atech.expensesync.database.room.SplitSyncDatabase
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
+import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
 import com.atech.expensesync.usecases.AddTransactionUseCase
 import com.atech.expensesync.usecases.CreateMealBook
 import com.atech.expensesync.usecases.CreateMealBookEntry
@@ -47,6 +48,9 @@ import com.atech.expensesync.usecases.UpdateTotalOutUseCase
 import com.atech.expensesync.usecases.UpdateTransactionUseCase
 import com.atech.expensesync.usecases.UpdateUploadUseCases
 import com.atech.expensesync.usecases.UploadUseCases
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.dsl.module
 
 val commonModule = module {
@@ -128,6 +132,8 @@ val commonModule = module {
     single { GetAllUnUploadUseCases(get()) }
     single { GetAllUseCases(get()) }
     single { UploadUseCases(get(), get(), get(), get(), get()) }
+    single { MealBookUploadUseCase(get(), get()) }
+    single { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
 
 
 }

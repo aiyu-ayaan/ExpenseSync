@@ -38,6 +38,8 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
+import com.atech.expensesync.delegates.UploadDataDelegate
+import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
 import com.atech.expensesync.firebase.usecase.ObserveLogInUsingOR
 import com.atech.expensesync.firebase.util.getOrNull
 import com.atech.expensesync.firebase.util.isError
@@ -51,6 +53,8 @@ import com.atech.expensesync.ui_utils.SystemUiController
 import com.atech.expensesync.ui_utils.lifecycler.LifeCycle
 import com.atech.expensesync.ui_utils.lifecycler.LifecycleObserver
 import com.atech.expensesync.ui_utils.runWithDeviceCompose
+import com.atech.expensesync.usecases.UploadUseCases
+import kotlinx.coroutines.CoroutineScope
 import org.koin.compose.koinInject
 
 
@@ -71,18 +75,39 @@ fun AppScreen(
     val isLogIn = LocalDataStore.current.getString(PrefKeys.USER_ID).isNotBlank()
     val desktopId = LocalDataStore.current.getString(PrefKeys.DESKTOP_USER_UID)
     val startDestination = if (isLogIn) BaseAppScreen.Split else BaseAppScreen.MessTrack
+    val uploadData by UploadDataDelegate.lazy()
     var currentDestination by rememberSaveable {
         mutableStateOf(
             startDestination
         )
     }
-    val observeLogInUsingOR = koinInject<ObserveLogInUsingOR>()
+    val mealBookUploadUseCase = koinInject<MealBookUploadUseCase>()
     val pref = koinInject<PrefManager>()
+    val coroutineScope = koinInject<CoroutineScope>()
+    val observeLogInUsingOR = koinInject<ObserveLogInUsingOR>()
+    val uploadUseCase = koinInject<UploadUseCases>()
     val lifecycleRegistry = com.atech.expensesync.ui_utils.lifecycler.rememberLifecycleRegistry()
+    uploadData.setVariables(
+        mealBookUploadUseCase = mealBookUploadUseCase,
+        prefManager = pref,
+        scope = coroutineScope,
+        uploadUseCase = uploadUseCase
+    )
+
     DisposableEffect(lifecycleRegistry) {
         val observer = object : LifecycleObserver {
             override fun onStateChanged(state: LifeCycle) {
-                com.atech.expensesync.utils.expenseSyncLogger("Lifecycle state changed to: $state")
+                when (state) {
+                    LifeCycle.ON_STOP -> {
+                        uploadData.uploadMealData()
+                    }
+
+                    else -> {
+                        com.atech.expensesync.utils.expenseSyncLogger(
+                            "State Details: $state",
+                        )
+                    }
+                }
             }
         }
 

@@ -23,8 +23,14 @@ interface MealDao {
     @Query("SELECT * FROM meal_book_entry WHERE mealBookId = :mealBookId ORDER BY createdAt DESC")
     fun getMealBookEntries(mealBookId: String): Flow<List<MealBookEntry>>
 
+    @Query("SELECT * FROM meal_book")
+    suspend fun getAllMealBooksUpload(): List<MealBook>
+
+    @Query("SELECT * FROM meal_book_entry")
+    suspend fun getAllMealBookEntriesUpload(): List<MealBookEntry>
+
     @Update
-    suspend fun updateMealBook(mealBook: MealBook) : Int
+    suspend fun updateMealBook(mealBook: MealBook): Int
 
     @Update
     suspend fun updateMealBookEntry(mealBookEntry: MealBookEntry): Int
