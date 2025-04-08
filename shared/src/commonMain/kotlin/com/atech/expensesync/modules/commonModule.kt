@@ -34,6 +34,7 @@ import com.atech.expensesync.usecases.InsertMember
 import com.atech.expensesync.usecases.InsertUploadUseCases
 import com.atech.expensesync.usecases.MapTransactionWithSplitAndThenUser
 import com.atech.expensesync.usecases.MealBookDataSyncUseCases
+import com.atech.expensesync.usecases.MealBookEntryDataSyncUseCases
 import com.atech.expensesync.usecases.MealBookSyncUseCases
 import com.atech.expensesync.usecases.MealBookUseCases
 import com.atech.expensesync.usecases.RemoveMember
@@ -140,7 +141,8 @@ val commonModule = module {
     single { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
 
     single { MealBookDataSyncUseCases(get(), get()) }
-    single { MealBookSyncUseCases(get()) }
+    single { MealBookEntryDataSyncUseCases(get(), get()) }
+    single { MealBookSyncUseCases(get(), get()) }
 
 
 }

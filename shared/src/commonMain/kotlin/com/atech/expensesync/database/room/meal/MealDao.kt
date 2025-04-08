@@ -17,8 +17,11 @@ interface MealDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createMealBook(mealBook: List<MealBook>)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createMealBookEntry(mealBookEntry: MealBookEntry): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createMealBookEntry(mealBookEntry: List<MealBookEntry>): Long
 
     @Query("SELECT * FROM meal_book ORDER BY created DESC")
     fun getMealBooks(): Flow<List<MealBook>>
