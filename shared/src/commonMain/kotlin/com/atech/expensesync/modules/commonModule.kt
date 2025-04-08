@@ -2,6 +2,7 @@ package com.atech.expensesync.modules
 
 import com.atech.expensesync.database.room.SplitSyncDatabase
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
+import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
 import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
 import com.atech.expensesync.usecases.AddTransactionUseCase
 import com.atech.expensesync.usecases.CreateMealBook
@@ -32,6 +33,8 @@ import com.atech.expensesync.usecases.InsertExpenseUseCase
 import com.atech.expensesync.usecases.InsertMember
 import com.atech.expensesync.usecases.InsertUploadUseCases
 import com.atech.expensesync.usecases.MapTransactionWithSplitAndThenUser
+import com.atech.expensesync.usecases.MealBookDataSyncUseCases
+import com.atech.expensesync.usecases.MealBookSyncUseCases
 import com.atech.expensesync.usecases.MealBookUseCases
 import com.atech.expensesync.usecases.RemoveMember
 import com.atech.expensesync.usecases.SplitGroupMemberUseCases
@@ -133,7 +136,11 @@ val commonModule = module {
     single { GetAllUseCases(get()) }
     single { UploadUseCases(get(), get(), get(), get(), get()) }
     single { MealBookUploadUseCase(get(), get()) }
+    single { GetMealBookDataUseCases(get()) }
     single { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
+
+    single { MealBookDataSyncUseCases(get(), get()) }
+    single { MealBookSyncUseCases(get()) }
 
 
 }

@@ -14,6 +14,13 @@ fun FirebaseResponse<*>.isError(): Boolean {
     return this is FirebaseResponse.Error
 }
 
+fun FirebaseResponse<*>.getError(): String? {
+    return when (this) {
+        is FirebaseResponse.Error -> this.error
+        else -> null
+    }
+}
+
 fun FirebaseResponse<*>.isSuccess(): Boolean {
     return this is FirebaseResponse.Success
 }

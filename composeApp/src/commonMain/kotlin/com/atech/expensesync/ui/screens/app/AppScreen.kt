@@ -102,9 +102,7 @@ fun AppScreen(
                     }
 
                     else -> {
-                        com.atech.expensesync.utils.expenseSyncLogger(
-                            "State Details: $state",
-                        )
+                        // Do nothing
                     }
                 }
             }

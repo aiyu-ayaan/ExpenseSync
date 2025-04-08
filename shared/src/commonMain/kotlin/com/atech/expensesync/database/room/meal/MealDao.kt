@@ -11,8 +11,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MealDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createMealBook(mealBook: MealBook): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createMealBook(mealBook: List<MealBook>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun createMealBookEntry(mealBookEntry: MealBookEntry): Long

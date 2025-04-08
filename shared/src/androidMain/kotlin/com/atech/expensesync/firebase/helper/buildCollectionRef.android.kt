@@ -7,7 +7,7 @@ fun buildCollectionRef(
     vararg firebaseHelper: FirebaseHelper,
     firestore: FirebaseFirestore
 ): CollectionReference {
-    val collectionRef = firestore.collection(firebaseHelper[0].collectionName)
+    val collectionRef = firestore.collection(firebaseHelper[0].collectionName!!)
     firebaseHelper.toList()
         .forEachIndexed { index, firebaseHelper ->
             if (index == 0) return@forEachIndexed

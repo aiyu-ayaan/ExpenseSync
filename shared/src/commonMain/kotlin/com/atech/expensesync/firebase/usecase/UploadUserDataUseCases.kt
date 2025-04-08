@@ -1,10 +1,14 @@
 package com.atech.expensesync.firebase.usecase
 
+import com.atech.expensesync.database.models.MealBookEntryFirebase
+import com.atech.expensesync.database.models.MealBookEntryFirebaseList
 import com.atech.expensesync.database.room.meal.MealDao
+import com.atech.expensesync.firebase.helper.FirebaseHelper
 import com.atech.expensesync.firebase.io.KmpFire
 import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.utils.FirebaseCollectionPath
 import com.atech.expensesync.utils.FirebaseDocumentName
+import kotlinx.coroutines.flow.Flow
 
 
 class MealBookUploadUseCase(
@@ -37,6 +41,30 @@ class MealBookUploadUseCase(
         }
         return FirebaseResponse.Success(Any())
     }
+}
+
+class GetMealBookDataUseCases(
+    private val kmpFire: KmpFire
+) {
+    suspend fun getMealBookData(
+        uid: String
+    ): Flow<FirebaseResponse<MealBookEntryFirebaseList>> =
+        kmpFire.getObservedDataWithQuery<MealBookEntryFirebaseList>(
+            FirebaseHelper(
+                collectionName = FirebaseCollectionPath.USER.path + "/$uid/data"
+            ),
+            FirebaseHelper(
+                documentName = FirebaseDocumentName.MEAL_BOOK.path
+            )
+        )
+
+    suspend fun getMealBookEntryData(
+        uid: String
+    ): Flow<FirebaseResponse<MealBookEntryFirebase>> =
+        kmpFire.getObservedData<MealBookEntryFirebase>(
+            FirebaseCollectionPath.USER.path + "/$uid/data",
+            FirebaseDocumentName.MEAL_BOOK_ENTRY.path
+        )
 }
 
 fun <T> List<T>.toMap(name: String) = mapOf(name to this)
