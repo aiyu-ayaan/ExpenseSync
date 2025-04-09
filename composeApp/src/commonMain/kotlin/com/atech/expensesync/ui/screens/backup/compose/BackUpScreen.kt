@@ -18,7 +18,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.navigation.AppNavigation
 import com.atech.expensesync.navigation.LogInNavigation
 import com.atech.expensesync.ui.screens.backup.BackUpScreenEvents
@@ -34,14 +36,17 @@ fun BackUpScreen(
 ) {
     val viewModel = koinInject<BackUpViewModel>()
     val isBackUpDone by viewModel.isBackUpDone
+    val pref = LocalDataStore.current
     LaunchedEffect(isBackUpDone) {
-        if (isBackUpDone)
+        if (isBackUpDone) {
+            pref.saveBoolean(PrefKeys.IS_BACKUP_DONE, true)
             navHostController.navigate(AppNavigation.AppScreen.route) {
                 launchSingleTop = true
                 popUpTo(LogInNavigation.BackUpScreen.route) {
                     inclusive = true
                 }
             }
+        }
     }
     MainContainer(
         modifier = modifier
