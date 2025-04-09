@@ -31,3 +31,10 @@ fun <T> FirebaseResponse<T>.getOrNull(): T? {
         else -> null
     }
 }
+
+fun <T> FirebaseResponse<T>.getException(): Exception? {
+    return when (this) {
+        is FirebaseResponse.Error -> Exception(this.error)
+        else -> null
+    }
+}

@@ -38,6 +38,8 @@ import com.atech.expensesync.usecases.MealBookEntryDataSyncUseCases
 import com.atech.expensesync.usecases.MealBookSyncUseCases
 import com.atech.expensesync.usecases.MealBookUseCases
 import com.atech.expensesync.usecases.RemoveMember
+import com.atech.expensesync.usecases.RestoreData
+import com.atech.expensesync.usecases.RestoreMealData
 import com.atech.expensesync.usecases.SplitGroupMemberUseCases
 import com.atech.expensesync.usecases.SplitTransactionUseCases
 import com.atech.expensesync.usecases.SplitUseCases
@@ -143,6 +145,9 @@ val commonModule = module {
     single { MealBookDataSyncUseCases(get(), get()) }
     single { MealBookEntryDataSyncUseCases(get(), get()) }
     single { MealBookSyncUseCases(get(), get()) }
+
+    single { RestoreMealData(get(), get()) }
+    single { RestoreData(get()) }
 
 
 }

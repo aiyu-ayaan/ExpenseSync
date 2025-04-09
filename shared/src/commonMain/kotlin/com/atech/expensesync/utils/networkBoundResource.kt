@@ -14,7 +14,6 @@ inline fun <ResultType, ResponseType> networkFetchData(
 ): Flow<FirebaseResponse<ResultType>> = channelFlow {
     launch {
         query().collect { localData ->
-            expenseSyncLogger("Local data updated: $localData")
             send(FirebaseResponse.Success(localData))
         }
     }
@@ -26,13 +25,11 @@ inline fun <ResultType, ResponseType> networkFetchData(
                 fetch().collect { response ->
                     when (response) {
                         is FirebaseResponse.Success -> {
-                            expenseSyncLogger("Network fetch successful")
                             saveFetchResult(response.data)
                             // Local data observation will emit updated data
                         }
 
                         is FirebaseResponse.Error -> {
-                            expenseSyncLogger("Network error: ${response.error}")
                             send(FirebaseResponse.Error(response.error))
                         }
 

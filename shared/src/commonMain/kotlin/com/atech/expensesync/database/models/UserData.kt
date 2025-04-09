@@ -14,7 +14,7 @@ data class MealBookEntryFirebase(
 )
 
 @Keep
-data class MealBookFirebaseList(
+data class MealBookEntryFirebaseList(
     val meal_book_entry: List<MealBookEntryFirebase> = emptyList(),
 )
 
@@ -27,7 +27,7 @@ fun MealBookEntryFirebase.toMealBookEntry(): MealBookEntry = MealBookEntry(
 )
 
 @Keep
-data class MealBookEntryFirebaseList(
+data class MealBookFirebaseList(
     val meal_book: List<MealBookFirebase> = emptyList(),
 )
 

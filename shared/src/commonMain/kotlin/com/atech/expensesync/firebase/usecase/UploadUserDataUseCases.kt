@@ -1,7 +1,7 @@
 package com.atech.expensesync.firebase.usecase
 
-import com.atech.expensesync.database.models.MealBookEntryFirebaseList
 import com.atech.expensesync.database.models.MealBookFirebaseList
+import com.atech.expensesync.database.models.MealBookEntryFirebaseList
 import com.atech.expensesync.database.room.meal.MealDao
 import com.atech.expensesync.firebase.helper.FirebaseHelper
 import com.atech.expensesync.firebase.io.KmpFire
@@ -48,8 +48,8 @@ class GetMealBookDataUseCases(
 ) {
     suspend fun getMealBookData(
         uid: String
-    ): Flow<FirebaseResponse<MealBookEntryFirebaseList>> =
-        kmpFire.getObservedDataWithQuery<MealBookEntryFirebaseList>(
+    ): Flow<FirebaseResponse<MealBookFirebaseList>> =
+        kmpFire.getObservedDataWithQuery<MealBookFirebaseList>(
             FirebaseHelper(
                 collectionName = FirebaseCollectionPath.USER.path + "/$uid/data"
             ),
@@ -60,8 +60,8 @@ class GetMealBookDataUseCases(
 
     suspend fun getMealBookEntryData(
         uid: String
-    ): Flow<FirebaseResponse<MealBookFirebaseList>> =
-        kmpFire.getObservedData<MealBookFirebaseList>(
+    ): Flow<FirebaseResponse<MealBookEntryFirebaseList>> =
+        kmpFire.getObservedData<MealBookEntryFirebaseList>(
             FirebaseCollectionPath.USER.path + "/$uid/data",
             FirebaseDocumentName.MEAL_BOOK_ENTRY.path
         )

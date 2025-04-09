@@ -27,9 +27,6 @@ data class MealBookDataSyncUseCases(
             getMealBookDataUseCases.getMealBookData(uid)
         },
         saveFetchResult = { mealBook ->
-            expenseSyncLogger(
-                "Called saveFetchResult ${mealBook.meal_book}",
-            )
             dao.createMealBook(mealBook.meal_book.map { it.toMealBook() })
         }
     )
@@ -49,9 +46,6 @@ data class MealBookEntryDataSyncUseCases(
             getMealBookDataUseCases.getMealBookEntryData(uid)
         },
         saveFetchResult = { mealBook ->
-            expenseSyncLogger(
-                "Called saveFetchResult ${mealBook.meal_book_entry}",
-            )
             dao.createMealBookEntry(mealBook.meal_book_entry.map { it.toMealBookEntry() })
         }
     )

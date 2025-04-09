@@ -30,8 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NavHostController
+import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.BottomPadding
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.ui.screens.meal.edit.EditMealBookEntryDialog
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
@@ -46,9 +48,15 @@ import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 import com.atech.expensesync.ui_utils.formatAmount
 import com.atech.expensesync.ui_utils.showToast
+import com.atech.expensesync.usecases.BackUpState
+import com.atech.expensesync.usecases.RestoreMealData
 import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.checkIts1stDayOfMonth
+import com.atech.expensesync.utils.expenseSyncLogger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -70,7 +78,27 @@ fun MealScreen(
 
     val lazyListState = rememberLazyListState()
     navigator.backHandlerThreePane()
-
+    val restore = koinInject<RestoreMealData>()
+    val scope = koinInject<CoroutineScope>()
+    val uid = LocalDataStore.current.getString(PrefKeys.USER_ID)
+    scope.launch {
+        restore.invoke(
+            uid
+        ){
+            when (it) {
+                is BackUpState.OnError -> {
+                    expenseSyncLogger(
+                        "Error restoring data: ${it.exception.message}"
+                    )
+                }
+                BackUpState.OnSuccess -> {
+                    expenseSyncLogger(
+                        "Data restored successfully"
+                    )
+                }
+            }
+        }
+    }
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
