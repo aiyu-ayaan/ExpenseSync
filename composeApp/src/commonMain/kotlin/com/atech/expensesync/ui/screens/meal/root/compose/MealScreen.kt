@@ -30,11 +30,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NavHostController
-import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.BottomPadding
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.room.meal.MealBook
+import com.atech.expensesync.firebase.util.FirebaseResponse
+import com.atech.expensesync.firebase.util.getError
+import com.atech.expensesync.firebase.util.getOrNull
+import com.atech.expensesync.firebase.util.isError
+import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.ui.screens.meal.edit.EditMealBookEntryDialog
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
 import com.atech.expensesync.ui.screens.meal.root.MealScreenEvents
@@ -43,20 +46,13 @@ import com.atech.expensesync.ui.screens.meal.root.compose.add.AddMealBookScreen
 import com.atech.expensesync.ui.screens.meal.view.ViewMealEvents
 import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
 import com.atech.expensesync.ui.screens.meal.view.compose.ViewMealScreen
-import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 import com.atech.expensesync.ui_utils.formatAmount
 import com.atech.expensesync.ui_utils.showToast
-import com.atech.expensesync.usecases.BackUpState
-import com.atech.expensesync.usecases.RestoreMealData
 import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.checkIts1stDayOfMonth
 import com.atech.expensesync.utils.expenseSyncLogger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -74,7 +70,7 @@ fun MealScreen(
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     val mealViewModel = koinViewModel<ViewMealViewModel>()
-    val mealBookItems by viewModel.mealBooks.collectAsState(emptyList())
+    val mealBookItems by viewModel.mealBooks.collectAsState(FirebaseResponse.Loading)
 
     val lazyListState = rememberLazyListState()
     navigator.backHandlerThreePane()
@@ -85,54 +81,49 @@ fun MealScreen(
         listPane = {
             AnimatedPane {
                 canShowAppBar.invoke(true)
-                MealListScreen(
-                    listState = lazyListState,
-                    onItemClick = {
-                        /*navHostController.navigate(*/
-                        viewModel.onEvent(
-                            MealScreenEvents.SetMealBookEntry(
-                                AddMealBookState(
-                                    icon = it.icon,
-                                    mealBookId = it.mealBookId,
-                                    name = it.name,
-                                    defaultPrice = it.defaultPrice,
-                                    defaultCurrency = it.defaultCurrency,
-                                    createdAt = it.created,
-                                    description = it.description,
-                                )
+                MealListScreen(listState = lazyListState, onItemClick = {
+                    /*navHostController.navigate(*/
+                    viewModel.onEvent(
+                        MealScreenEvents.SetMealBookEntry(
+                            AddMealBookState(
+                                icon = it.icon,
+                                mealBookId = it.mealBookId,
+                                name = it.name,
+                                defaultPrice = it.defaultPrice,
+                                defaultCurrency = it.defaultCurrency,
+                                createdAt = it.created,
+                                description = it.description,
                             )
                         )
-                        navigator.navigateTo(
-                            ListDetailPaneScaffoldRole.Detail
-                        )
+                    )
+                    navigator.navigateTo(
+                        ListDetailPaneScaffoldRole.Detail
+                    )
 //                    )
-                    }, onAddMealBookClick = {
-                        viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(AddMealBookState()))
-                        navigator.navigateTo(ListDetailPaneScaffoldRole.Extra)
-                    }, state = mealBookItems, onEvent = viewModel::onEvent, calculateTotalPrice = {
-                        val value by viewModel.calculateTotalForCurrentMonth(it).collectAsState(0.0)
+                }, onAddMealBookClick = {
+                    viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(AddMealBookState()))
+                    navigator.navigateTo(ListDetailPaneScaffoldRole.Extra)
+                }, state = mealBookItems, onEvent = viewModel::onEvent, calculateTotalPrice = {
+                    val value by viewModel.calculateTotalForCurrentMonth(it).collectAsState(0.0)
+                    value
+                }, calculateTotalLastMonthPrice = {
+                    if (checkIts1stDayOfMonth()) {
+                        val value by viewModel.calculateTotalForLastMonth(it).collectAsState(0.0)
                         value
-                    }, calculateTotalLastMonthPrice = {
-                        if (checkIts1stDayOfMonth()) {
-                            val value by viewModel.calculateTotalForLastMonth(it)
-                                .collectAsState(0.0)
-                            value
-                        } else 0.0
-                    },
-                    onLongClick = {
-                        if (navigator.currentDestination?.pane == ListDetailPaneScaffoldRole.Detail) {
-                            return@MealListScreen
-                        }
-                        viewModel.onEvent(
-                            MealScreenEvents.SetMealBookEntry(
-                                it
-                            )
-                        )
-                        navigator.navigateTo(
-                            ListDetailPaneScaffoldRole.Extra
-                        )
+                    } else 0.0
+                }, onLongClick = {
+                    if (navigator.currentDestination?.pane == ListDetailPaneScaffoldRole.Detail) {
+                        return@MealListScreen
                     }
-                )
+                    viewModel.onEvent(
+                        MealScreenEvents.SetMealBookEntry(
+                            it
+                        )
+                    )
+                    navigator.navigateTo(
+                        ListDetailPaneScaffoldRole.Extra
+                    )
+                })
             }
         },
         extraPane = {
@@ -146,49 +137,44 @@ fun MealScreen(
                     })
             }
         },
-        detailPane =
-            if (viewModel.addMealState.value != null) {
-                {
-                    val arg = viewModel.addMealState.value
-                    AnimatedPane {
-                        canShowAppBar.invoke(false)
-                        mealViewModel.onEvent(
-                            ViewMealEvents.SetMealBookId(
-                                arg!!.mealBookId,
-                                arg
-                            )
+        detailPane = if (viewModel.addMealState.value != null) {
+            {
+                val arg = viewModel.addMealState.value
+                AnimatedPane {
+                    canShowAppBar.invoke(false)
+                    mealViewModel.onEvent(
+                        ViewMealEvents.SetMealBookId(
+                            arg!!.mealBookId, arg
                         )
-                        val calenderMonth by mealViewModel.calenderMonth
-                        val mealBookEntryState by mealViewModel.mealBookEntryState
-                        ViewMealScreen(
-                            mealBookState = mealViewModel.mealBookState.value
-                                ?: arg,
-                            state = mealBookEntryState,
-                            calenderMonth = calenderMonth,
-                            onEvent = mealViewModel::onEvent,
-                            onNavigateUp = {
-                                navigator.navigateBack()
-                                viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(null))
-                            },
-                            onEditClick = {
-                                viewModel.onEvent(
-                                    MealScreenEvents.SetMealBookEntry(
-                                        arg.copy(
-                                            isEdit = true
-                                        )
+                    )
+                    val calenderMonth by mealViewModel.calenderMonth
+                    val mealBookEntryState by mealViewModel.mealBookEntryState
+                    ViewMealScreen(
+                        mealBookState = mealViewModel.mealBookState.value ?: arg,
+                        state = mealBookEntryState,
+                        calenderMonth = calenderMonth,
+                        onEvent = mealViewModel::onEvent,
+                        onNavigateUp = {
+                            navigator.navigateBack()
+                            viewModel.onEvent(MealScreenEvents.OnMealScreenStateChange(null))
+                        },
+                        onEditClick = {
+                            viewModel.onEvent(
+                                MealScreenEvents.SetMealBookEntry(
+                                    arg.copy(
+                                        isEdit = true
                                     )
                                 )
-                                navigator.navigateTo(
-                                    ListDetailPaneScaffoldRole.Extra
-                                )
-                            }
-                        )
-                    }
+                            )
+                            navigator.navigateTo(
+                                ListDetailPaneScaffoldRole.Extra
+                            )
+                        })
                 }
-            } else {
-                {}
             }
-    )
+        } else {
+            {}
+        })
 }
 
 @Composable
@@ -209,7 +195,7 @@ fun LazyListState.handelFabState(): Boolean {
 private fun MealListScreen(
     modifier: Modifier = Modifier,
     onAddMealBookClick: () -> Unit = {},
-    state: List<MealBook>,
+    state: FirebaseResponse<List<MealBook>>,
     listState: LazyListState,
     onLongClick: (AddMealBookState) -> Unit = {},
     calculateTotalPrice: @Composable (String) -> Double,
@@ -224,6 +210,7 @@ private fun MealListScreen(
     var price by remember { mutableStateOf(0.0.formatAmount()) }
     var currency by remember { mutableStateOf(Currency.INR) }
     var mealBookId: String? by remember { mutableStateOf(null) }
+    var isLoaded by remember { mutableStateOf(false) }
 
 
     AnimatedVisibility(isPriceDialogVisible) {
@@ -245,75 +232,74 @@ private fun MealListScreen(
             )
         })
     }
+
     MainContainer(
-        modifier = modifier
-            .nestedScroll(
-                topAppBarScrollBehavior.nestedScrollConnection
-            ),
-        title = "Meal",
-        scrollBehavior = topAppBarScrollBehavior,
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text("Add Meal") },
-                expanded = listState.handelFabState(),
-                icon = {
-                    Icon(Icons.TwoTone.Book, contentDescription = "Add Meal")
-                }, onClick = onAddMealBookClick
-            )
-        }) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(MaterialTheme.spacing.medium),
-            contentPadding = paddingValues,
-            state = listState,
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
-        ) {
-            items(state) {
-                MealItem(
-                    onMealItemClick = {
-                        onItemClick.invoke(it)
+        modifier = modifier.nestedScroll(
+            topAppBarScrollBehavior.nestedScrollConnection
+        ), title = "Meal", scrollBehavior = topAppBarScrollBehavior, floatingActionButton = {
+            AnimatedVisibility(state.isSuccess()) {
+                ExtendedFloatingActionButton(
+                    text = { Text("Add Meal") },
+                    expanded = listState.handelFabState(),
+                    icon = {
+                        Icon(Icons.TwoTone.Book, contentDescription = "Add Meal")
                     },
-                    totalPrice = calculateTotalPrice.invoke(it.mealBookId),
-                    lastMonthPrice = calculateTotalLastMonthPrice.invoke(it.mealBookId),
-                    state = it,
-                    onActionClick = {
-                        mealBookId = it.mealBookId
-                        isPriceDialogVisible = true
-                        currency = it.defaultCurrency
-                        price = it.defaultPrice.formatAmount()
-                    },
-                    onlLongClick = {
-                        onLongClick.invoke(
-                            AddMealBookState(
-                                icon = it.icon,
-                                mealBookId = it.mealBookId,
-                                name = it.name,
-                                defaultPrice = it.defaultPrice,
-                                defaultCurrency = it.defaultCurrency,
-                                createdAt = it.created,
-                                description = it.description,
-                                isEdit = true
-                            )
-                        )
-                    }
+                    onClick = onAddMealBookClick
                 )
             }
-            item {
-                BottomPadding(
-                    padding = MaterialTheme.spacing.bottomPadding * 2
-                )
+        }) { paddingValues ->
+        val data = state.getOrNull() ?: emptyList()
+        if (state.isError()) {
+            expenseSyncLogger(
+                "Error in meal book list: ${state.getError()}"
+            )
+        }
+        expenseSyncLogger(
+            "Meal book list: ${state.getOrNull()}"
+        )
+        isLoaded = true
+        AnimatedVisibility(isLoaded) {
+            LazyColumn(
+                modifier = Modifier.padding(MaterialTheme.spacing.medium),
+                contentPadding = paddingValues,
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+            ) {
+                items(data) {
+                    MealItem(
+                        onMealItemClick = {
+                            onItemClick.invoke(it)
+                        },
+                        totalPrice = calculateTotalPrice.invoke(it.mealBookId),
+                        lastMonthPrice = calculateTotalLastMonthPrice.invoke(it.mealBookId),
+                        state = it,
+                        onActionClick = {
+                            mealBookId = it.mealBookId
+                            isPriceDialogVisible = true
+                            currency = it.defaultCurrency
+                            price = it.defaultPrice.formatAmount()
+                        },
+                        onlLongClick = {
+                            onLongClick.invoke(
+                                AddMealBookState(
+                                    icon = it.icon,
+                                    mealBookId = it.mealBookId,
+                                    name = it.name,
+                                    defaultPrice = it.defaultPrice,
+                                    defaultCurrency = it.defaultCurrency,
+                                    createdAt = it.created,
+                                    description = it.description,
+                                    isEdit = true
+                                )
+                            )
+                        })
+                }
+                item {
+                    BottomPadding(
+                        padding = MaterialTheme.spacing.bottomPadding * 2
+                    )
+                }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun MealScreenPreview() {
-    ExpenseSyncTheme {
-        MealListScreen(
-            state = emptyList(), calculateTotalPrice = { 0.0 },
-            listState = rememberLazyListState()
-        )
     }
 }

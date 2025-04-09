@@ -16,8 +16,8 @@ val androidUIModule = module {
     viewModel { LogInViewModel(get()) }
     viewModel { ScanViewModel(get(), get()) }
     viewModel { AddExpenseViewModel(get(), get(), get()) }
-    viewModel { MealViewModel(get()) }
+    viewModel { MealViewModel(get(), get(), get()) }
     viewModel { ViewMealViewModel(get()) }
     viewModel { ExpenseViewModel(get()) }
-    viewModel { com.atech.expensesync.ui.screens.backup.BackUpViewModel(get(),get()) }
+    viewModel { com.atech.expensesync.ui.screens.backup.BackUpViewModel(get(), get()) }
 }

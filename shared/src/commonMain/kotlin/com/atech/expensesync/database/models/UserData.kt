@@ -33,13 +33,14 @@ data class MealBookFirebaseList(
 
 @Keep
 data class MealBookFirebase(
-    val name: String = "",
+    var name: String = "",
     var icon: String = "",
-    val defaultPrice: Double = 0.0,
-    val defaultCurrency: Currency = Currency.INR,
-    val description: String = "",
-    val created: Long = System.currentTimeMillis(),
-    val mealBookId: String = UUID.randomUUID().toString(),
+    var defaultPrice: Double = 0.0,
+    var defaultCurrency: Currency = Currency.INR,
+    var description: String = "",
+    var created: Long = System.currentTimeMillis(),
+    var mealBookId: String = UUID.randomUUID().toString(),
+    var formattedDate: String = ""
 )
 
 fun MealBookFirebase.toMealBook(): com.atech.expensesync.database.room.meal.MealBook =

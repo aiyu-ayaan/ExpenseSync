@@ -4,6 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.atech.expensesync.database.pref.PrefKeys
+import com.atech.expensesync.database.pref.PrefManager
+import com.atech.expensesync.usecases.MealBookSyncUseCases
 import com.atech.expensesync.usecases.MealBookUseCases
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -11,12 +14,17 @@ import kotlinx.coroutines.runBlocking
 import java.util.Calendar
 
 class MealViewModel(
-    private val useCases: MealBookUseCases
+    private val useCases: MealBookUseCases,
+    private val mealBookMealViewModel: MealBookSyncUseCases,
+    private val prefManager: PrefManager
 ) : ViewModel() {
     private val _addMealState = mutableStateOf<AddMealBookState?>(null)
     val addMealState: State<AddMealBookState?> get() = _addMealState
 
-    val mealBooks = useCases.getMealBooks.invoke()
+    private val uid by lazy {
+        prefManager.getString(PrefKeys.USER_ID)
+    }
+    val mealBooks = mealBookMealViewModel.mealBookDataSync.invoke(uid)
 
     private val mapper by lazy { AddMealBookStateTOMealBookMapper() }
 
