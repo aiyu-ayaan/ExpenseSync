@@ -7,6 +7,7 @@ import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
 import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.usecases.UploadUseCases
 import com.atech.expensesync.utils.LoggerType
+import com.atech.expensesync.utils.expenseSyncLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -67,7 +68,7 @@ class UploadDataDelegate : UploadData {
                 userUid
             )) {
                 is FirebaseResponse.Error -> {
-                    com.atech.expensesync.utils.expenseSyncLogger(
+                    expenseSyncLogger(
                         "Error in uploading meal data: ${d.error}", LoggerType.ERROR
                     )
                 }
@@ -77,10 +78,12 @@ class UploadDataDelegate : UploadData {
                     uploadUseCase!!.update.invoke(
                         item.copy(isUpdated = true)
                     )
-                    com.atech.expensesync.utils.expenseSyncLogger(
+                    expenseSyncLogger(
                         "Data is uploaded successfully!!"
                     )
                 }
+
+                FirebaseResponse.Empty -> {}
             }
         }
 

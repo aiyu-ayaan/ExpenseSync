@@ -40,6 +40,10 @@ class ScanViewModel(
                 is FirebaseResponse.Success -> {
                     _logInDetails.value = FirebaseResponse.Success(it.data.desktopLogInDetails)
                 }
+
+                FirebaseResponse.Empty -> {
+                    _logInDetails.value = FirebaseResponse.Empty
+                }
             }
         }.launchIn(viewModelScope)
     }

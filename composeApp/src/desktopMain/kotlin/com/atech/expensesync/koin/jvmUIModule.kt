@@ -1,5 +1,6 @@
 package com.atech.expensesync.koin
 
+import com.atech.expensesync.ui.screens.backup.BackUpViewModel
 import com.atech.expensesync.ui.screens.expense.root.ExpenseViewModel
 import com.atech.expensesync.ui.screens.login.LogInViewModel
 import com.atech.expensesync.ui.screens.meal.root.MealViewModel
@@ -15,5 +16,6 @@ val jvmUIModule = module {
     single { MealViewModel(get()) }
     single { ViewMealViewModel(get()) }
     single { ExpenseViewModel(get()) }
+    single { BackUpViewModel(get(),get()) }
 //    single { QRHelperImp() }
 }

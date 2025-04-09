@@ -39,6 +39,7 @@ abstract class SplitSyncDatabase : RoomDatabase() {
     abstract val mealDao: MealDao
     abstract val expenseBookDao: ExpenseBookDao
     abstract val updateDao: UploadDao
+    abstract val maintenanceDao: MaintenanceDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {

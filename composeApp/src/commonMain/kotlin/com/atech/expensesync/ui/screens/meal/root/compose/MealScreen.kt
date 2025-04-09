@@ -78,27 +78,6 @@ fun MealScreen(
 
     val lazyListState = rememberLazyListState()
     navigator.backHandlerThreePane()
-    val restore = koinInject<RestoreMealData>()
-    val scope = koinInject<CoroutineScope>()
-    val uid = LocalDataStore.current.getString(PrefKeys.USER_ID)
-    scope.launch {
-        restore.invoke(
-            uid
-        ){
-            when (it) {
-                is BackUpState.OnError -> {
-                    expenseSyncLogger(
-                        "Error restoring data: ${it.exception.message}"
-                    )
-                }
-                BackUpState.OnSuccess -> {
-                    expenseSyncLogger(
-                        "Data restored successfully"
-                    )
-                }
-            }
-        }
-    }
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,

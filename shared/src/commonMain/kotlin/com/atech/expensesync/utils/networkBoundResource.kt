@@ -36,6 +36,10 @@ inline fun <ResultType, ResponseType> networkFetchData(
                         is FirebaseResponse.Loading -> {
                             // Already emitted loading state initially
                         }
+
+                        FirebaseResponse.Empty -> {
+                            // Handle empty state if needed
+                        }
                     }
                 }
             } catch (e: Exception) {

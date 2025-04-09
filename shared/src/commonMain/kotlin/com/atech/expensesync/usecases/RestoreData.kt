@@ -7,6 +7,7 @@ import com.atech.expensesync.database.models.toMealBookEntry
 import com.atech.expensesync.database.room.meal.MealDao
 import com.atech.expensesync.firebase.util.getException
 import com.atech.expensesync.firebase.util.getOrNull
+import com.atech.expensesync.firebase.util.isEmpty
 import com.atech.expensesync.firebase.util.isError
 import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.utils.FirebaseCollectionPath
@@ -34,6 +35,10 @@ data class RestoreMealData(
             collectionName = FirebaseCollectionPath.USER.path + "/$uid/data",
             documentName = FirebaseDocumentName.MEAL_BOOK.path
         )
+        if (data.isEmpty()) {
+            status(BackUpState.OnSuccess)
+            return
+        }
         if (data.isSuccess()) {
             val mealBooks = data.getOrNull()
             if (mealBooks != null) {
@@ -52,6 +57,10 @@ data class RestoreMealData(
             collectionName = FirebaseCollectionPath.USER.path + "/$uid/data",
             documentName = FirebaseDocumentName.MEAL_BOOK_ENTRY.path
         )
+        if (mealBookEntries.isEmpty()) {
+            status(BackUpState.OnSuccess)
+            return
+        }
         if (mealBookEntries.isSuccess()) {
             val mealBookEntry = mealBookEntries.getOrNull()
             if (mealBookEntry != null) {

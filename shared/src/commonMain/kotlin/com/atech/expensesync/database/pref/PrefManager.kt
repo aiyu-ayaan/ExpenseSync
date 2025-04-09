@@ -88,4 +88,5 @@ enum class PrefKeys {
     USER_ID,
     USER_MODEL,
     DESKTOP_USER_UID,
+    IS_BACKUP_DONE,
 }

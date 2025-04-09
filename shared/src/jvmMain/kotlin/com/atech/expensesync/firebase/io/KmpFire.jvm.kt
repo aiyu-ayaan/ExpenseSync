@@ -34,7 +34,7 @@ actual class KmpFire(
                         trySend(FirebaseResponse.Error("Failed to convert data"))
                     }
                 } else {
-                    trySend(FirebaseResponse.Error("No data found"))
+                    trySend(FirebaseResponse.Empty)
                 }
             }
 
@@ -74,7 +74,7 @@ actual class KmpFire(
                         trySend(FirebaseResponse.Error("Failed to convert data"))
                     }
                 } else {
-                    trySend(FirebaseResponse.Error("No data found"))
+                    trySend(FirebaseResponse.Empty)
                 }
             }
 
@@ -106,7 +106,7 @@ actual class KmpFire(
                     val data = snapshot.toObjects(T::class.java)
                     trySend(FirebaseResponse.Success(data))
                 } else {
-                    trySend(FirebaseResponse.Error("No data found"))
+                    trySend(FirebaseResponse.Empty)
                 }
             }
 
@@ -133,7 +133,7 @@ actual class KmpFire(
                 FirebaseResponse.Error("Failed to convert data")
             }
         } else {
-            FirebaseResponse.Error("No data found")
+            FirebaseResponse.Empty
         }
     } catch (e: Exception) {
         FirebaseResponse.Error("Failed to get data: ${e.message}")

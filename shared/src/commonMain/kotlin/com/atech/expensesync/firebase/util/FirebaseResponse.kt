@@ -3,7 +3,8 @@ package com.atech.expensesync.firebase.util
 sealed interface FirebaseResponse<out T> {
     data class Success<T>(val data: T) : FirebaseResponse<T>
     data class Error(val error: String) : FirebaseResponse<Nothing>
-    object Loading : FirebaseResponse<Nothing>
+    data object Loading : FirebaseResponse<Nothing>
+    data object Empty : FirebaseResponse<Nothing>
 }
 
 fun FirebaseResponse<*>.isLoading(): Boolean {
@@ -23,6 +24,10 @@ fun FirebaseResponse<*>.getError(): String? {
 
 fun FirebaseResponse<*>.isSuccess(): Boolean {
     return this is FirebaseResponse.Success
+}
+
+fun <T> FirebaseResponse<T>.isEmpty(): Boolean {
+    return this is FirebaseResponse.Empty
 }
 
 fun <T> FirebaseResponse<T>.getOrNull(): T? {

@@ -32,6 +32,7 @@ import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.login.toUser
 import com.atech.expensesync.navigation.ExpanseSyncRoutes
+import com.atech.expensesync.navigation.LogInNavigation
 import com.atech.expensesync.ui.screens.login.LogInEvents
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.runWithDeviceCompose
@@ -96,7 +97,7 @@ fun LogInScreen(
                                 pref.saveString(
                                     PrefKeys.USER_MODEL, model.data.toJson()
                                 )
-                                navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
+                                navHostController.navigate(LogInNavigation.BackUpScreen.route) {
                                     launchSingleTop = true
                                     popUpTo(ExpanseSyncRoutes.LOGIN.route) {
                                         inclusive = true
@@ -105,6 +106,11 @@ fun LogInScreen(
                             }
 
                             FirebaseResponse.Loading -> {
+                                logInMessage = "Creating ..."
+                                hasClick = true
+                            }
+
+                            FirebaseResponse.Empty -> {
                                 logInMessage = "Creating ..."
                                 hasClick = true
                             }
@@ -213,7 +219,7 @@ fun LogInScreen(
                             pref.saveString(
                                 PrefKeys.USER_MODEL, userState.toJson()
                             )
-                            navHostController.navigate(ExpanseSyncRoutes.AppScreens.route) {
+                            navHostController.navigate(LogInNavigation.BackUpScreen.route) {
                                 launchSingleTop = true
                                 popUpTo(ExpanseSyncRoutes.LOGIN.route) {
                                     inclusive = true

@@ -68,6 +68,7 @@ val commonModule = module {
     single { get<SplitSyncDatabase>().mealDao }
     single { get<SplitSyncDatabase>().expenseBookDao }
     single { get<SplitSyncDatabase>().updateDao }
+    single { get<SplitSyncDatabase>().maintenanceDao }
     single { CreateNewGroupUseCase(get()) }
     single { UpdateGroupUseCase(get()) }
     single { GetGroupsUseCase(get()) }

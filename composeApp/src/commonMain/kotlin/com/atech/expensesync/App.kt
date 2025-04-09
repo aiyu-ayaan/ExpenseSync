@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.navigation.ExpanseSyncNavigation
+import com.atech.expensesync.navigation.LogInNavigation
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
@@ -33,14 +34,18 @@ fun App(
             ) {
                 val isLoggedInSkipped = pref.getBoolean(PrefKeys.IS_LOG_IN_SKIP)
                 val userId = pref.getString(PrefKeys.USER_ID)
+                val isBackUpDone = pref.getBoolean(PrefKeys.IS_BACKUP_DONE)
                 ExpanseSyncNavigation(
                     modifier = Modifier.padding(
                     ),
                     navHostController = navHostController,
-                    startDestination = if (isLoggedInSkipped || userId.isNotEmpty())
-                        ExpanseSyncNavigation.AppScreens.route
-                    else
-                        ExpanseSyncNavigation.LogInScreen.route
+                    startDestination =
+                        if (!isLoggedInSkipped && userId.isNotEmpty() && !isBackUpDone)
+                            LogInNavigation.BackUpScreen.route
+                        else if (isLoggedInSkipped || userId.isNotEmpty())
+                            ExpanseSyncNavigation.AppScreens.route
+                        else
+                            ExpanseSyncNavigation.LogInScreen.route
 
                 )
             }

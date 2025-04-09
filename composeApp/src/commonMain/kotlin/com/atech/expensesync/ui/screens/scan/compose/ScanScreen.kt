@@ -44,6 +44,7 @@ import com.atech.expensesync.ui.screens.scan.ScanViewModel
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 import com.atech.expensesync.utils.convertToDateFormat
+import com.atech.expensesync.utils.expenseSyncLogger
 import expensesync.composeapp.generated.resources.Res
 import expensesync.composeapp.generated.resources.devices
 import org.koin.compose.viewmodel.koinViewModel
@@ -191,15 +192,21 @@ fun ScanScreen(
                     viewModel.onEvent(ScanEvents.OnScanSuccess(data) { state ->
                         when (state) {
                             is FirebaseResponse.Error -> {
-                                com.atech.expensesync.utils.expenseSyncLogger(
+                                expenseSyncLogger(
                                     "Error: ${state.error}"
                                 )
                             }
 
                             FirebaseResponse.Loading -> {}
                             is FirebaseResponse.Success<DesktopLogInDetails> -> {
-                                com.atech.expensesync.utils.expenseSyncLogger(
+                                expenseSyncLogger(
                                     "${state.data.systemUid} ${state.data.systemName}"
+                                )
+                            }
+
+                            FirebaseResponse.Empty -> {
+                                expenseSyncLogger(
+                                    "Empty"
                                 )
                             }
                         }

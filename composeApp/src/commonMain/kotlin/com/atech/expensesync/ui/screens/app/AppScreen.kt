@@ -38,6 +38,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
+import com.atech.expensesync.database.room.MaintenanceDao
 import com.atech.expensesync.delegates.UploadDataDelegate
 import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
 import com.atech.expensesync.firebase.usecase.ObserveLogInUsingOR
@@ -86,6 +87,7 @@ fun AppScreen(
     val observeLogInUsingOR = koinInject<ObserveLogInUsingOR>()
     val uploadUseCase = koinInject<UploadUseCases>()
     val lifecycleRegistry = com.atech.expensesync.ui_utils.lifecycler.rememberLifecycleRegistry()
+    val maintenanceDao: MaintenanceDao = koinInject()
     uploadData.setVariables(
         mealBookUploadUseCase = mealBookUploadUseCase,
         prefManager = pref,
@@ -124,6 +126,7 @@ fun AppScreen(
                     if (it.isSuccess()) {
                         if (it.getOrNull() != null && it.getOrNull()!!.systemUid != desktopId) {
                             pref.clearAll()
+                            maintenanceDao.deleteAll()
                             com.atech.expensesync.utils.restartApp()
                         }
                     }
