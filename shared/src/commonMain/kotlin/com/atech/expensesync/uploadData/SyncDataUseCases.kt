@@ -13,39 +13,35 @@ data class MealBookSyncUseCases(
 )
 
 data class MealBookDataSyncUseCases(
-    private val dao: MealDao,
-    private val getMealBookDataUseCases: GetMealBookDataUseCases
+    private val dao: MealDao, private val getMealBookDataUseCases: GetMealBookDataUseCases
 ) {
     operator fun invoke(
         uid: String
-    ) = networkFetchData(
-        query = {
-            dao.getMealBooks()
-        },
-        fetch = {
-            getMealBookDataUseCases.getMealBookData(uid)
-        },
-        saveFetchResult = { mealBook ->
-            dao.createMealBook(mealBook.meal_book.map { it.toMealBook() })
-        }
-    )
+    ) = networkFetchData(query = {
+        dao.getMealBooks()
+    }, fetch = {
+        getMealBookDataUseCases.getMealBookData(uid)
+    }, saveFetchResult = { mealBook ->
+        val data = mealBook.meal_book.map { it.mealBookId }
+        com.atech.expensesync.utils.expenseSyncLogger(
+            "Meal Book Data: $data"
+        )
+        dao.deleteMealBookOtherThanIds(data)
+        dao.createMealBook(mealBook.meal_book.map { it.toMealBook() })
+    })
 }
 
 data class MealBookEntryDataSyncUseCases(
-    private val dao: MealDao,
-    private val getMealBookDataUseCases: GetMealBookDataUseCases
+    private val dao: MealDao, private val getMealBookDataUseCases: GetMealBookDataUseCases
 ) {
     operator fun invoke(
         uid: String
-    ) = networkFetchData(
-        query = {
-            dao.getMealBooks()
-        },
-        fetch = {
-            getMealBookDataUseCases.getMealBookEntryData(uid)
-        },
-        saveFetchResult = { mealBook ->
-            dao.createMealBookEntry(mealBook.meal_book_entry.map { it.toMealBookEntry() })
-        }
-    )
+    ) = networkFetchData(query = {
+        dao.getMealBooks()
+    }, fetch = {
+        getMealBookDataUseCases.getMealBookEntryData(uid)
+    }, saveFetchResult = { mealBook ->
+        dao.createMealBookEntry(mealBook.meal_book_entry.map { it.toMealBookEntry() })
+        dao.deleteMealBookEntryOtherThanIds(mealBook.meal_book_entry.map { it.createdAt })
+    })
 }

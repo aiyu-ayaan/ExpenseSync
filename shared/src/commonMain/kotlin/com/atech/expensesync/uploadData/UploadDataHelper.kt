@@ -18,7 +18,10 @@ class UploadDataHelper(
     val scope: CoroutineScope,
     private val uploadUseCase: UploadUseCases
 ) {
-    fun uploadMealData() {
+    fun uploadMealData(
+        onError: (String) -> Unit = {},
+        onSuccess: () -> Unit = {}
+    ) {
         val userUid = prefManager.getString(PrefKeys.USER_ID)
         if (userUid.isBlank()) {
             return
@@ -32,6 +35,7 @@ class UploadDataHelper(
                     expenseSyncLogger(
                         "Error in uploading meal data: ${d.error}", LoggerType.ERROR
                     )
+                    onError(d.error)
                 }
 
                 FirebaseResponse.Loading -> {}
@@ -42,6 +46,7 @@ class UploadDataHelper(
                     expenseSyncLogger(
                         "Data is uploaded successfully!!"
                     )
+                    onSuccess()
                 }
 
                 FirebaseResponse.Empty -> {}

@@ -53,6 +53,12 @@ interface MealDao {
     @Query("Delete from meal_book where mealBookId = :mealBookId")
     suspend fun deleteMealBookById(mealBookId: String)
 
+    @Query("DELETE FROM meal_book WHERE mealBookId NOT IN (:ids)")
+    suspend fun deleteMealBookOtherThanIds(ids: List<String>)
+
+    @Query("DELETE FROM meal_book_entry WHERE createdAt NOT IN (:ids)")
+    suspend fun deleteMealBookEntryOtherThanIds(ids: List<Long>)
+
     @Transaction
     suspend fun deleteMealBookAndEntries(mealBookId: String) {
         deleteMealBookById(mealBookId)
@@ -69,8 +75,6 @@ interface MealDao {
     """
     )
     fun getTotalPrice(
-        mealBookId: String,
-        startOfMonth: Long,
-        endOfMonth: Long
+        mealBookId: String, startOfMonth: Long, endOfMonth: Long
     ): Flow<Double>
 }

@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.atech.expensesync.LocalUploadDataHelper
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.ChooseCurrencyBottomSheet
 import com.atech.expensesync.component.ChooseIconBottomSheet
@@ -40,6 +41,7 @@ import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.formatAmount
 import com.atech.expensesync.ui_utils.isValidDecimalInput
 import com.atech.expensesync.ui_utils.showToast
+import com.atech.expensesync.utils.LoggerType
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -58,6 +60,7 @@ fun AddMealBookScreen(
 
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+    val uploadDataHelper = LocalUploadDataHelper.current
     MainContainer(
         modifier = modifier,
         title = "Add Meal Book",
@@ -67,25 +70,37 @@ fun AddMealBookScreen(
                 text = if (state.isEdit) "Update" else "Add",
                 enable = state.defaultPrice != 0.0 && state.name.isNotEmpty(),
                 onClick = {
-                    if (state.isEdit.not()) {
-                        onEvent.invoke(MealScreenEvents.OnAddMeal {
-                            if (it > 0) {
-                                showToast("Meal Book created successfully")
+                    if (state.isEdit.not()) onEvent.invoke(MealScreenEvents.OnAddMeal {
+                        if (it > 0) {
+                            showToast("Meal Book created successfully")
+                            uploadDataHelper.uploadMealData(
+                                onError = {
+                                    com.atech.expensesync.utils.expenseSyncLogger(
+                                        it, LoggerType.ERROR
+                                    )
+                                }) {
                                 onNavigationClick()
-                            } else {
-                                showToast("Failed to create Meal Book.Check Meal Book name and try again")
                             }
-                        })
-                        return@AppButton
-                    }
-                    onEvent.invoke(MealScreenEvents.UpdateMealBook(state) { res ->
+                        } else {
+                            showToast("Failed to create Meal Book.Check Meal Book name and try again")
+                        }
+                    })
+                    else onEvent.invoke(MealScreenEvents.UpdateMealBook(state) { res ->
                         if (res < 0) {
                             showToast("Failed to create Meal Book.Check Meal Book name and try again")
-                            return@UpdateMealBook
+                        } else {
+                            showToast("Meal Book updated successfully")
+                            uploadDataHelper.uploadMealData(
+                                onError = {
+                                    com.atech.expensesync.utils.expenseSyncLogger(
+                                        it, LoggerType.ERROR
+                                    )
+                                }) {
+                                onNavigationClick()
+                            }
                         }
-                        onNavigationClick()
-                        showToast("Meal Book updated successfully")
                     })
+
                 })
         }) { paddingValues ->
         AnimatedVisibility(showCurrencyBottomSheet) {
@@ -247,9 +262,11 @@ fun AddMealBookScreen(
                     onEvent.invoke(
                         MealScreenEvents.DeleteMealBook(
                             mealBookId = state.mealBookId, onComplete = {
-                                showToast("Meal Book deleted successfully")
-                                isDeleteDialogVisible = false
-                                onNavigationClick()
+                                uploadDataHelper.uploadMealData {
+//                                    showToast("Meal Book deleted successfully")
+                                    isDeleteDialogVisible = false
+                                    onNavigationClick()
+                                }
                             })
                     )
 

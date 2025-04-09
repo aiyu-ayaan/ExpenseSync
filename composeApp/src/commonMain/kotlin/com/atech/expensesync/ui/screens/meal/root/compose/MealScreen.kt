@@ -251,12 +251,10 @@ private fun MealListScreen(
         val data = state.getOrNull() ?: emptyList()
         if (state.isError()) {
             expenseSyncLogger(
-                "Error in meal book list: ${state.getError()}"
+                "Error in meal book list: ${state.getError()}",
+                com.atech.expensesync.utils.LoggerType.ERROR
             )
         }
-        expenseSyncLogger(
-            "Meal book list: ${state.getOrNull()}"
-        )
 //        TODO: Handle error state and also handle update and delete state
         isLoaded = true
         AnimatedVisibility(isLoaded) {
