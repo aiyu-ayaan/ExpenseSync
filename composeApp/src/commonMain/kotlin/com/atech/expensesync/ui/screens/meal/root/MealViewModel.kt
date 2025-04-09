@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
-import com.atech.expensesync.usecases.MealBookSyncUseCases
+import com.atech.expensesync.uploadData.MealBookSyncUseCases
 import com.atech.expensesync.usecases.MealBookUseCases
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.atech.expensesync.usecases
+package com.atech.expensesync.uploadData
 
 import com.atech.expensesync.database.room.upload.UpdateType
 import com.atech.expensesync.database.room.upload.UploadDao

@@ -4,6 +4,16 @@ import com.atech.expensesync.database.room.SplitSyncDatabase
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
 import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
 import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
+import com.atech.expensesync.uploadData.GetAllUnUploadByTypeUseCases
+import com.atech.expensesync.uploadData.GetAllUnUploadUseCases
+import com.atech.expensesync.uploadData.GetAllUseCases
+import com.atech.expensesync.uploadData.InsertUploadUseCases
+import com.atech.expensesync.uploadData.MealBookDataSyncUseCases
+import com.atech.expensesync.uploadData.MealBookEntryDataSyncUseCases
+import com.atech.expensesync.uploadData.MealBookSyncUseCases
+import com.atech.expensesync.uploadData.UpdateUploadUseCases
+import com.atech.expensesync.uploadData.UploadDataHelper
+import com.atech.expensesync.uploadData.UploadUseCases
 import com.atech.expensesync.usecases.AddTransactionUseCase
 import com.atech.expensesync.usecases.CreateMealBook
 import com.atech.expensesync.usecases.CreateMealBookEntry
@@ -17,9 +27,6 @@ import com.atech.expensesync.usecases.DeleteMealBookEntry
 import com.atech.expensesync.usecases.DeleteTransactionUseCase
 import com.atech.expensesync.usecases.ExpenseUseCases
 import com.atech.expensesync.usecases.GetAllExpensesUseCase
-import com.atech.expensesync.usecases.GetAllUnUploadByTypeUseCases
-import com.atech.expensesync.usecases.GetAllUnUploadUseCases
-import com.atech.expensesync.usecases.GetAllUseCases
 import com.atech.expensesync.usecases.GetExpenseBookEntryUseCase
 import com.atech.expensesync.usecases.GetExpenseByIdUseCase
 import com.atech.expensesync.usecases.GetGroupMembers
@@ -31,11 +38,7 @@ import com.atech.expensesync.usecases.GetTransactionsUseCase
 import com.atech.expensesync.usecases.InsertExpenseEntryUseCase
 import com.atech.expensesync.usecases.InsertExpenseUseCase
 import com.atech.expensesync.usecases.InsertMember
-import com.atech.expensesync.usecases.InsertUploadUseCases
 import com.atech.expensesync.usecases.MapTransactionWithSplitAndThenUser
-import com.atech.expensesync.usecases.MealBookDataSyncUseCases
-import com.atech.expensesync.usecases.MealBookEntryDataSyncUseCases
-import com.atech.expensesync.usecases.MealBookSyncUseCases
 import com.atech.expensesync.usecases.MealBookUseCases
 import com.atech.expensesync.usecases.RemoveMember
 import com.atech.expensesync.usecases.RestoreData
@@ -52,8 +55,6 @@ import com.atech.expensesync.usecases.UpdateTotalAmountUseCase
 import com.atech.expensesync.usecases.UpdateTotalInUseCase
 import com.atech.expensesync.usecases.UpdateTotalOutUseCase
 import com.atech.expensesync.usecases.UpdateTransactionUseCase
-import com.atech.expensesync.usecases.UpdateUploadUseCases
-import com.atech.expensesync.usecases.UploadUseCases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -149,6 +150,6 @@ val commonModule = module {
 
     single { RestoreMealData(get(), get()) }
     single { RestoreData(get()) }
-
+    single { UploadDataHelper(get(), get(), get(), get()) }
 
 }

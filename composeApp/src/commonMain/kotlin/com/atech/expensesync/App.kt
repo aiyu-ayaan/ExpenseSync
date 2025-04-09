@@ -13,11 +13,14 @@ import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.navigation.ExpanseSyncNavigation
 import com.atech.expensesync.navigation.LogInNavigation
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
+import com.atech.expensesync.uploadData.UploadDataHelper
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 
 val LocalDataStore = staticCompositionLocalOf<PrefManager> { error("No DataStore provided") }
+val LocalUploadDataHelper =
+    staticCompositionLocalOf<UploadDataHelper> { error("No UploadDataHelper provided") }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,8 +32,9 @@ fun App(
     KoinContext {
         ExpenseSyncTheme {
             val pref = koinInject<PrefManager>()
+            val uploadDataHelper: UploadDataHelper = koinInject()
             CompositionLocalProvider(
-                LocalDataStore provides pref
+                LocalDataStore provides pref, LocalUploadDataHelper provides uploadDataHelper
             ) {
                 val isLoggedInSkipped = pref.getBoolean(PrefKeys.IS_LOG_IN_SKIP)
                 val userId = pref.getString(PrefKeys.USER_ID)

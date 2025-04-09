@@ -22,6 +22,10 @@ class BackUpViewModel(
         PrefKeys.USER_ID
     )
 
+    init {
+        onEvent(BackUpScreenEvents.OnMealDataBackUpDone)
+    }
+
     fun onEvent(
         event: BackUpScreenEvents
     ) {

@@ -1,10 +1,9 @@
-package com.atech.expensesync.usecases
+package com.atech.expensesync.uploadData
 
 import com.atech.expensesync.database.models.toMealBook
 import com.atech.expensesync.database.models.toMealBookEntry
 import com.atech.expensesync.database.room.meal.MealDao
 import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
-import com.atech.expensesync.utils.expenseSyncLogger
 import com.atech.expensesync.utils.networkFetchData
 
 

@@ -5,6 +5,7 @@ import com.atech.expensesync.database.room.meal.MealBookEntry
 import com.atech.expensesync.database.room.meal.MealDao
 import com.atech.expensesync.database.room.upload.UpdateType
 import com.atech.expensesync.database.room.upload.UploadModel
+import com.atech.expensesync.uploadData.InsertUploadUseCases
 
 data class MealBookUseCases(
     val createMealBook: CreateMealBook,

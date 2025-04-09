@@ -36,11 +36,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.atech.expensesync.LocalDataStore
+import com.atech.expensesync.LocalUploadDataHelper
 import com.atech.expensesync.database.pref.PrefKeys
-import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.room.MaintenanceDao
-import com.atech.expensesync.delegates.UploadDataDelegate
-import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
 import com.atech.expensesync.firebase.usecase.ObserveLogInUsingOR
 import com.atech.expensesync.firebase.util.getOrNull
 import com.atech.expensesync.firebase.util.isError
@@ -54,8 +52,6 @@ import com.atech.expensesync.ui_utils.SystemUiController
 import com.atech.expensesync.ui_utils.lifecycler.LifeCycle
 import com.atech.expensesync.ui_utils.lifecycler.LifecycleObserver
 import com.atech.expensesync.ui_utils.runWithDeviceCompose
-import com.atech.expensesync.usecases.UploadUseCases
-import kotlinx.coroutines.CoroutineScope
 import org.koin.compose.koinInject
 
 
@@ -75,32 +71,24 @@ fun AppScreen(
 ) {
     val desktopId = LocalDataStore.current.getString(PrefKeys.DESKTOP_USER_UID)
     val startDestination = BaseAppScreen.Split
-    val uploadData by UploadDataDelegate.lazy()
+    val uploadDataHelper = LocalUploadDataHelper.current
     var currentDestination by rememberSaveable {
         mutableStateOf(
             startDestination
         )
     }
-    val mealBookUploadUseCase = koinInject<MealBookUploadUseCase>()
-    val pref = koinInject<PrefManager>()
-    val coroutineScope = koinInject<CoroutineScope>()
+    val pref = uploadDataHelper.prefManager
     val observeLogInUsingOR = koinInject<ObserveLogInUsingOR>()
-    val uploadUseCase = koinInject<UploadUseCases>()
     val lifecycleRegistry = com.atech.expensesync.ui_utils.lifecycler.rememberLifecycleRegistry()
     val maintenanceDao: MaintenanceDao = koinInject()
-    uploadData.setVariables(
-        mealBookUploadUseCase = mealBookUploadUseCase,
-        prefManager = pref,
-        scope = coroutineScope,
-        uploadUseCase = uploadUseCase
-    )
+
 
     DisposableEffect(lifecycleRegistry) {
         val observer = object : LifecycleObserver {
             override fun onStateChanged(state: LifeCycle) {
                 when (state) {
                     LifeCycle.ON_STOP -> {
-                        uploadData.uploadMealData()
+                        uploadDataHelper.uploadMealData()
                     }
 
                     else -> {
