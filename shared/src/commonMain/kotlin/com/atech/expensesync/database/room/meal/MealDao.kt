@@ -26,6 +26,9 @@ interface MealDao {
     @Query("SELECT * FROM meal_book ORDER BY created DESC")
     fun getMealBooks(): Flow<List<MealBook>>
 
+    @Query("SELECT * FROM meal_book_entry ORDER BY createdAt DESC")
+    fun getMealBookEntries(): Flow<List<MealBookEntry>>
+
     @Query("SELECT * FROM meal_book_entry WHERE mealBookId = :mealBookId ORDER BY createdAt DESC")
     fun getMealBookEntries(mealBookId: String): Flow<List<MealBookEntry>>
 
@@ -56,8 +59,8 @@ interface MealDao {
     @Query("DELETE FROM meal_book WHERE mealBookId NOT IN (:ids)")
     suspend fun deleteMealBookOtherThanIds(ids: List<String>)
 
-    @Query("DELETE FROM meal_book_entry WHERE createdAt NOT IN (:ids)")
-    suspend fun deleteMealBookEntryOtherThanIds(ids: List<Long>)
+    @Query("DELETE FROM meal_book_entry WHERE mealBookId NOT IN (:ids)")
+    suspend fun deleteMealBookEntryOtherThanIds(ids: List<String>)
 
     @Transaction
     suspend fun deleteMealBookAndEntries(mealBookId: String) {

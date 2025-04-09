@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NavHostController
+import com.atech.expensesync.LocalUploadDataHelper
 import com.atech.expensesync.component.BottomPadding
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.meal.MealBook
@@ -71,6 +72,7 @@ fun MealScreen(
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     val mealViewModel = koinViewModel<ViewMealViewModel>()
     val mealBookItems by viewModel.mealBooks.collectAsState(FirebaseResponse.Loading)
+    viewModel.backUpMealEntries()
 
     val lazyListState = rememberLazyListState()
     navigator.backHandlerThreePane()
@@ -211,6 +213,7 @@ private fun MealListScreen(
     var currency by remember { mutableStateOf(Currency.INR) }
     var mealBookId: String? by remember { mutableStateOf(null) }
     var isLoaded by remember { mutableStateOf(false) }
+    val uploadDataHelper = LocalUploadDataHelper.current
 
 
     AnimatedVisibility(isPriceDialogVisible) {
@@ -227,7 +230,10 @@ private fun MealListScreen(
                         showToast(
                             "Meal Book Entry created successfully"
                         )
-                        isPriceDialogVisible = false
+                        uploadDataHelper.uploadMealData {
+                            isPriceDialogVisible = false
+
+                        }
                     })
             )
         })

@@ -11,6 +11,7 @@ import com.atech.expensesync.utils.convertToDateFormat
 import java.util.UUID
 
 @Keep
+
 @Entity(
     tableName = "meal_book_entry",
     indices = [

@@ -61,6 +61,7 @@ import com.aay.compose.baseComponents.model.GridOrientation
 import com.aay.compose.lineChart.LineChart
 import com.aay.compose.lineChart.model.LineParameters
 import com.aay.compose.lineChart.model.LineType
+import com.atech.expensesync.LocalUploadDataHelper
 import com.atech.expensesync.component.DisplayCard
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.component.TitleComposable
@@ -147,6 +148,7 @@ fun ViewMealScreen(
     val scope = rememberCoroutineScope()
     var showHistoryBottomSheet by remember { mutableStateOf(false) }
     var deleteWarningDialogVisible by remember { mutableStateOf(false) }
+    val uploadDataHelper = LocalUploadDataHelper.current
 
 
 
@@ -302,7 +304,8 @@ fun ViewMealScreen(
                     onEvent.invoke(
                         ViewMealEvents.UpdateMealBookEntry(
                             oldMealBookEntry = mealBookEntry, mealBookEntry = it.copy(
-                                mealBookId = mealBookEntry?.mealBookId ?: return@EditMealBookEntryDialog,
+                                mealBookId = mealBookEntry?.mealBookId
+                                    ?: return@EditMealBookEntryDialog,
                             ), onComplete = { request ->
                                 if (request < 0) {
                                     showToast(
@@ -313,8 +316,10 @@ fun ViewMealScreen(
                                 showToast(
                                     "Meal Book Entry created successfully"
                                 )
-                                isPriceDialogVisible = false
-                                mealBookEntry = null
+                                uploadDataHelper.uploadMealData {
+                                    isPriceDialogVisible = false
+                                    mealBookEntry = null
+                                }
                             })
                     )
                 },

@@ -12,6 +12,7 @@ data class MealBookSyncUseCases(
     val mealBookEntryDataSync: MealBookEntryDataSyncUseCases,
 )
 
+//TODO : check here
 data class MealBookDataSyncUseCases(
     private val dao: MealDao, private val getMealBookDataUseCases: GetMealBookDataUseCases
 ) {
@@ -23,11 +24,8 @@ data class MealBookDataSyncUseCases(
         getMealBookDataUseCases.getMealBookData(uid)
     }, saveFetchResult = { mealBook ->
         val data = mealBook.meal_book.map { it.mealBookId }
-        com.atech.expensesync.utils.expenseSyncLogger(
-            "Meal Book Data: $data"
-        )
-        dao.deleteMealBookOtherThanIds(data)
         dao.createMealBook(mealBook.meal_book.map { it.toMealBook() })
+        dao.deleteMealBookOtherThanIds(data)
     })
 }
 
@@ -37,11 +35,12 @@ data class MealBookEntryDataSyncUseCases(
     operator fun invoke(
         uid: String
     ) = networkFetchData(query = {
-        dao.getMealBooks()
+        dao.getMealBookEntries()
     }, fetch = {
         getMealBookDataUseCases.getMealBookEntryData(uid)
     }, saveFetchResult = { mealBook ->
         dao.createMealBookEntry(mealBook.meal_book_entry.map { it.toMealBookEntry() })
-        dao.deleteMealBookEntryOtherThanIds(mealBook.meal_book_entry.map { it.createdAt })
+        dao.deleteMealBookEntryOtherThanIds(mealBook.meal_book_entry.map { it.mealBookId }
+            .distinct())
     })
 }

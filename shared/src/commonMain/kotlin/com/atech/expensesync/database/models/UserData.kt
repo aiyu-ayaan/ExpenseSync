@@ -11,6 +11,7 @@ data class MealBookEntryFirebase(
     val description: String = "",
     val mealBookId: String = "",
     val createdAt: Long = System.currentTimeMillis(),
+    var formattedDate: String = ""
 )
 
 @Keep

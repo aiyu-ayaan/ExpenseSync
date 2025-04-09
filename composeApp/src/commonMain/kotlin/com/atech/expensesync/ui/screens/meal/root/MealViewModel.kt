@@ -26,6 +26,7 @@ class MealViewModel(
     }
     val mealBooks = mealBookMealViewModel.mealBookDataSync.invoke(uid)
 
+
     private val mapper by lazy { AddMealBookStateTOMealBookMapper() }
 
     fun calculateTotalForCurrentMonth(
@@ -114,4 +115,14 @@ class MealViewModel(
                 _addMealState.value = event.mealBookEntry
         }
     }
+
+    fun backUpMealEntries() = viewModelScope.launch {
+        mealBookMealViewModel.mealBookEntryDataSync.invoke(uid)
+            .collect {
+                com.atech.expensesync.utils.expenseSyncLogger(
+                    "$it"
+                )
+            }
+    }
+
 }
