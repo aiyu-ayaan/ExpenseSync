@@ -257,6 +257,7 @@ private fun MealListScreen(
         expenseSyncLogger(
             "Meal book list: ${state.getOrNull()}"
         )
+//        TODO: Handle error state and also handle update and delete state
         isLoaded = true
         AnimatedVisibility(isLoaded) {
             LazyColumn(
