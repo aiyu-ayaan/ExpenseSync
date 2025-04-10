@@ -12,7 +12,6 @@ data class MealBookSyncUseCases(
     val mealBookEntryDataSync: MealBookEntryDataSyncUseCases,
 )
 
-//TODO : check here
 data class MealBookDataSyncUseCases(
     private val dao: MealDao, private val getMealBookDataUseCases: GetMealBookDataUseCases
 ) {

@@ -29,7 +29,7 @@ import com.atech.expensesync.database.room.upload.UploadModel
         MealBookEntry::class, ExpenseBook::class, ExpenseBookEntry::class,
         UploadModel::class
     ],
-    version = 6
+    version = 5
 )
 abstract class SplitSyncDatabase : RoomDatabase() {
     abstract val splitGroupDao: SplitGroupDao

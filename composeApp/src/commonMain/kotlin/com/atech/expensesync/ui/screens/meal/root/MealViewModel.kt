@@ -119,9 +119,7 @@ class MealViewModel(
     fun backUpMealEntries() = viewModelScope.launch {
         mealBookMealViewModel.mealBookEntryDataSync.invoke(uid)
             .collect {
-                com.atech.expensesync.utils.expenseSyncLogger(
-                    "$it"
-                )
+//               Do nothing
             }
     }
 
