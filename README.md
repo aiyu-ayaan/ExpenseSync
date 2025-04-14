@@ -1,5 +1,4 @@
 ![Code](https://tokei.rs/b1/github/aiyu-ayaan/ExpenseSync?category=code)
-
 [![wakatime](https://wakatime.com/badge/user/3a4240f0-6bea-4626-be2a-1129790e4336/project/797d9aa9-4aad-430c-96d4-010b2de71c89.svg)](https://wakatime.com/badge/user/3a4240f0-6bea-4626-be2a-1129790e4336/project/797d9aa9-4aad-430c-96d4-010b2de71c89)
 
 This is a Kotlin Multiplatform project targeting Android, Desktop, Server.
