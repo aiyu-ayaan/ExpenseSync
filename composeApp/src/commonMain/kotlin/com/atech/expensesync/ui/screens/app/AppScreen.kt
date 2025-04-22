@@ -1,21 +1,13 @@
 package com.atech.expensesync.ui.screens.app
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.AccountCircle
 import androidx.compose.material.icons.twotone.AttachMoney
-import androidx.compose.material.icons.twotone.Build
-import androidx.compose.material.icons.twotone.CalendarMonth
 import androidx.compose.material.icons.twotone.Fastfood
 import androidx.compose.material.icons.twotone.Payments
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -30,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
@@ -46,6 +37,7 @@ import com.atech.expensesync.firebase.util.isLoading
 import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.ui.screens.expense.root.compose.ExpenseScreen
 import com.atech.expensesync.ui.screens.meal.root.compose.MealScreen
+import com.atech.expensesync.ui.screens.profile.compose.ProfileScreen
 import com.atech.expensesync.ui.screens.split.root.compose.SplitScreen
 import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.SystemUiController
@@ -61,7 +53,7 @@ enum class BaseAppScreen(
     Split("Split", Icons.TwoTone.Payments), MessTrack(
         "Mess Track", Icons.TwoTone.Fastfood
     ),
-    Expense("Expense", Icons.TwoTone.AttachMoney), Calender("History", Icons.TwoTone.CalendarMonth)
+    Expense("Expense", Icons.TwoTone.AttachMoney), Profile("Profile", Icons.TwoTone.AccountCircle)
 }
 
 
@@ -183,24 +175,8 @@ fun AppScreen(
                         showNavigation = it
                     })
 
-                BaseAppScreen.Calender -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            modifier = Modifier.fillMaxWidth().fillMaxHeight(.5f),
-                            imageVector = Icons.TwoTone.Build,
-                            contentDescription = "Budget"
-                        )
-                        Text(
-                            "Calender", style = MaterialTheme.typography.titleLarge
-                        )
-                        Text(
-                            "Work in Progress", style = MaterialTheme.typography.bodySmall
-                        )
-                    }
+                BaseAppScreen.Profile -> {
+                    ProfileScreen()
                 }
             }
         }

@@ -4,6 +4,7 @@ import com.atech.expensesync.ui.screens.expense.root.ExpenseViewModel
 import com.atech.expensesync.ui.screens.login.LogInViewModel
 import com.atech.expensesync.ui.screens.meal.root.MealViewModel
 import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
+import com.atech.expensesync.ui.screens.profile.ProfileViewModel
 import com.atech.expensesync.ui.screens.scan.ScanViewModel
 import com.atech.expensesync.ui.screens.split.add.AddExpenseViewModel
 import com.atech.expensesync.ui.screens.split.root.SplitViewModel
@@ -20,4 +21,5 @@ val androidUIModule = module {
     viewModel { ViewMealViewModel(get()) }
     viewModel { ExpenseViewModel(get()) }
     viewModel { com.atech.expensesync.ui.screens.backup.BackUpViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get(), get()) }
 }

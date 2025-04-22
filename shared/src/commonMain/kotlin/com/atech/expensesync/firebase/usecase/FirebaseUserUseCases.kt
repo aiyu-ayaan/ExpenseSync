@@ -14,7 +14,8 @@ data class FirebaseUserUseCases(
     val logInToDesktopUseCase: LogInToDesktopUseCase,
     val observeLogInUsingOR: ObserveLogInUsingOR,
     val getLogInDetails: GetLogInDetails,
-    val performDesktopLogOut: PerformDesktopLogOut
+    val performDesktopLogOut: PerformDesktopLogOut,
+    val getUserDetails: GetUserDetails
 )
 
 data class CreateUserUseCase(
@@ -98,5 +99,17 @@ data class PerformDesktopLogOut(
                 "systemUid" to null,
                 "desktopLogInDetails" to null
             )
+        )
+}
+
+data class GetUserDetails(
+    private val kmpFire: KmpFire
+) {
+    suspend operator fun invoke(
+        uid: String,
+    ): Flow<FirebaseResponse<User>> =
+        kmpFire.getObservedData(
+            FirebaseCollectionPath.USER.path,
+            uid
         )
 }
