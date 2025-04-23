@@ -13,6 +13,8 @@ androidx-lifecycle = "2.8.4"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 chart = "Beta-0.0.5"
+coilCompose = "3.1.0"
+coilNetworkOkhttp = "3.1.0"
 compose-multiplatform = "1.7.0"
 core = "3.5.1"
 firebaseAdmin = "9.3.0"
@@ -61,6 +63,8 @@ coreVersion = "1.6.1"
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activityCompose" }
 chart = { module = "io.github.thechance101:chart", version.ref = "chart" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 core = { module = "com.google.zxing:core", version.ref = "core" }
 firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebaseAdmin" }
 jetlime = { module = "io.github.pushpalroy:jetlime", version.ref = "jetlime" }

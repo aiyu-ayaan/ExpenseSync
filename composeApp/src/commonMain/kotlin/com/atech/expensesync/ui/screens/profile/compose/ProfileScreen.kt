@@ -31,11 +31,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +62,17 @@ import com.atech.expensesync.ui_utils.backHandlerThreePane
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
+
+enum class DetailsScreenType {
+    NONE,
+    CLOUD_SYNC,
+    ACCOUNT,
+    ACKNOWLEDGEMENTS,
+    ABOUT_US,
+    REPORT_BUG,
+    SHARE
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun ProfileScreen(
@@ -67,6 +82,7 @@ fun ProfileScreen(
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     val viewModel = koinInject<ProfileViewModel>()
     val user by viewModel.user
+    var screenType by remember { mutableStateOf(DetailsScreenType.NONE) }
     navigator.backHandlerThreePane()
     ListDetailPaneScaffold(
         modifier = modifier,
@@ -80,10 +96,33 @@ fun ProfileScreen(
                     user = user.getOrNull() ?: return@ListDetailPaneScaffold,
                     onLinkedDeviceClicked = {
                         navHostController.navigate(AppNavigation.ScanScreen.route)
+                    },
+                    onItemClick = {
+                        screenType = it
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.Detail
+                        )
                     }
                 )
         },
-        detailPane = {}
+        detailPane = when (screenType) {
+            DetailsScreenType.ACKNOWLEDGEMENTS -> {
+                {
+                   AnimatedPane {
+                       AcknowledgementScreen(
+                           onNavigationClick = {
+                               screenType = DetailsScreenType.NONE
+                               navigator.navigateBack()
+                           }
+                       )
+                   }
+                }
+            }
+
+            else -> {
+                {}
+            }
+        }
     )
 }
 
@@ -93,6 +132,7 @@ fun ProfileScreenCompose(
     modifier: Modifier = Modifier,
     user: User,
     onLinkedDeviceClicked: () -> Unit = {},
+    onItemClick: (DetailsScreenType) -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val rainbowColorsBrush = remember {
@@ -164,7 +204,9 @@ fun ProfileScreenCompose(
                 icon = Icons.TwoTone.Key,
                 title = "Account",
                 description = "Manage your account settings",
-                onClick = {}
+                onClick = {
+                    onItemClick(DetailsScreenType.ACCOUNT)
+                }
             )
             com.atech.expensesync.ui_utils.runWithDeviceCompose(
                 onAndroid = {
@@ -180,29 +222,39 @@ fun ProfileScreenCompose(
                 icon = Icons.TwoTone.CloudSync,
                 title = "Cloud Sync",
                 description = "Manage your cloud sync settings",
-                onClick = {}
+                onClick = {
+                    onItemClick(DetailsScreenType.CLOUD_SYNC)
+                }
             )
             ProfileItems(
                 icon = Icons.TwoTone.AccountTree,
                 title = "Acknowledgements",
                 description = "Dependencies used in this app",
-                onClick = {}
+                onClick = {
+                    onItemClick(DetailsScreenType.ACKNOWLEDGEMENTS)
+                }
             )
             ProfileItems(
                 icon = Icons.TwoTone.Info,
                 title = "About Us",
                 description = "Learn more about us",
-                onClick = {}
+                onClick = {
+                    onItemClick(DetailsScreenType.ABOUT_US)
+                }
             )
             ProfileItems(
                 icon = Icons.TwoTone.BugReport,
                 title = "Report Bug",
-                onClick = {}
+                onClick = {
+                    onItemClick(DetailsScreenType.REPORT_BUG)
+                }
             )
             ProfileItems(
                 icon = Icons.TwoTone.Share,
                 title = "Share",
-                onClick = {}
+                onClick = {
+                    onItemClick(DetailsScreenType.SHARE)
+                }
             )
 
             Text(
