@@ -8,6 +8,7 @@ import com.atech.expensesync.ui.screens.profile.ProfileViewModel
 import com.atech.expensesync.ui.screens.scan.ScanViewModel
 import com.atech.expensesync.ui.screens.split.add.AddExpenseViewModel
 import com.atech.expensesync.ui.screens.split.root.SplitViewModel
+import com.atech.expensesync.ui_utils.LinkHelper
 import org.koin.androidx.viewmodel.dsl.viewModel
 
 import org.koin.dsl.module
@@ -22,4 +23,5 @@ val androidUIModule = module {
     viewModel { ExpenseViewModel(get()) }
     viewModel { com.atech.expensesync.ui.screens.backup.BackUpViewModel(get(), get()) }
     viewModel { ProfileViewModel(get(), get()) }
+    single { LinkHelper(get()) }
 }
