@@ -77,7 +77,8 @@ enum class DetailsScreenType {
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    canShowAppBar: (Boolean) -> Unit= {},
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     val viewModel = koinInject<ProfileViewModel>()
@@ -90,10 +91,12 @@ fun ProfileScreen(
         value = navigator.scaffoldValue,
         listPane = {
             if (user.isSuccess())
+            AnimatedPane{
+                canShowAppBar.invoke(true)
                 ProfileScreenCompose(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    user = user.getOrNull() ?: return@ListDetailPaneScaffold,
+                    user = user.getOrNull() ?: return@AnimatedPane,
                     onLinkedDeviceClicked = {
                         navHostController.navigate(AppNavigation.ScanScreen.route)
                     },
@@ -104,10 +107,12 @@ fun ProfileScreen(
                         )
                     }
                 )
+            }
         },
         detailPane = when (screenType) {
             DetailsScreenType.ACKNOWLEDGEMENTS -> {
                 {
+                    canShowAppBar.invoke(false)
                    AnimatedPane {
                        AcknowledgementScreen(
                            onNavigationClick = {
