@@ -44,11 +44,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.firebase.util.getOrNull
 import com.atech.expensesync.firebase.util.isSuccess
+import com.atech.expensesync.navigation.AppNavigation
 import com.atech.expensesync.ui.screens.profile.ProfileViewModel
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
@@ -59,7 +61,8 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun ProfileScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navHostController : NavHostController
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     val viewModel = koinInject<ProfileViewModel>()
@@ -75,7 +78,10 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                     ,
-                    user = user.getOrNull() ?: return@ListDetailPaneScaffold
+                    user = user.getOrNull() ?: return@ListDetailPaneScaffold,
+                    onLinkedDeviceClicked = {
+                        navHostController.navigate(AppNavigation.ScanScreen.route)
+                    }
                 )
         },
         detailPane = {}
@@ -86,7 +92,8 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenCompose(
     modifier: Modifier = Modifier,
-    user: User
+    user: User,
+    onLinkedDeviceClicked : () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val rainbowColorsBrush = remember {
@@ -164,7 +171,7 @@ fun ProfileScreenCompose(
                 icon = Icons.TwoTone.Devices,
                 title = "Linked Devices",
                 description = "Manage your linked devices",
-                onClick = {}
+                onClick = onLinkedDeviceClicked
             )
             ProfileItems(
                 icon = Icons.TwoTone.CloudSync,
@@ -257,6 +264,6 @@ fun ProfileItems(
 @Composable
 private fun ProfileScreenPreview() {
     ExpenseSyncTheme {
-        ProfileScreen()
+//        ProfileScreenCompose()
     }
 }

@@ -176,7 +176,9 @@ fun AppScreen(
                     })
 
                 BaseAppScreen.Profile -> {
-                    ProfileScreen()
+                    ProfileScreen(
+                        navHostController = navHostController
+                    )
                 }
             }
         }
