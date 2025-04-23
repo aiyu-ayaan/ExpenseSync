@@ -62,7 +62,7 @@ import org.koin.compose.koinInject
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    navHostController : NavHostController
+    navHostController: NavHostController
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     val viewModel = koinInject<ProfileViewModel>()
@@ -76,8 +76,7 @@ fun ProfileScreen(
             if (user.isSuccess())
                 ProfileScreenCompose(
                     modifier = Modifier
-                        .fillMaxWidth()
-                    ,
+                        .fillMaxWidth(),
                     user = user.getOrNull() ?: return@ListDetailPaneScaffold,
                     onLinkedDeviceClicked = {
                         navHostController.navigate(AppNavigation.ScanScreen.route)
@@ -93,7 +92,7 @@ fun ProfileScreen(
 fun ProfileScreenCompose(
     modifier: Modifier = Modifier,
     user: User,
-    onLinkedDeviceClicked : () -> Unit = {},
+    onLinkedDeviceClicked: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val rainbowColorsBrush = remember {
@@ -167,11 +166,15 @@ fun ProfileScreenCompose(
                 description = "Manage your account settings",
                 onClick = {}
             )
-            ProfileItems(
-                icon = Icons.TwoTone.Devices,
-                title = "Linked Devices",
-                description = "Manage your linked devices",
-                onClick = onLinkedDeviceClicked
+            com.atech.expensesync.ui_utils.runWithDeviceCompose(
+                onAndroid = {
+                    ProfileItems(
+                        icon = Icons.TwoTone.Devices,
+                        title = "Linked Devices",
+                        description = "Manage your linked devices",
+                        onClick = onLinkedDeviceClicked
+                    )
+                }
             )
             ProfileItems(
                 icon = Icons.TwoTone.CloudSync,
