@@ -11,6 +11,7 @@ inline fun <ResultType, ResponseType> networkFetchData(
     crossinline fetch: suspend () -> Flow<FirebaseResponse<ResponseType>>,
     crossinline saveFetchResult: suspend (ResponseType) -> Unit,
     crossinline shouldFetch: () -> Boolean = { true },
+    crossinline isDataDifferent: suspend (ResponseType) -> Boolean = { true }
 ): Flow<FirebaseResponse<ResultType>> = channelFlow {
     launch {
         query().collect { localData ->
@@ -25,8 +26,12 @@ inline fun <ResultType, ResponseType> networkFetchData(
                 fetch().collect { response ->
                     when (response) {
                         is FirebaseResponse.Success -> {
-                            saveFetchResult(response.data)
-                            // Local data observation will emit updated data
+                            if (isDataDifferent(response.data)) {
+                                saveFetchResult(response.data)
+                                expenseSyncLogger("Network data different from local, saving to database")
+                            } else {
+                                expenseSyncLogger("Network data same as local, skipping database insert")
+                            }
                         }
 
                         is FirebaseResponse.Error -> {

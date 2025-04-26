@@ -80,4 +80,30 @@ interface MealDao {
     fun getTotalPrice(
         mealBookId: String, startOfMonth: Long, endOfMonth: Long
     ): Flow<Double>
+
+
+    @Query("SELECT * FROM meal_book ORDER BY created DESC")
+    suspend fun getMealBooksSync(): List<MealBook>
+
+    @Query("SELECT * FROM meal_book_entry ORDER BY createdAt DESC")
+    suspend fun getMealBookEntriesSync(): List<MealBookEntry>
+
+    // Transaction to ensure data consistency when syncing
+    @Transaction
+    suspend fun syncMealBookData(
+        mealBooks: List<MealBook>,
+        validIds: List<String>
+    ) {
+        createMealBook(mealBooks)
+        deleteMealBookOtherThanIds(validIds)
+    }
+
+    @Transaction
+    suspend fun syncMealBookEntryData(
+        entries: List<MealBookEntry>,
+        validIds: List<String>
+    ) {
+        createMealBookEntry(entries)
+        deleteMealBookEntryOtherThanIds(validIds)
+    }
 }
