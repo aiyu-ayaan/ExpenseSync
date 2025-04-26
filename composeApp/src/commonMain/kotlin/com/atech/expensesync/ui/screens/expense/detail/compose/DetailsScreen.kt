@@ -378,18 +378,32 @@ fun TopNetBalanceView(
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
 
             // Income/expense percentage indicators
+
+            val total = expenseBook.totalIn + expenseBook.totalOut.absoluteValue
+
+            val incomePercentage = if (total != 0.0) {
+                ((expenseBook.totalIn / total) * 100).roundToInt()
+            } else {
+                0
+            }
+
+            val expensesPercentage = if (total != 0.0) {
+                ((expenseBook.totalOut.absoluteValue / total) * 100).roundToInt()
+            } else {
+                0
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Income ${((expenseBook.totalIn / (expenseBook.totalIn + expenseBook.totalOut.absoluteValue)) * 100).roundToInt()}%",
+                    text = "Income ${incomePercentage}%",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.appGreen
                 )
 
                 Text(
-                    text = "Expenses ${((expenseBook.totalOut.absoluteValue / (expenseBook.totalIn + expenseBook.totalOut.absoluteValue)) * 100).roundToInt()}%",
+                    text = "Expenses ${expensesPercentage}%",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.appRed
                 )
