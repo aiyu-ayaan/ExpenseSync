@@ -30,7 +30,7 @@ import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.component.expenseIcons
 import com.atech.expensesync.database.room.expense.ExpenseBook
-import com.atech.expensesync.ui.screens.expense.root.ExpanseEvents
+import com.atech.expensesync.ui.screens.expense.root.ExpenseEvents
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
 import kotlinx.coroutines.launch
@@ -41,7 +41,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AddEditScreen(
     modifier: Modifier = Modifier,
     state: ExpenseBook = ExpenseBook(""),
-    onEvent: (ExpanseEvents) -> Unit = {},
+    onEvent: (ExpenseEvents) -> Unit = {},
     isEdit: Boolean = false,
     onNavigateClick: () -> Unit = {}
 ) {
@@ -62,10 +62,10 @@ fun AddEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 value = state.bookName,
                 onValueChange = {
-                    onEvent(ExpanseEvents.OnExpenseBookChange(state.copy(bookName = it)))
+                    onEvent(ExpenseEvents.OnExpenseBookChange(state.copy(bookName = it)))
                 },
                 clearIconClick = {
-                    onEvent(ExpanseEvents.OnExpenseBookChange(state.copy(bookName = "")))
+                    onEvent(ExpenseEvents.OnExpenseBookChange(state.copy(bookName = "")))
                 },
                 placeholder = "Enter Book Name",
                 keyboardOptions = KeyboardOptions(
@@ -104,7 +104,7 @@ fun AddEditScreen(
                 text = "Save",
                 enable = state.bookName.isNotEmpty(),
                 onClick = {
-                    onEvent(ExpanseEvents.OnSaveExpense {
+                    onEvent(ExpenseEvents.OnSaveExpense {
                         if (it > 0) {
                             onNavigateClick()
                             return@OnSaveExpense
@@ -125,7 +125,7 @@ fun AddEditScreen(
                 }
             }) {
             onEvent.invoke(
-                ExpanseEvents.OnExpenseBookChange(
+                ExpenseEvents.OnExpenseBookChange(
                     state.copy(defaultCurrency = it)
                 )
             )
@@ -141,7 +141,7 @@ fun AddEditScreen(
                 }
             }) {
             onEvent.invoke(
-                ExpanseEvents.OnExpenseBookChange(
+                ExpenseEvents.OnExpenseBookChange(
                     state.copy(icon = it.displayName)
                 )
             )

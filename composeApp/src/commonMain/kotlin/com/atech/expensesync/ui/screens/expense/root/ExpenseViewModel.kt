@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.room.expense.ExpenseBook
+import com.atech.expensesync.database.room.expense.ExpenseBookEntry
 import com.atech.expensesync.usecases.ExpenseUseCases
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class ExpenseViewModel(
     private val useCase: ExpenseUseCases
@@ -24,22 +26,26 @@ class ExpenseViewModel(
     private val _clickedExpenseBook = mutableStateOf<ExpenseBook?>(null)
     val clickedExpenseBook: State<ExpenseBook?> get() = _clickedExpenseBook
 
+    private val _getExpenseBookEntry =
+        mutableStateOf<Map<Long, List<ExpenseBookEntry>>>(emptyMap())
+    val getExpenseBookEntry: State<Map<Long, List<ExpenseBookEntry>>> get() = _getExpenseBookEntry
+
     fun onEvent(
-        event: ExpanseEvents
+        event: ExpenseEvents
     ) {
         when (event) {
-            is ExpanseEvents.OnExpenseBookChange -> {
+            is ExpenseEvents.OnExpenseBookChange -> {
                 _expenseBook.value = event.expenseBook
             }
 
-            ExpanseEvents.ResetStates -> {
+            ExpenseEvents.ResetStates -> {
                 _expenseBook.value = ExpenseBook(
                     bookName = ""
                 )
                 _clickedExpenseBook.value = null
             }
 
-            is ExpanseEvents.OnSaveExpense -> viewModelScope.launch {
+            is ExpenseEvents.OnSaveExpense -> viewModelScope.launch {
                 event.onComplete(
                     useCase.insertExpense.invoke(
                         _expenseBook.value
@@ -47,7 +53,7 @@ class ExpenseViewModel(
                 )
             }
 
-            is ExpanseEvents.OnExpenseBookClick -> viewModelScope.launch {
+            is ExpenseEvents.OnExpenseBookClick -> viewModelScope.launch {
                 useCase.getExpenseById(
                     event.expenseBook?.bookId ?: return@launch
                 ).collect {
@@ -55,12 +61,28 @@ class ExpenseViewModel(
                 }
             }
 
-            is ExpanseEvents.OnSaveExpenseBookEntry -> {
+            is ExpenseEvents.OnSaveExpenseBookEntry -> {
                 viewModelScope.launch {
                     useCase.addTransaction.invoke(
                         event.expenseBookEntry
                     )
                     event.onComplete()
+                }
+            }
+
+            ExpenseEvents.LoadExpenseBookEntry -> viewModelScope.launch {
+                useCase.getExpenseBookEntry(
+                    _clickedExpenseBook.value?.bookId ?: return@launch
+                ).collect {
+                    _getExpenseBookEntry.value = it.groupBy { expense ->
+                        val calendar = Calendar.getInstance()
+                        calendar.timeInMillis = expense.createdAt
+                        calendar.set(Calendar.HOUR_OF_DAY, 0)
+                        calendar.set(Calendar.MINUTE, 0)
+                        calendar.set(Calendar.SECOND, 0)
+                        calendar.set(Calendar.MILLISECOND, 0)
+                        calendar.timeInMillis
+                    }
                 }
             }
         }

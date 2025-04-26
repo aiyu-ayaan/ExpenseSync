@@ -105,6 +105,7 @@ data class ExpenseBookEntry(
     val remarks: String = "",
     val category: Category = Category.NONE,
     val paymentMethod: PaymentMethod = PaymentMethod.CASH,
+    val netBalance: Double,
     @PrimaryKey
     val createdAt: Long = System.currentTimeMillis(),
 )

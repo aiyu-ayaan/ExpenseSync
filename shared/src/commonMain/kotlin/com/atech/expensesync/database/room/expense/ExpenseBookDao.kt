@@ -39,7 +39,7 @@ interface ExpenseBookDao {
     @Query("SELECT * FROM expense_book where bookId = :bookId")
     fun getExpenseById(bookId: String): Flow<ExpenseBook>
 
-    @Query("SELECT * FROM expense_book_entry where bookId = :bookId")
+    @Query("SELECT * FROM expense_book_entry where bookId = :bookId order by createdAt desc")
     fun getExpenseBookEntry(bookId: String): Flow<List<ExpenseBookEntry>>
 
     @Query("UPDATE expense_book SET totalAmount = totalAmount + :amount where bookId = :bookId")

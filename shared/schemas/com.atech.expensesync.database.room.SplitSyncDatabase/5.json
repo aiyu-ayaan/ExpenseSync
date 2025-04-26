@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "90b7ae5b03fdc5abe234ad8cf25a6a93",
+    "identityHash": "10608f94c2e14d768435989f59d3c3f6",
     "entities": [
       {
         "tableName": "split_group_members",
@@ -620,7 +620,7 @@
       },
       {
         "tableName": "expense_book_entry",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`amount` REAL NOT NULL, `bookId` TEXT NOT NULL, `transactionType` TEXT NOT NULL, `remarks` TEXT NOT NULL, `category` TEXT NOT NULL, `paymentMethod` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`createdAt`), FOREIGN KEY(`bookId`) REFERENCES `expense_book`(`bookId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`amount` REAL NOT NULL, `bookId` TEXT NOT NULL, `transactionType` TEXT NOT NULL, `remarks` TEXT NOT NULL, `category` TEXT NOT NULL, `paymentMethod` TEXT NOT NULL, `netBalance` REAL NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`createdAt`), FOREIGN KEY(`bookId`) REFERENCES `expense_book`(`bookId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "amount",
@@ -656,6 +656,12 @@
             "fieldPath": "paymentMethod",
             "columnName": "paymentMethod",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "netBalance",
+            "columnName": "netBalance",
+            "affinity": "REAL",
             "notNull": true
           },
           {
@@ -735,7 +741,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '90b7ae5b03fdc5abe234ad8cf25a6a93')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '10608f94c2e14d768435989f59d3c3f6')"
     ]
   }
 }

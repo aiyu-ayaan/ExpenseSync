@@ -55,6 +55,7 @@ enum class CashType {
 fun CashInOutScreen(
     modifier: Modifier = Modifier,
     bookId: String,
+    netBalance: Double,
     cashType: CashType = CashType.CASH_IN,
     onNavigationClick: () -> Unit = {},
     onSave: (ExpenseBookEntry) -> Unit = {},
@@ -76,6 +77,7 @@ fun CashInOutScreen(
                 bookId = bookId,
                 category = Category.NONE,
                 paymentMethod = PaymentMethod.CASH,
+                netBalance = 0.0,
             )
         )
     }
@@ -217,6 +219,13 @@ fun CashInOutScreen(
                             onSave.invoke(
                                 amount.copy(
                                     createdAt = currentPickDate,
+                                    netBalance = if(netBalance==0.0)
+                                        amount.amount
+                                    else if (cashType == CashType.CASH_IN) {
+                                        netBalance + amount.amount
+                                    } else {
+                                        netBalance - amount.amount
+                                    }
                                 )
                             )
                         }
@@ -234,6 +243,7 @@ private fun CashInOutScreenPreview() {
     ExpenseSyncTheme {
         CashInOutScreen(
             bookId = "1",
+            netBalance = 0.0,
         )
     }
 }

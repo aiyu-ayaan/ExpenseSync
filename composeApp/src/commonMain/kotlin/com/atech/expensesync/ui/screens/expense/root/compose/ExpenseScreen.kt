@@ -32,7 +32,7 @@ import com.atech.expensesync.database.room.expense.ExpenseBook
 import com.atech.expensesync.ui.screens.expense.detail.compose.CashInOutScreen
 import com.atech.expensesync.ui.screens.expense.detail.compose.CashType
 import com.atech.expensesync.ui.screens.expense.detail.compose.ExpenseDetailsScreen
-import com.atech.expensesync.ui.screens.expense.root.ExpanseEvents
+import com.atech.expensesync.ui.screens.expense.root.ExpenseEvents
 import com.atech.expensesync.ui.screens.expense.root.ExpenseViewModel
 import com.atech.expensesync.ui.screens.expense.root.compose.add_edit.AddEditScreen
 import com.atech.expensesync.ui.screens.meal.root.compose.handelFabState
@@ -66,7 +66,7 @@ fun ExpenseScreen(
     navigator.backHandlerThreePane(
         {
             if (extraScreenType == ExtraScreenType.ADD) viewModel.onEvent(
-                ExpanseEvents.ResetStates
+                ExpenseEvents.ResetStates
             )
         })
     ListDetailPaneScaffold(
@@ -83,7 +83,7 @@ fun ExpenseScreen(
                     )
                 }, expenseBook = expenseBooks, onMealBookItemClick = {
                     viewModel.onEvent(
-                        ExpanseEvents.OnExpenseBookClick(
+                        ExpenseEvents.OnExpenseBookClick(
                             it
                         )
                     )
@@ -99,9 +99,10 @@ fun ExpenseScreen(
                     canShowAppBar.invoke(false)
                     ExpenseDetailsScreen(
                         state = viewModel.clickedExpenseBook.value!!,
+                        expenseBookEntry = viewModel.getExpenseBookEntry.value,
                         onNavigateBack = {
                             viewModel.onEvent(
-                                ExpanseEvents.ResetStates
+                                ExpenseEvents.ResetStates
                             )
                             navigator.navigateBack()
                         },
@@ -129,7 +130,7 @@ fun ExpenseScreen(
                             onEvent = viewModel::onEvent,
                             onNavigateClick = {
                                 viewModel.onEvent(
-                                    ExpanseEvents.ResetStates
+                                    ExpenseEvents.ResetStates
                                 )
                                 navigator.navigateBack()
                             })
@@ -148,9 +149,10 @@ fun ExpenseScreen(
                             onNavigationClick = {
                                 navigator.navigateBack()
                             },
+                            netBalance = viewModel.clickedExpenseBook.value?.netBalance ?: 0.0,
                             onSave = {
                                 viewModel.onEvent(
-                                    ExpanseEvents.OnSaveExpenseBookEntry(
+                                    ExpenseEvents.OnSaveExpenseBookEntry(
                                         it, onComplete = {
                                             com.atech.expensesync.ui_utils.showToast(
                                                 "Entry saved successfully",

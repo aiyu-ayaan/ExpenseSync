@@ -3,23 +3,25 @@ package com.atech.expensesync.ui.screens.expense.root
 import com.atech.expensesync.database.room.expense.ExpenseBook
 import com.atech.expensesync.database.room.expense.ExpenseBookEntry
 
-sealed interface ExpanseEvents {
+sealed interface ExpenseEvents {
     data class OnExpenseBookChange(
         val expenseBook: ExpenseBook
-    ) : ExpanseEvents
+    ) : ExpenseEvents
 
-    data object ResetStates : ExpanseEvents
+    data object ResetStates : ExpenseEvents
 
     data class OnSaveExpense(
         val onComplete: (Long) -> Unit
-    ) : ExpanseEvents
+    ) : ExpenseEvents
 
     data class OnExpenseBookClick(
         val expenseBook: ExpenseBook?
-    ) : ExpanseEvents
+    ) : ExpenseEvents
+
+    data object LoadExpenseBookEntry : ExpenseEvents
 
     data class OnSaveExpenseBookEntry(
         val expenseBookEntry: ExpenseBookEntry,
         val onComplete: () -> Unit
-    ) : ExpanseEvents
+    ) : ExpenseEvents
 }
