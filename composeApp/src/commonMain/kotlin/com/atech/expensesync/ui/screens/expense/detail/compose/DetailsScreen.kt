@@ -359,13 +359,9 @@ fun TopNetBalanceView(
             // Visual balance indicator
             LinearProgressIndicator(
                 progress = {
-                    val ratio =
-                        (expenseBook.totalIn / (expenseBook.totalIn + expenseBook.totalOut.absoluteValue))
-                            .coerceIn(
-                                0.0,
-                                1.0
-                            )
-                    ratio.toFloat()
+                    val total = expenseBook.totalIn + expenseBook.totalOut.absoluteValue
+                    val ratio = if (total == 0.0) 0.0 else (expenseBook.totalIn / total)
+                    ratio.coerceIn(0.0, 1.0).toFloat()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
