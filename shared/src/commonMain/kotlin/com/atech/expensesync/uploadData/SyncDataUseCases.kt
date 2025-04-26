@@ -71,8 +71,6 @@ data class MealBookEntryDataSyncUseCases(
 
 private fun <T> compareCollections(local: List<T>, remote: List<T>): Boolean {
     if (local.size != remote.size) return false
-
-    // Create a map for quick lookup (this assumes equals() is properly implemented)
     val localMap = local.groupBy { it.hashCode() }.mapValues { it.value.size }
     val remoteMap = remote.groupBy { it.hashCode() }.mapValues { it.value.size }
 
