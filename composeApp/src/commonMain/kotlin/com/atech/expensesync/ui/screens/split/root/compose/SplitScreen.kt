@@ -83,13 +83,14 @@ fun SplitScreen(
                             pane = ListDetailPaneScaffoldRole.Extra
                         )
                     },
-                    linkedDeviceScreenClick = {
+                    /*linkedDeviceScreenClick = {
                         if (isLogIn) {
-                            navHostController.navigate(AppNavigation.ScanScreen.route)
+
                         } else navHostController.navigate(
                             ExpanseSyncNavigation.LogInScreen.route
                         )
-                    },
+                    }*/
+
                     navHostController = navHostController
                 )
             }
@@ -130,7 +131,6 @@ private fun MainContent(
     modifier: Modifier,
     groupsFlow: Flow<List<SplitGroup>>,
     addNewGroupClick: () -> Unit,
-    linkedDeviceScreenClick: () -> Unit,
     navHostController: NavHostController
 ) {
     val itemState by groupsFlow.collectAsState(initial = emptyList())
@@ -138,16 +138,6 @@ private fun MainContent(
         modifier = modifier,
         title = "Split",
         actions = {
-            runWithDeviceCompose(
-                onAndroid = {
-                    IconButton(onClick = { linkedDeviceScreenClick.invoke() }) {
-                        Icon(
-                            imageVector = Icons.TwoTone.Camera,
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
             IconButton(onClick = { addNewGroupClick.invoke() }) {
                 Icon(
                     imageVector = Icons.TwoTone.GroupAdd,

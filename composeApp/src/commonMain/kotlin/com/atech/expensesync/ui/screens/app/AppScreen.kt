@@ -176,7 +176,12 @@ fun AppScreen(
                     })
 
                 BaseAppScreen.Profile -> {
-                    ProfileScreen()
+                    ProfileScreen(
+                        navHostController = navHostController,
+                        canShowAppBar = {
+                            showNavigation = it
+                        }
+                    )
                 }
             }
         }

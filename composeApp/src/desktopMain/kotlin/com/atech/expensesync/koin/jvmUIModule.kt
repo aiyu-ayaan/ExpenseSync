@@ -8,6 +8,7 @@ import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
 import com.atech.expensesync.ui.screens.profile.ProfileViewModel
 import com.atech.expensesync.ui.screens.split.add.AddExpenseViewModel
 import com.atech.expensesync.ui.screens.split.root.SplitViewModel
+import com.atech.expensesync.ui_utils.LinkHelper
 import org.koin.dsl.module
 
 val jvmUIModule = module {
@@ -19,5 +20,6 @@ val jvmUIModule = module {
     single { ExpenseViewModel(get()) }
     single { BackUpViewModel(get(), get()) }
     single { ProfileViewModel(get(), get()) }
+    single { LinkHelper() }
 //    single { QRHelperImp() }
 }
