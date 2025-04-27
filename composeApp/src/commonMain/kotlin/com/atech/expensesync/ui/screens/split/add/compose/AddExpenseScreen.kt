@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.atech.expensesync.component.DatePickerModal
 import com.atech.expensesync.component.EditTextEnhance
+import com.atech.expensesync.component.EditTextPrice
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.split.SplitGroupMembers
 import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
@@ -167,10 +168,10 @@ fun AddExpenseScreen(
                 ),
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-            EditTextEnhance(
+            EditTextPrice(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = "Amount",
-                value = state.amount.formatAmount(),
+                value = state.amount.toString(),
                 onValueChange = {
                     onEvent(AddExpenseEvents.OnCreateExpenseStateChange(state.copy(amount = it.takeIf { it.isNotEmpty() }
                         ?.toDoubleOrNull() ?: 0.0)))
@@ -184,6 +185,9 @@ fun AddExpenseScreen(
                     keyboardType = KeyboardType.Decimal,
                     imeAction = ImeAction.Done
                 ),
+                clearIconClick = {
+                    onEvent(AddExpenseEvents.OnCreateExpenseStateChange(state.copy(amount = 0.0)))
+                }
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
             Row(

@@ -32,6 +32,7 @@ import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.ChooseCurrencyBottomSheet
 import com.atech.expensesync.component.ChooseIconBottomSheet
 import com.atech.expensesync.component.EditTextEnhance
+import com.atech.expensesync.component.EditTextPrice
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.component.mealIcons
 import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
@@ -39,7 +40,6 @@ import com.atech.expensesync.ui.screens.meal.root.MealScreenEvents
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.formatAmount
-import com.atech.expensesync.ui_utils.isValidDecimalInput
 import com.atech.expensesync.ui_utils.showToast
 import com.atech.expensesync.utils.LoggerType
 import kotlinx.coroutines.launch
@@ -167,21 +167,18 @@ fun AddMealBookScreen(
                         MealScreenEvents.OnMealScreenStateChange(state.copy(name = ""))
                     )
                 })
-            EditTextEnhance(
+            EditTextPrice(
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = "Per meal cost",
-                value = price,
+                value = state.defaultPrice.toString(),
                 onValueChange = { newValue ->
-                    if (newValue.isValidDecimalInput()) {
-                        price = newValue
-                        onEvent.invoke(
-                            MealScreenEvents.OnMealScreenStateChange(
-                                state.copy(
-                                    defaultPrice = newValue.toDoubleOrNull() ?: 0.0
-                                )
+                    onEvent.invoke(
+                        MealScreenEvents.OnMealScreenStateChange(
+                            state.copy(
+                                defaultPrice = newValue.toDoubleOrNull() ?: 0.0
                             )
                         )
-                    }
+                    )
                 },
                 leadingIcon = {
                     IconButton(onClick = {
@@ -195,7 +192,6 @@ fun AddMealBookScreen(
                     }
                 },
                 clearIconClick = {
-                    price = ""
                     onEvent.invoke(
                         MealScreenEvents.OnMealScreenStateChange(state.copy(defaultPrice = 0.0))
                     )
