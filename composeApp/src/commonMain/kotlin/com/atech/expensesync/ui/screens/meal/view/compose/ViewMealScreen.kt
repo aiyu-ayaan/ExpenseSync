@@ -3,7 +3,9 @@ package com.atech.expensesync.ui.screens.meal.view.compose
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,10 +25,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Delete
+import androidx.compose.material.icons.twotone.DinnerDining
 import androidx.compose.material.icons.twotone.Edit
+import androidx.compose.material.icons.twotone.FreeBreakfast
+import androidx.compose.material.icons.twotone.LunchDining
+import androidx.compose.material.icons.twotone.Nightlife
 import androidx.compose.material.icons.twotone.Today
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -39,6 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.LaunchedEffect
@@ -79,7 +87,6 @@ import com.atech.expensesync.ui_utils.showToast
 import com.atech.expensesync.utils.Currency
 import com.atech.expensesync.utils.DatePattern
 import com.atech.expensesync.utils.convertToDateFormat
-import com.atech.expensesync.utils.expenseSyncLogger
 import com.atech.expensesync.utils.firstDayOfWeek
 import com.atech.expensesync.utils.generatePriceSumOfBasicOfWeek
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -98,6 +105,7 @@ import com.pushpal.jetlime.JetLimeEventDefaults
 import com.pushpal.jetlime.JetLimeExtendedEvent
 import com.pushpal.jetlime.VerticalAlignment
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -556,37 +564,86 @@ fun VerticalEventContent(
 ) {
     Card(
         modifier = modifier,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         val maxIndex = item.size - 1
         Column {
             item.forEachIndexed { index, meal ->
-                Column {
-                    ListItem(
-                        modifier = Modifier.clickable {
-                            onItemClick(meal)
-                        }, headlineContent = {
+                ListItem(
+                    modifier = Modifier
+                        .clickable(
+                            indication = ripple(),
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { onItemClick(meal) },
+                    headlineContent = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             Text(
                                 text = "${defaultCurrency.symbol} ${meal.price.formatAmount()}",
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.primary
                             )
-                        }, supportingContent = if (meal.description.isNotEmpty()) {
-                            {
-                                Text(
-                                    text = meal.description,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    modifier = Modifier.basicMarquee(
-                                    )
+
+                            // Add a small indicator for meal type if available
+                            if (meal.price > 0) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.primaryContainer)
                                 )
                             }
-                        } else null, trailingContent = {
+                        }
+                    },
+                    supportingContent = if (meal.description.isNotEmpty()) {
+                        {
                             Text(
-                                text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_12),
+                                text = meal.description,
                                 style = MaterialTheme.typography.labelMedium,
-                                maxLines = 1
+                                modifier = Modifier.basicMarquee(),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                        })
-                    if (maxIndex != 0 && index != maxIndex) HorizontalDivider()
+                        }
+                    } else null,
+                    trailingContent = {
+                        Text(
+                            text = meal.createdAt.convertToDateFormat(DatePattern.HH_MM_12),
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    },
+                    // Add leading icon based on time of day
+                    leadingContent = {
+                        val calendar =
+                            Calendar.getInstance().apply { timeInMillis = meal.createdAt }
+                        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                        val icon = when {
+                            hour < 11 -> Icons.TwoTone.FreeBreakfast
+                            hour < 16 -> Icons.TwoTone.LunchDining
+                            hour < 21 -> Icons.TwoTone.DinnerDining
+                            else -> Icons.TwoTone.Nightlife
+                        }
+
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                        )
+                    }
+                )
+                if (maxIndex != 0 && index != maxIndex) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        thickness = 0.5.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
                 }
             }
         }
@@ -596,25 +653,54 @@ fun VerticalEventContent(
 @Composable
 private fun MonthHeader(calendarMonth: CalendarMonth) {
     val daysOfWeek = calendarMonth.weekDays.first().map { it.date.dayOfWeek }
+    val isCurrentMonth = calendarMonth.yearMonth == YearMonth.now()
+
     Column(
-        modifier = Modifier.wrapContentHeight(),
+        modifier = Modifier
+            .wrapContentHeight()
+            .padding(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
     ) {
-        Text(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            text = calendarMonth.yearMonth.month.name.lowercase()
-                .replaceFirstChar { it.uppercase() } + if (calendarMonth.yearMonth.year == YearMonth.now().year) ""
-            else " ${calendarMonth.yearMonth.year}",
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleSmall)
-        Row(modifier = Modifier.fillMaxWidth()) {
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isCurrentMonth) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+
+            Text(
+                text = calendarMonth.yearMonth.month.name.lowercase()
+                    .replaceFirstChar { it.uppercase() } + if (calendarMonth.yearMonth.year == YearMonth.now().year) ""
+                else " ${calendarMonth.yearMonth.year}",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = if (isCurrentMonth) FontWeight.Bold else FontWeight.SemiBold,
+                color = if (isCurrentMonth) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, bottom = 8.dp)
+        ) {
             for (dayOfWeek in daysOfWeek) {
+                val isWeekend = dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY
                 Text(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     text = dayOfWeek.name.first().toString(),
                     fontWeight = FontWeight.Medium,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (isWeekend) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -628,22 +714,30 @@ fun Day(
     events: List<MealBookEntry> = emptyList(),
 ) {
     val month: Month = day.date.month
-    val eventsMap = events.convertToEventMap(
-        year = day.date.year, month = month
-    )
-    expenseSyncLogger(
-        "$eventsMap"
-    )
+    val eventsMap = events.convertToEventMap(year = day.date.year, month = month)
     val dayOfMonth = day.date.dayOfMonth
     val noOfEvent = eventsMap[dayOfMonth]?.size ?: 0
+    val hasEvents = noOfEvent > 0
+    val isToday = day.date == LocalDate.now()
 
     Box(
-        modifier = Modifier.aspectRatio(1f).clip(CircleShape).background(
-            color = if (isSelected) MaterialTheme.colorScheme.primary.copy(
-                alpha = .6f
+        modifier = Modifier
+            .aspectRatio(1f)
+            .padding(2.dp)
+            .clip(CircleShape)
+            .background(
+                color = when {
+                    isSelected -> MaterialTheme.colorScheme.primary
+                    isToday -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                    else -> Color.Transparent
+                }
             )
-            else Color.Transparent
-        ), contentAlignment = Alignment.Center
+            .border(
+                width = if (isToday && !isSelected) 1.dp else 0.dp,
+                color = if (isToday && !isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                shape = CircleShape
+            ),
+        contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -651,31 +745,74 @@ fun Day(
         ) {
             Text(
                 text = day.date.dayOfMonth.toString(),
-                color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-                else if (day.position == DayPosition.MonthDate) MaterialTheme.colorScheme.onSurface
-                else MaterialTheme.colorScheme.onSurface.copy(
-                    alpha = .4f
-                )
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal,
+                color = when {
+                    isSelected -> MaterialTheme.colorScheme.onPrimary
+                    day.position == DayPosition.MonthDate -> MaterialTheme.colorScheme.onSurface
+                    else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                }
             )
 
-            if (noOfEvent > 0 && day.position == DayPosition.MonthDate) {
+            if (hasEvents && day.position == DayPosition.MonthDate) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Box(
-                        modifier = Modifier.size(6.dp).clip(CircleShape).background(
-                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.primary
-                        )
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Text(text = (noOfEvent.takeIf { it > 1 } ?: "").toString(),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontSize = 8.sp,
-                        color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.primary)
+                    // Create a custom indicator based on event count
+                    when {
+                        noOfEvent >= 3 -> {
+                            // Multiple events indicator
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(1.dp)
+                            ) {
+                                repeat(3) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(4.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                                                else MaterialTheme.colorScheme.primary
+                                            )
+                                    )
+                                }
+                            }
+                        }
+
+                        noOfEvent == 2 -> {
+                            // Two events indicator
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(1.dp)
+                            ) {
+                                repeat(2) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(4.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                                                else MaterialTheme.colorScheme.primary
+                                            )
+                                    )
+                                }
+                            }
+                        }
+
+                        else -> {
+                            // Single event indicator
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        color = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                                        else MaterialTheme.colorScheme.primary
+                                    )
+                            )
+                        }
+                    }
                 }
             }
         }
