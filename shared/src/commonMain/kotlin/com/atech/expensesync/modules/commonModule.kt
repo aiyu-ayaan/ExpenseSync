@@ -44,6 +44,7 @@ import com.atech.expensesync.usecases.GetTransactionsUseCase
 import com.atech.expensesync.usecases.InsertExpenseEntryUseCase
 import com.atech.expensesync.usecases.InsertExpenseUseCase
 import com.atech.expensesync.usecases.InsertMember
+import com.atech.expensesync.usecases.InsertSplitGroupMember
 import com.atech.expensesync.usecases.MapTransactionWithSplitAndThenUser
 import com.atech.expensesync.usecases.MealBookUseCases
 import com.atech.expensesync.usecases.RemoveMember
@@ -170,6 +171,13 @@ val commonModule = module {
     single { GetSplitTransactions(get()) }
     single { CreateSplitTransaction(get()) }
     single { GetSplitGroupMembers(get()) }
-    single { SplitV2UseCases(get(), get(), get(), get(), get(), get(), get(),get()) }
+    single { InsertSplitGroupMember(get()) }
+    single {
+        SplitV2UseCases(
+            get(), get(), get(),
+            get(), get(), get(),
+            get(), get(), get()
+        )
+    }
 
 }

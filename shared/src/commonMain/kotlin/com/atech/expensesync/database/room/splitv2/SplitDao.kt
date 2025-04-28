@@ -44,7 +44,12 @@ interface SplitDao {
     )
 
     @Query("SELECT * FROM splitGroupName WHERE groupId = :groupId order by addedAt DESC")
-    suspend fun getSplitGroupMembers(
+    fun getSplitGroupMembers(
+        groupId: String,
+    ): Flow<List<GroupMembers>>
+
+    @Query("SELECT * FROM splitGroupName WHERE groupId = :groupId order by addedAt DESC")
+    suspend fun getSplitGroupMembersInternal(
         groupId: String,
     ): List<GroupMembers>
 
@@ -52,7 +57,7 @@ interface SplitDao {
     suspend fun createSplitGroup(
         splitGroup: SplitModel,
         splitGroupMembers: List<GroupMembers>,
-    )  {
+    ) {
         insertSplitGroup(splitGroup)
         insertSplitGroupMembers(splitGroupMembers)
     }
@@ -92,6 +97,13 @@ interface SplitDao {
         splitGlobalTransactions: List<SplitGlobalTransactions>,
     )
 
+    @Query("SELECT * FROM splitGlobalTransactions WHERE groupId = :groupId AND groupMemberUid = :groupMemberUid")
+    suspend fun getMemberSplitGlobalTransaction(
+        groupId: String,
+        groupMemberUid: String,
+    ): SplitGlobalTransactions?
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSplitTransaction(
         splitTransactions: SplitTransactions,
@@ -119,7 +131,7 @@ interface SplitDao {
         splitTransactions: SplitTransactions,
         splitGlobalTransactions: SplitGlobalTransactions,
     ) {
-        if(checkIfSplitGlobalTransactionExists(splitGlobalTransactions.groupId) == null) {
+        if (checkIfSplitGlobalTransactionExists(splitGlobalTransactions.groupId) == null) {
             insertSplitGlobalTransactions(splitGlobalTransactions)
         } else {
             updateSplitGlobalTransactions(splitGlobalTransactions)

@@ -78,6 +78,8 @@ fun SplitV2Screen(
                     },
                     getAllGroupMembers = {
                         viewModel.getAllMembers(it)
+                            .collectAsState(emptyList())
+                            .value
                     },
                     navHostController = navHostController
 
@@ -116,7 +118,7 @@ private fun MainScreen(
     modifier: Modifier = Modifier,
     state: List<SplitModel>,
     navHostController: NavHostController,
-    getAllGroupMembers: (String) -> List<GroupMembers> = { _ -> emptyList() },
+    getAllGroupMembers: @Composable (String) -> List<GroupMembers> = { _ -> emptyList() },
     addNewGroupClick: () -> Unit = {},
 ) {
     MainContainer(

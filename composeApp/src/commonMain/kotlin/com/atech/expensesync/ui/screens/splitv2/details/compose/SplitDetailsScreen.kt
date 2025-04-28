@@ -5,17 +5,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Groups
 import androidx.compose.material.icons.twotone.Payment
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,33 +52,84 @@ private enum class TabState {
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, KoinExperimentalAPI::class)
 @Composable
 fun SplitDetailsScreen(
-    modifier: Modifier = Modifier,
-    state: SplitModel,
-    navHostController: NavHostController
+    modifier: Modifier = Modifier, state: SplitModel, navHostController: NavHostController
 ) {
     val viewModel = koinViewModel<SplitDetailsViewModel>()
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     navigator.backHandlerThreePane()
+    var extraPane by remember { mutableStateOf(ExtraPane.None) }
     LaunchedEffect(state) {
         viewModel.onEvent(SplitDetailsEvents.SetSplitModel(state))
     }
     val detailsModel by viewModel.detailsModel
+    val groupMembers by viewModel.groupMembers
     ListDetailPaneScaffold(
         modifier = modifier,
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
         listPane = {
-            BaseScreen(
-                modifier = Modifier.fillMaxWidth(),
-                onNavigateBack = {
-                    navHostController.navigateUp()
-                },
-            )
+            AnimatedPane {
+                BaseScreen(
+                    modifier = Modifier.fillMaxWidth(),
+                    onNavigateBack = {
+                        navHostController.navigateUp()
+                    },
+                    onGroupMembersClick = {
+                        extraPane = ExtraPane.GroupMembers
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.Extra
+                        )
+                    },
+                    navigateToAddExpense = {
+                        extraPane = ExtraPane.AddExpense
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.Extra
+                        )
+                    }
+                )
+            }
         },
         detailPane = {
 
         },
-    )
+        extraPane = when (extraPane) {
+            ExtraPane.AddExpense -> {
+                {
+                    AnimatedPane {
+                        AddExpenseScreen(
+                            modifier = Modifier.fillMaxWidth(),
+                            state = viewModel.addOrUpdateSplitTransaction.value,
+                            splitModel = detailsModel ?: return@AnimatedPane,
+                            groupMembers = groupMembers,
+                            onEvent = viewModel::onEvent,
+                            onNavigationClick = {
+                                extraPane = ExtraPane.None
+                                navigator.navigateBack()
+                            })
+                    }
+                }
+            }
+
+            ExtraPane.GroupMembers -> {
+                {
+                    AnimatedPane {
+                        AddMemberScreen(
+                            modifier = Modifier.fillMaxWidth(),
+                            state = groupMembers,
+                            onEvent = viewModel::onEvent,
+                            onNavigationClick = {
+                                extraPane = ExtraPane.None
+                                navigator.navigateBack()
+                            })
+                    }
+                }
+            }
+
+            ExtraPane.None -> null
+            ExtraPane.ShowDetailOfTransaction -> {
+                {}
+            }
+        })
 }
 
 
@@ -82,7 +137,9 @@ fun SplitDetailsScreen(
 @Composable
 private fun BaseScreen(
     modifier: Modifier = Modifier,
+    onGroupMembersClick: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
+    navigateToAddExpense: () -> Unit = {},
 ) {
     MainContainer(
         modifier = modifier,
@@ -91,7 +148,7 @@ private fun BaseScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-//                    TODO : Add Expense
+                    navigateToAddExpense.invoke()
                 },
             ) {
                 Row(
@@ -104,8 +161,12 @@ private fun BaseScreen(
                     )
                 }
             }
-        }
-    ) { contentPadding ->
+        },
+        actions = {
+            IconButton(onClick = onGroupMembersClick) {
+                Icon(imageVector = Icons.TwoTone.Groups, contentDescription = "")
+            }
+        }) { contentPadding ->
         var state by remember { mutableStateOf(0) }
         Column(
             modifier = Modifier.padding(contentPadding),
@@ -146,8 +207,7 @@ private fun SetTabLayout(
         when (TabState.entries[state]) {
             TabState.SettleUp -> {
                 Text(
-                    text = "Settle Up",
-                    modifier = Modifier.padding(MaterialTheme.spacing.medium)
+                    text = "Settle Up", modifier = Modifier.padding(MaterialTheme.spacing.medium)
                 )
             }
 

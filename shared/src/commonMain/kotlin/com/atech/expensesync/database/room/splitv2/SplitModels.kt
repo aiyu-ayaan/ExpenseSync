@@ -15,6 +15,11 @@ enum class SplitType {
     EXACT           // Precise amount for each member
 }
 
+enum class TransactionType{
+    SETTLE_UP,
+    EXPENSE,
+}
+
 @Keep
 enum class Type(
     val label: String,
@@ -109,14 +114,15 @@ data class SplitGlobalTransactions(
     ]
 )
 data class SplitTransactions(
-    @PrimaryKey
-    val transactionId: String = UUID.randomUUID().toString(),
     val groupId: String,
     val amount: Double,
-    val description: String = "",
     val paidByUid: String,
+    val description: String = "",
     val splitType: SplitType = SplitType.EQUAL,
+    val isSettled : Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
+    @PrimaryKey
+    val transactionId: String = UUID.randomUUID().toString(),
 )
 
 @Keep

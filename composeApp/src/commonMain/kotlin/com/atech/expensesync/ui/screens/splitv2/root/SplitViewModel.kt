@@ -22,7 +22,7 @@ class SplitViewModel(
 ) : ViewModel() {
 
 
-    private val _addSplitState = mutableStateOf<SplitModel>(
+    private val _addSplitState = mutableStateOf(
         SplitModel(
             groupName = "",
             createdByUid = ""
