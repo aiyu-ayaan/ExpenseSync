@@ -35,7 +35,7 @@ import com.atech.expensesync.database.room.upload.UploadModel
         com.atech.expensesync.database.room.splitv2.SplitTransactions::class,
         SplitModel::class
     ],
-    version = 6
+    version = 7
 )
 abstract class SplitSyncDatabase : RoomDatabase() {
     abstract val splitGroupDao: SplitGroupDao
