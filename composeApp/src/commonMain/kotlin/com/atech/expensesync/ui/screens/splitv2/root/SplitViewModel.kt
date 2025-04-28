@@ -11,6 +11,7 @@ import com.atech.expensesync.database.room.splitv2.GroupMembers
 import com.atech.expensesync.database.room.splitv2.SplitModel
 import com.atech.expensesync.usecases.SplitV2UseCases
 import com.atech.expensesync.utils.fromJson
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -31,10 +32,10 @@ class SplitViewModel(
 
     val getAllSplitGroups = splitV2UseCases.getSplitGroups()
 
-    fun getAllMembers(groupId: String) = viewModelScope.async {
+    fun getAllMembers(groupId: String) = viewModelScope.async(Dispatchers.IO) {
         splitV2UseCases.getSplitGroupMembers(groupId)
     }.let {
-        runBlocking {
+        runBlocking(Dispatchers.IO) {
             it.await()
         }
     }

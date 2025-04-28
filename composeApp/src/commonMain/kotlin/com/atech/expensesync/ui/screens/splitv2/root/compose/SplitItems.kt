@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.screens.splitv2.root.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.GroupWork
 import androidx.compose.material.icons.twotone.AccountCircle
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -26,13 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import coil3.compose.SubcomposeAsyncImage
 import com.atech.expensesync.database.room.splitv2.GroupMembers
 import com.atech.expensesync.database.room.splitv2.SplitModel
-import expensesync.composeapp.generated.resources.Res
-import expensesync.composeapp.generated.resources.devices
-import org.jetbrains.compose.resources.painterResource
+import com.atech.expensesync.ui.theme.spacing
 
 @Composable
 fun SplitGroupItem(
@@ -55,12 +52,20 @@ fun SplitGroupItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.GroupWork,
-                contentDescription = "Group Icon",
-                modifier = Modifier.size(48.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
+            Box(
+                modifier = Modifier
+                    .padding(MaterialTheme.spacing.medium)
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(12.dp))  // Added rounded corners
+                    .background(MaterialTheme.colorScheme.primary)
+            ) {
+                Icon(
+                    imageVector = splitModel.groupType.toTypeWithImage().icon,
+                    contentDescription = "Group Icon",
+                    modifier = Modifier.align(Alignment.Center),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
 
             Spacer(modifier = Modifier.width(16.dp))
 
