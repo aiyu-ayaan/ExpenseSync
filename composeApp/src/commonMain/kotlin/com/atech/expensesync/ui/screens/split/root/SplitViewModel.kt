@@ -9,13 +9,13 @@ import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.room.split.SplitGroup
 import com.atech.expensesync.database.room.split.SplitGroupMembers
-import com.atech.expensesync.usecases.SplitUseCases
+import com.atech.expensesync.usecases.SplitV2UseCases
 import com.atech.expensesync.utils.fromJson
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 class SplitViewModel(
-    private val useCases: SplitUseCases,
+    private val useCases: SplitV2UseCases,
     private val pref: PrefManager
 ) : ViewModel() {
 

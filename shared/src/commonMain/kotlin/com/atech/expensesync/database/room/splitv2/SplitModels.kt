@@ -113,6 +113,7 @@ data class SplitModel(
     val groupType: Type = Type.None,
     val isActive: Boolean = true,
     val whiteBoard: String? = null,
+    val createdAt: Long = System.currentTimeMillis(),
     @PrimaryKey
     val groupId: String = UUID.randomUUID().toString(),
 )
