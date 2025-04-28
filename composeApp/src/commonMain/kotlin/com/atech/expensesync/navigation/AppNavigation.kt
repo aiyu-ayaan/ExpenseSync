@@ -1,21 +1,18 @@
 package com.atech.expensesync.navigation
 
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import com.atech.expensesync.database.room.splitv2.SplitModel
+import com.atech.expensesync.database.room.splitv2.Type
 import com.atech.expensesync.ui.screens.app.AppScreen
-import com.atech.expensesync.ui.screens.meal.root.AddMealBookState
-import com.atech.expensesync.ui.screens.meal.view.ViewMealEvents
-import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
-import com.atech.expensesync.ui.screens.meal.view.compose.ViewMealScreen
 import com.atech.expensesync.ui.screens.scan.compose.ScanScreen
+import com.atech.expensesync.ui.screens.splitv2.details.compose.SplitDetailsScreen
 import com.atech.expensesync.ui_utils.animatedComposable
 import com.atech.expensesync.ui_utils.animatedComposableEnh
 import com.atech.expensesync.utils.Currency
 import kotlinx.serialization.Serializable
-import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 sealed class AppNavigation(val route: String) {
@@ -24,29 +21,39 @@ sealed class AppNavigation(val route: String) {
 }
 
 @Serializable
-data class ViewExpanseBookArgs(
-    val grpId: String,
-    val grpName: String,
+data class ViewSplitBookArgs(
+    val groupName: String,
+    val createdByUid: String,
+    val defaultCurrency: Currency = Currency.INR,
+    val groupType: Type = Type.None,
+    val isActive: Boolean = true,
+    val whiteBoard: String? = null,
+    val createdAt: Long,
+    val groupId: String,
 )
 
-@Serializable
-data class ViewMealArgs(
-    val name: String,
-    val defaultPrice: String,
-    val description: String,
-    val defaultCurrency: String,
-    val mealBookId: String,
-    val createdAt: String
+fun ViewSplitBookArgs.toSplitModel(): SplitModel = SplitModel(
+    groupName = groupName,
+    createdByUid = createdByUid,
+    defaultCurrency = defaultCurrency,
+    groupType = groupType,
+    isActive = isActive,
+    whiteBoard = whiteBoard,
+    createdAt = createdAt,
+    groupId = groupId
 )
 
-fun ViewMealArgs.toAddMealBookState() = AddMealBookState(
-    name = name,
-    defaultPrice = defaultPrice.toDoubleOrNull() ?: 0.0,
-    description = description,
-    defaultCurrency = Currency.valueOf(defaultCurrency),
-    mealBookId = mealBookId,
-    createdAt = createdAt.toLong()
+fun SplitModel.toViewSplitBookArgs(): ViewSplitBookArgs = ViewSplitBookArgs(
+    groupName = groupName,
+    createdByUid = createdByUid,
+    defaultCurrency = defaultCurrency,
+    groupType = groupType,
+    isActive = isActive,
+    whiteBoard = whiteBoard,
+    createdAt = createdAt,
+    groupId = groupId
 )
+
 
 @OptIn(KoinExperimentalAPI::class)
 fun NavGraphBuilder.appNavigation(
@@ -70,20 +77,11 @@ fun NavGraphBuilder.appNavigation(
                 navHostController = navHostController
             )
         }
-        animatedComposableEnh<ViewMealArgs> {
-            val args = it.toRoute<ViewMealArgs>().toAddMealBookState()
-            val viewModel = koinViewModel<ViewMealViewModel>()
-            viewModel.onEvent(ViewMealEvents.SetMealBookId(args.mealBookId, args))
-            val calenderMonth by viewModel.calenderMonth
-            val mealBookEntryState by viewModel.mealBookEntryState
-            ViewMealScreen(
-                mealBookState = viewModel.mealBookState.value ?: args,
-                state = mealBookEntryState,
-                calenderMonth = calenderMonth,
-                onEvent = viewModel::onEvent,
-                onNavigateUp = {
-                    navHostController.navigateUp()
-                }
+        animatedComposableEnh<ViewSplitBookArgs> {
+            val item = it.toRoute<ViewSplitBookArgs>().toSplitModel()
+            SplitDetailsScreen(
+                state = item,
+                navHostController = navHostController
             )
         }
     }

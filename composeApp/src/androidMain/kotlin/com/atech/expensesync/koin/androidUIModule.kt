@@ -6,6 +6,7 @@ import com.atech.expensesync.ui.screens.meal.root.MealViewModel
 import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
 import com.atech.expensesync.ui.screens.profile.ProfileViewModel
 import com.atech.expensesync.ui.screens.scan.ScanViewModel
+import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsViewModel
 import com.atech.expensesync.ui.screens.splitv2.root.SplitViewModel
 import com.atech.expensesync.ui_utils.LinkHelper
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -24,4 +25,5 @@ val androidUIModule = module {
     viewModel { ProfileViewModel(get(), get()) }
     single { LinkHelper(get()) }
     viewModel { SplitViewModel(get(), get()) }
+    viewModel { SplitDetailsViewModel(get()) }
 }

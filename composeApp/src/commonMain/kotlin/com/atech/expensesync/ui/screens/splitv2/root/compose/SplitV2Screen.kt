@@ -23,9 +23,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.splitv2.GroupMembers
 import com.atech.expensesync.database.room.splitv2.SplitModel
+import com.atech.expensesync.navigation.toViewSplitBookArgs
 import com.atech.expensesync.ui.screens.splitv2.root.SplitV2Events
 import com.atech.expensesync.ui.screens.splitv2.root.SplitViewModel
 import com.atech.expensesync.ui_utils.backHandlerThreePane
@@ -41,6 +43,7 @@ enum class ExtraScreenType {
 @Composable
 fun SplitV2Screen(
     modifier: Modifier = Modifier,
+    navHostController: NavHostController,
     canShowAppBar: (Boolean) -> Unit,
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
@@ -75,7 +78,9 @@ fun SplitV2Screen(
                     },
                     getAllGroupMembers = {
                         viewModel.getAllMembers(it)
-                    }
+                    },
+                    navHostController = navHostController
+
                 )
             }
         },
@@ -89,7 +94,7 @@ fun SplitV2Screen(
                 {
                     AnimatedPane {
                         AddGroupScreen(
-                            state = viewModel.addSplitState.value ,
+                            state = viewModel.addSplitState.value,
                             onEvent = viewModel::onEvent,
                             onNavigateBack = {
                                 extraScreenType = ExtraScreenType.NONE
@@ -110,6 +115,7 @@ fun SplitV2Screen(
 private fun MainScreen(
     modifier: Modifier = Modifier,
     state: List<SplitModel>,
+    navHostController: NavHostController,
     getAllGroupMembers: (String) -> List<GroupMembers> = { _ -> emptyList() },
     addNewGroupClick: () -> Unit = {},
 ) {
@@ -142,11 +148,15 @@ private fun MainScreen(
             modifier = Modifier.fillMaxSize(),
             contentPadding = contentPadding
         ) {
-            items (state) { item ->
+            items(state) { item ->
                 SplitGroupItem(
                     splitModel = item,
                     members = getAllGroupMembers.invoke(item.groupId),
-                    onItemClick = {}
+                    onItemClick = {
+                        navHostController.navigate(
+                            item.toViewSplitBookArgs()
+                        )
+                    }
                 )
             }
         }

@@ -158,7 +158,7 @@ fun AppScreen(
             when (destination) {
                 BaseAppScreen.Split -> {
                     SplitV2Screen(
-                       /* navHostController = navHostController,*/ canShowAppBar = {
+                        navHostController = navHostController, canShowAppBar = {
                             showNavigation = it
                         })
                 }
