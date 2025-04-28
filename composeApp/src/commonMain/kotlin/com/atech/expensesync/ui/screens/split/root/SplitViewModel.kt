@@ -35,7 +35,7 @@ class SplitViewModel(
                     SplitGroup(
                         groupId = groupId,
                         groupName = _createGroupState.value.groupName,
-                        type = _createGroupState.value.groupType.label,
+                        type = _createGroupState.value.groupTypeWithImage.label,
                         createdByUid = userModel.uid,
                     ),
                     listOf(

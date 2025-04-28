@@ -29,11 +29,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.room.splitv2.Type
 import com.atech.expensesync.ui.screens.split.root.CreateGroupEvent
 import com.atech.expensesync.ui.screens.split.root.CreateGroupScreenState
 import com.atech.expensesync.ui.theme.spacing
 
-enum class Type(
+enum class TypeWithImage(
     val label: String,
     val icon: ImageVector
 ) {
@@ -43,6 +44,15 @@ enum class Type(
     Trip("Trip", Icons.TwoTone.AirplanemodeActive),
     Other("Other", Icons.AutoMirrored.TwoTone.ListAlt)
 }
+
+fun TypeWithImage.toType(): Type =
+    when (this) {
+        TypeWithImage.Home -> Type.Home
+        TypeWithImage.Couple -> Type.Couple
+        TypeWithImage.Trip -> Type.Trip
+        TypeWithImage.Other -> Type.Other
+        else -> Type.None
+    }
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -60,7 +70,7 @@ fun AddGroupScreen(
         actions = {
             AppButton(
                 text = "Create",
-                enable = state.groupName.isNotBlank() && state.groupType != Type.None,
+                enable = state.groupName.isNotBlank() && state.groupTypeWithImage != TypeWithImage.None,
                 onClick = {
                     onEvent(
                         CreateGroupEvent.SaveGroup
@@ -115,15 +125,15 @@ fun AddGroupScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
             ) {
-                Type.entries.filter { it.label.isNotBlank() }.forEach { type ->
+                TypeWithImage.entries.filter { it.label.isNotBlank() }.forEach { type ->
                     FilterChip(
-                        selected = type == state.groupType,
+                        selected = type == state.groupTypeWithImage,
                         onClick = {
                             onEvent(
                                 CreateGroupEvent.OnStateChange(
                                     state.copy(
-                                        groupType =
-                                            if (state.groupType == type) Type.None
+                                        groupTypeWithImage =
+                                            if (state.groupTypeWithImage == type) TypeWithImage.None
                                             else type
                                     )
                                 )

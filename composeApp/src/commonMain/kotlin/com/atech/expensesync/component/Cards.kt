@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.atech.expensesync.database.room.split.SplitGroup
-import com.atech.expensesync.ui.screens.split.root.compose.add_group.Type
+import com.atech.expensesync.ui.screens.split.root.compose.add_group.TypeWithImage
 import com.atech.expensesync.ui.theme.spacing
 
 @Composable
@@ -52,7 +52,7 @@ fun GroupItems(
     model: SplitGroup,
     onClick: () -> Unit
 ) {
-    val enum = Type.entries.find { it.name == model.type } ?: Type.None
+    val enum = TypeWithImage.entries.find { it.name == model.type } ?: TypeWithImage.None
     DefaultCard(
         modifier = modifier.fillMaxWidth()
             .clickable { onClick() },
