@@ -11,9 +11,6 @@ import com.atech.expensesync.ui.screens.meal.view.ViewMealEvents
 import com.atech.expensesync.ui.screens.meal.view.ViewMealViewModel
 import com.atech.expensesync.ui.screens.meal.view.compose.ViewMealScreen
 import com.atech.expensesync.ui.screens.scan.compose.ScanScreen
-import com.atech.expensesync.ui.screens.split.add.AddExpenseEvents
-import com.atech.expensesync.ui.screens.split.add.AddExpenseViewModel
-import com.atech.expensesync.ui.screens.split.add.compose.ViewExpanseBookScreen
 import com.atech.expensesync.ui_utils.animatedComposable
 import com.atech.expensesync.ui_utils.animatedComposableEnh
 import com.atech.expensesync.utils.Currency
@@ -71,19 +68,6 @@ fun NavGraphBuilder.appNavigation(
         ) {
             ScanScreen(
                 navHostController = navHostController
-            )
-        }
-        animatedComposableEnh<ViewExpanseBookArgs> {
-            val args = it.toRoute<ViewExpanseBookArgs>()
-            val viewModel = koinViewModel<AddExpenseViewModel>()
-            viewModel.onEvent(AddExpenseEvents.SetViewExpenseBookArgs(args))
-            ViewExpanseBookScreen(
-                navHostController = navHostController,
-                state = viewModel.viewExpenseBookState.value,
-                addExpenseBookState = viewModel.createExpenseState.value,
-                members = viewModel.grpMembers.value,
-                transactionWithUser = viewModel.getTransactionWithUser,
-                onEvent = viewModel::onEvent
             )
         }
         animatedComposableEnh<ViewMealArgs> {

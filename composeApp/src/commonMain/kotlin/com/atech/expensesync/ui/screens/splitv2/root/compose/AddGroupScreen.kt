@@ -1,4 +1,4 @@
-package com.atech.expensesync.ui.screens.split.root.compose.add_group
+package com.atech.expensesync.ui.screens.splitv2.root.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,9 +29,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.room.splitv2.SplitModel
 import com.atech.expensesync.database.room.splitv2.Type
-import com.atech.expensesync.ui.screens.split.root.CreateGroupEvent
-import com.atech.expensesync.ui.screens.split.root.CreateGroupScreenState
+import com.atech.expensesync.ui.screens.splitv2.root.SplitV2Events
 import com.atech.expensesync.ui.theme.spacing
 
 enum class TypeWithImage(
@@ -55,31 +55,44 @@ fun TypeWithImage.toType(): Type =
     }
 
 
+fun Type.toTypeWithImage(): TypeWithImage =
+    when (this) {
+        Type.Home -> TypeWithImage.Home
+        Type.Couple -> TypeWithImage.Couple
+        Type.Trip -> TypeWithImage.Trip
+        Type.Other -> TypeWithImage.Other
+        else -> TypeWithImage.None
+    }
+
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddGroupScreen(
     modifier: Modifier = Modifier,
-    state: CreateGroupScreenState,
-    onEvent: (CreateGroupEvent) -> Unit,
+    state: SplitModel,
+    onEvent: (SplitV2Events) -> Unit,
     onNavigateBack: () -> Unit
 ) {
 
     MainContainer(
         modifier = modifier,
         title = "Create a group",
+        onNavigationClick = {
+            onEvent.invoke(SplitV2Events.ResetSplitState)
+            onNavigateBack.invoke()
+        },
         actions = {
             AppButton(
                 text = "Create",
-                enable = state.groupName.isNotBlank() && state.groupTypeWithImage != TypeWithImage.None,
+                enable = state.groupName.isNotBlank() && state.groupType != Type.None,
                 onClick = {
                     onEvent(
-                        CreateGroupEvent.SaveGroup
+                        SplitV2Events.SaveGroup
                     )
                     onNavigateBack()
                 }
             )
-        },
-        onNavigationClick = onNavigateBack
+        }
     ) { contentPadding ->
         Column(
             modifier = Modifier
@@ -92,7 +105,7 @@ fun AddGroupScreen(
                 value = state.groupName,
                 onValueChange = {
                     onEvent(
-                        CreateGroupEvent.OnStateChange(
+                        SplitV2Events.OnAddSplitStateChange(
                             state.copy(groupName = it)
                         )
                     )
@@ -106,7 +119,7 @@ fun AddGroupScreen(
                 placeholder = "Group Name",
                 clearIconClick = {
                     onEvent(
-                        CreateGroupEvent.OnStateChange(
+                        SplitV2Events.OnAddSplitStateChange(
                             state.copy(groupName = "")
                         )
                     )
@@ -127,14 +140,14 @@ fun AddGroupScreen(
             ) {
                 TypeWithImage.entries.filter { it.label.isNotBlank() }.forEach { type ->
                     FilterChip(
-                        selected = type == state.groupTypeWithImage,
+                        selected = type == state.groupType.toTypeWithImage(),
                         onClick = {
                             onEvent(
-                                CreateGroupEvent.OnStateChange(
+                                SplitV2Events.OnAddSplitStateChange(
                                     state.copy(
-                                        groupTypeWithImage =
-                                            if (state.groupTypeWithImage == type) TypeWithImage.None
-                                            else type
+                                        groupType  =
+                                            (if (state.groupType.toTypeWithImage() == type) TypeWithImage.None
+                                            else type).toType()
                                     )
                                 )
                             )

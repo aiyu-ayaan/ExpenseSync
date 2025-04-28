@@ -38,7 +38,7 @@ import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.ui.screens.expense.root.compose.ExpenseScreen
 import com.atech.expensesync.ui.screens.meal.root.compose.MealScreen
 import com.atech.expensesync.ui.screens.profile.compose.ProfileScreen
-import com.atech.expensesync.ui.screens.split.root.compose.SplitScreen
+import com.atech.expensesync.ui.screens.splitv2.root.compose.SplitV2Screen
 import com.atech.expensesync.ui_utils.BackHandler
 import com.atech.expensesync.ui_utils.SystemUiController
 import com.atech.expensesync.ui_utils.lifecycler.LifeCycle
@@ -157,8 +157,8 @@ fun AppScreen(
         ) { destination ->
             when (destination) {
                 BaseAppScreen.Split -> {
-                    SplitScreen(
-                        navHostController = navHostController, canShowAppBar = {
+                    SplitV2Screen(
+                       /* navHostController = navHostController,*/ canShowAppBar = {
                             showNavigation = it
                         })
                 }

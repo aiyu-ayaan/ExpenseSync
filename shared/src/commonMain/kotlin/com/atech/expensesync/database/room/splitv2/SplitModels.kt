@@ -55,6 +55,24 @@ data class GroupMembers(
 @Keep
 @Entity(
     tableName = "splitGlobalTransactions",
+    indices = [
+        androidx.room.Index(value = ["groupId"]),
+        androidx.room.Index(value = ["groupMemberUid"]),
+    ],
+    foreignKeys = [
+        androidx.room.ForeignKey(
+            entity = SplitModel::class,
+            parentColumns = ["groupId"],
+            childColumns = ["groupId"],
+            onDelete = androidx.room.ForeignKey.CASCADE
+        ),
+        androidx.room.ForeignKey(
+            entity = GroupMembers::class,
+            parentColumns = ["uid"],
+            childColumns = ["groupMemberUid"],
+            onDelete = androidx.room.ForeignKey.CASCADE
+        )
+    ]
 )
 data class SplitGlobalTransactions(
     val groupId: String,
@@ -62,6 +80,8 @@ data class SplitGlobalTransactions(
     val totalAmountOwe: Double = 0.0,
     val totalAmountPaid: Double = 0.0,
     val currency: Currency = Currency.INR,
+    @PrimaryKey
+    val key : String = groupId + groupMemberUid,
 )
 
 
@@ -89,6 +109,7 @@ data class SplitGlobalTransactions(
     ]
 )
 data class SplitTransactions(
+    @PrimaryKey
     val transactionId: String = UUID.randomUUID().toString(),
     val groupId: String,
     val amount: Double,

@@ -28,8 +28,7 @@ import com.atech.expensesync.database.room.upload.UploadModel
 
 
 @Database(
-    entities = [SplitGroupMembers::class, SplitTransactions::class,
-        TransactionSplit::class, SplitGroup::class, MealBook::class,
+    entities = [ MealBook::class,
         MealBookEntry::class, ExpenseBook::class, ExpenseBookEntry::class,
         UploadModel::class, GroupMembers::class, SplitGlobalTransactions::class,
         com.atech.expensesync.database.room.splitv2.SplitTransactions::class,
@@ -38,10 +37,10 @@ import com.atech.expensesync.database.room.upload.UploadModel
     version = 7
 )
 abstract class SplitSyncDatabase : RoomDatabase() {
-    abstract val splitGroupDao: SplitGroupDao
-    abstract val splitGroupMemberDao: SplitGroupMemberDao
-    abstract val splitTransactionDao: SplitTransactionDao
-    abstract val transactionSplitDao: TransactionSplitDao
+//    abstract val splitGroupDao: SplitGroupDao
+//    abstract val splitGroupMemberDao: SplitGroupMemberDao
+//    abstract val splitTransactionDao: SplitTransactionDao
+//    abstract val transactionSplitDao: TransactionSplitDao
     abstract val mealDao: MealDao
     abstract val expenseBookDao: ExpenseBookDao
     abstract val updateDao: UploadDao

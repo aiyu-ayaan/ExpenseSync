@@ -14,7 +14,8 @@ data class SplitV2UseCases(
     val updateSplitGroupMember: UpdateSplitGroupMember,
     val getAllGlobalTransactions: GetAllGlobalTransactions,
     val getSplitTransactions: GetSplitTransactions,
-    val createSplitTransaction: CreateSplitTransaction
+    val createSplitTransaction: CreateSplitTransaction,
+    val getSplitGroupMembers: GetSplitGroupMembers,
 )
 
 data class CreateSplitGroup(
@@ -91,4 +92,11 @@ data class CreateSplitTransaction(
         splitTransactions,
         splitGlobalTransactions
     )
+}
+data class GetSplitGroupMembers(
+    private val splitDao: SplitDao
+) {
+    suspend operator fun invoke(
+        groupId: String
+    ) = splitDao.getSplitGroupMembers(groupId)
 }

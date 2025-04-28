@@ -19,17 +19,7 @@ interface MaintenanceDao {
     @Query("DELETE FROM EXPENSE_BOOK_ENTRY")
     suspend fun deleteAllExpenseBookEntry()
 
-    @Query("DELETE FROM split_transactions")
-    suspend fun deleteAllSplitBook()
 
-    @Query("DELETE FROM split_group")
-    suspend fun deleteAllSplitGroup()
-
-    @Query("DELETE FROM split_group_members")
-    suspend fun deleteAllSplitGroupMembers()
-
-    @Query("DELETE FROM split_transaction_split")
-    suspend fun deleteAllSplitTransactionSplit()
 
     @Query("DELETE FROM upload_table")
     suspend fun deleteAllUpload()
@@ -41,10 +31,6 @@ interface MaintenanceDao {
         deleteAllMealBookEntry()
         deleteAllExpenseBook()
         deleteAllExpenseBookEntry()
-        deleteAllSplitBook()
-        deleteAllSplitGroup()
-        deleteAllSplitGroupMembers()
-        deleteAllSplitTransactionSplit()
         deleteAllUpload()
     }
 

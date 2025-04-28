@@ -36,6 +36,7 @@ import com.atech.expensesync.usecases.GetGroupMembers
 import com.atech.expensesync.usecases.GetGroupsUseCase
 import com.atech.expensesync.usecases.GetMealBookEntries
 import com.atech.expensesync.usecases.GetMealBooks
+import com.atech.expensesync.usecases.GetSplitGroupMembers
 import com.atech.expensesync.usecases.GetSplitGroups
 import com.atech.expensesync.usecases.GetSplitTransactions
 import com.atech.expensesync.usecases.GetTotalPrice
@@ -70,10 +71,10 @@ import org.koin.dsl.module
 
 val commonModule = module {
     // Dao
-    single { get<SplitSyncDatabase>().splitGroupDao }
-    single { get<SplitSyncDatabase>().transactionSplitDao }
-    single { get<SplitSyncDatabase>().splitGroupMemberDao }
-    single { get<SplitSyncDatabase>().splitTransactionDao }
+//    single { get<SplitSyncDatabase>().splitGroupDao }
+//    single { get<SplitSyncDatabase>().transactionSplitDao }
+//    single { get<SplitSyncDatabase>().splitGroupMemberDao }
+//    single { get<SplitSyncDatabase>().splitTransactionDao }
     single { get<SplitSyncDatabase>().mealDao }
     single { get<SplitSyncDatabase>().expenseBookDao }
     single { get<SplitSyncDatabase>().updateDao }
@@ -168,6 +169,7 @@ val commonModule = module {
     single { GetAllGlobalTransactions(get()) }
     single { GetSplitTransactions(get()) }
     single { CreateSplitTransaction(get()) }
-    single { SplitV2UseCases(get(), get(), get(), get(), get(), get(), get()) }
+    single { GetSplitGroupMembers(get()) }
+    single { SplitV2UseCases(get(), get(), get(), get(), get(), get(), get(),get()) }
 
 }

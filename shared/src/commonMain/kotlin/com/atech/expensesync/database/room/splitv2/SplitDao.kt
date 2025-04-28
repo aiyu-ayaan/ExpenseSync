@@ -28,7 +28,6 @@ interface SplitDao {
     @Query("SELECT * FROM splitGroup order by createdAt DESC")
     fun getSplitGroups(): Flow<List<SplitModel>>
 
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSplitGroupMember(
         splitGroupMember: GroupMembers,
