@@ -41,7 +41,14 @@ class BackUpViewModel(
                             onEvent(
                                 BackUpScreenEvents.OnExpenseDataBackUpDone
                             )
-                        }, onError = {})
+                        }, onError = {
+                            expenseSyncLogger(
+                                "Meal data restore failed: ${it.message}"
+                            )
+                            onEvent(
+                                BackUpScreenEvents.OnSplitDataBackUpDone
+                            )
+                        })
                     }
                 )
             }
