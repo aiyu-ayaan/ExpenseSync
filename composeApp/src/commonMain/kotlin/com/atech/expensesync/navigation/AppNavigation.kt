@@ -24,8 +24,8 @@ sealed class AppNavigation(val route: String) {
 data class ViewSplitBookArgs(
     val groupName: String,
     val createdByUid: String,
-    val defaultCurrency: Currency = Currency.INR,
-    val groupType: Type = Type.None,
+    val defaultCurrency: String = Currency.INR.name,
+    val groupType: String = Type.None.name,
     val isActive: Boolean = true,
     val whiteBoard: String? = null,
     val createdAt: Long,
@@ -35,8 +35,8 @@ data class ViewSplitBookArgs(
 fun ViewSplitBookArgs.toSplitModel(): SplitModel = SplitModel(
     groupName = groupName,
     createdByUid = createdByUid,
-    defaultCurrency = defaultCurrency,
-    groupType = groupType,
+    defaultCurrency = Currency.valueOf(defaultCurrency),
+    groupType = Type.valueOf(groupType),
     isActive = isActive,
     whiteBoard = whiteBoard,
     createdAt = createdAt,
@@ -46,8 +46,8 @@ fun ViewSplitBookArgs.toSplitModel(): SplitModel = SplitModel(
 fun SplitModel.toViewSplitBookArgs(): ViewSplitBookArgs = ViewSplitBookArgs(
     groupName = groupName,
     createdByUid = createdByUid,
-    defaultCurrency = defaultCurrency,
-    groupType = groupType,
+    defaultCurrency = defaultCurrency.name,
+    groupType = groupType.name,
     isActive = isActive,
     whiteBoard = whiteBoard,
     createdAt = createdAt,
