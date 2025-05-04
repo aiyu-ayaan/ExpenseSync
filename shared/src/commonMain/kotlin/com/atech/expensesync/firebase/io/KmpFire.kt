@@ -15,6 +15,11 @@ expect class KmpFire {
         vararg firebaseHelper: FirebaseHelper,
     ): Flow<FirebaseResponse<T>>
 
+    suspend inline fun <reified T : Any> getObservedDataWithArrayContains(
+        collectionName: String,
+        query: Pair<String, String>,
+    ): Flow<FirebaseResponse<List<T>>>
+
     suspend inline fun <reified T : Any> getObservedCollection(
         collectionName: String,
     ): Flow<FirebaseResponse<List<T>>>
@@ -26,20 +31,16 @@ expect class KmpFire {
 
 
     suspend inline fun <reified T : Any> insertData(
-        collectionName: String,
-        documentName: String?,
-        data: T
+        collectionName: String, documentName: String?, data: T
     ): FirebaseResponse<T>
 
     suspend inline fun <reified T : Any> updateDataModel(
-        collectionName: String,
-        documentName: String,
-        data: T
+        collectionName: String, documentName: String, data: T
     ): FirebaseResponse<T>
 
     suspend inline fun <reified T : Any> updateDataMap(
-        collectionName: String,
-        documentName: String,
-        data: Map<String, Any?>
+        collectionName: String, documentName: String, data: Map<String, Any?>
     ): FirebaseResponse<T>
+
+
 }

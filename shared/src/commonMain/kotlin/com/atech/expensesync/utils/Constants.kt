@@ -8,6 +8,7 @@ const val FIREBASE_PARENT_COLLECTION_VERSION = "v1"
 enum class FirebaseCollectionPath(val path: String) {
     USER("$FIREBASE_PARENT_COLLECTION/$FIREBASE_PARENT_COLLECTION_VERSION/${FirebaseDocumentName.USER.path}"),
     MEAL("${USER.path}/data"),
+    SPLIT("$FIREBASE_PARENT_COLLECTION/$FIREBASE_PARENT_COLLECTION_VERSION/${FirebaseDocumentName.SPLIT.path}")
 }
 
 
@@ -15,6 +16,7 @@ enum class FirebaseDocumentName(val path: String) {
     USER("user"),
     MEAL_BOOK("meal_book"),
     MEAL_BOOK_ENTRY("meal_book_entry"),
+    SPLIT("split"),
 }
 
 const val API_PATH = "/api/v1"

@@ -17,7 +17,6 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,9 +24,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.room.splitv2.GroupMembers
-import com.atech.expensesync.database.room.splitv2.SplitModel
-import com.atech.expensesync.navigation.toViewSplitBookArgs
+import com.atech.expensesync.database.models.SplitFirebase
+import com.atech.expensesync.firebase.util.FirebaseResponse
+import com.atech.expensesync.firebase.util.getOrNull
+import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.ui.screens.splitv2.root.SplitV2Events
 import com.atech.expensesync.ui.screens.splitv2.root.SplitViewModel
 import com.atech.expensesync.ui_utils.backHandlerThreePane
@@ -49,7 +49,7 @@ fun SplitV2Screen(
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
 
     val viewModel = koinViewModel<SplitViewModel>()
-    val allGroups = viewModel.getAllSplitGroups.collectAsState(emptyList()).value
+    val allGroups by viewModel.allSplitGroups
 
     com.atech.expensesync.utils.expenseSyncLogger("$allGroups")
     var extraScreenType by remember { mutableStateOf(ExtraScreenType.NONE) }
@@ -75,11 +75,6 @@ fun SplitV2Screen(
                         navigator.navigateTo(
                             ListDetailPaneScaffoldRole.Extra
                         )
-                    },
-                    getAllGroupMembers = {
-                        viewModel.getAllMembers(it)
-                            .collectAsState(emptyList())
-                            .value
                     },
                     navHostController = navHostController
 
@@ -116,9 +111,8 @@ fun SplitV2Screen(
 @Composable
 private fun MainScreen(
     modifier: Modifier = Modifier,
-    state: List<SplitModel>,
+    state: FirebaseResponse<List<SplitFirebase>>,
     navHostController: NavHostController,
-    getAllGroupMembers: @Composable (String) -> List<GroupMembers> = { _ -> emptyList() },
     addNewGroupClick: () -> Unit = {},
 ) {
     MainContainer(
@@ -146,21 +140,22 @@ private fun MainScreen(
             )
         }
     ) { contentPadding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = contentPadding
-        ) {
-            items(state) { item ->
-                SplitGroupItem(
-                    splitModel = item,
-                    members = getAllGroupMembers.invoke(item.groupId),
-                    onItemClick = {
-                        navHostController.navigate(
-                            item.toViewSplitBookArgs()
-                        )
-                    }
-                )
+        if (state.isSuccess())
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = contentPadding
+            ) {
+                items(state.getOrNull()!!) { item ->
+                    SplitGroupItem(
+                        splitModel = item,
+                        members = item.members,
+                        onItemClick = {
+//                            navHostController.navigate(
+//                                item.toViewSplitBookArgs()
+//                            )
+                        }
+                    )
+                }
             }
-        }
     }
 }

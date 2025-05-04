@@ -14,7 +14,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val androidUIModule = module {
-//    viewModel { SplitViewModel(get(), get()) }
     viewModel { LogInViewModel(get()) }
     viewModel { ScanViewModel(get(), get()) }
 //    viewModel { AddExpenseViewModel(get(), get(), get()) }

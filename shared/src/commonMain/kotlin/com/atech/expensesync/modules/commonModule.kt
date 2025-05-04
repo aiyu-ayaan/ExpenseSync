@@ -1,9 +1,12 @@
 package com.atech.expensesync.modules
 
 import com.atech.expensesync.database.room.SplitSyncDatabase
+import com.atech.expensesync.firebase.usecase.CreateSplitGroup
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
 import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
+import com.atech.expensesync.firebase.usecase.GetSplitData
 import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
+import com.atech.expensesync.firebase.usecase.SplitUseCases
 import com.atech.expensesync.uploadData.GetAllUnUploadByTypeUseCases
 import com.atech.expensesync.uploadData.GetAllUnUploadUseCases
 import com.atech.expensesync.uploadData.GetAllUseCases
@@ -17,54 +20,29 @@ import com.atech.expensesync.uploadData.UploadUseCases
 import com.atech.expensesync.usecases.AddTransactionUseCase
 import com.atech.expensesync.usecases.CreateMealBook
 import com.atech.expensesync.usecases.CreateMealBookEntry
-import com.atech.expensesync.usecases.CreateNewGroupUseCase
-import com.atech.expensesync.usecases.CreateNewTransactionUseCase
-import com.atech.expensesync.usecases.CreateSplitGroup
-import com.atech.expensesync.usecases.CreateSplitTransaction
 import com.atech.expensesync.usecases.DeleteExpenseEntryUseCase
 import com.atech.expensesync.usecases.DeleteExpenseUseCase
-import com.atech.expensesync.usecases.DeleteGroupUseCase
 import com.atech.expensesync.usecases.DeleteMealBook
 import com.atech.expensesync.usecases.DeleteMealBookEntry
-import com.atech.expensesync.usecases.DeleteTransactionUseCase
 import com.atech.expensesync.usecases.ExpenseUseCases
 import com.atech.expensesync.usecases.GetAllExpensesUseCase
-import com.atech.expensesync.usecases.GetAllGlobalTransactions
 import com.atech.expensesync.usecases.GetExpenseBookEntryUseCase
 import com.atech.expensesync.usecases.GetExpenseByIdUseCase
-import com.atech.expensesync.usecases.GetGroupMembers
-import com.atech.expensesync.usecases.GetGroupsUseCase
 import com.atech.expensesync.usecases.GetMealBookEntries
 import com.atech.expensesync.usecases.GetMealBooks
-import com.atech.expensesync.usecases.GetSplitGroupMembers
-import com.atech.expensesync.usecases.GetSplitGroups
-import com.atech.expensesync.usecases.GetSplitTransactions
 import com.atech.expensesync.usecases.GetTotalPrice
-import com.atech.expensesync.usecases.GetTransactionsUseCase
 import com.atech.expensesync.usecases.InsertExpenseEntryUseCase
 import com.atech.expensesync.usecases.InsertExpenseUseCase
-import com.atech.expensesync.usecases.InsertMember
-import com.atech.expensesync.usecases.InsertSplitGroupMember
-import com.atech.expensesync.usecases.MapTransactionWithSplitAndThenUser
 import com.atech.expensesync.usecases.MealBookUseCases
-import com.atech.expensesync.usecases.RemoveMember
 import com.atech.expensesync.usecases.RestoreData
 import com.atech.expensesync.usecases.RestoreMealData
-import com.atech.expensesync.usecases.SplitGroupMemberUseCases
-import com.atech.expensesync.usecases.SplitTransactionUseCases
-import com.atech.expensesync.usecases.SplitUseCases
-import com.atech.expensesync.usecases.SplitV2UseCases
 import com.atech.expensesync.usecases.UpdateExpenseEntryUseCase
 import com.atech.expensesync.usecases.UpdateExpenseUseCase
-import com.atech.expensesync.usecases.UpdateGroupUseCase
 import com.atech.expensesync.usecases.UpdateMealBook
 import com.atech.expensesync.usecases.UpdateMealBookEntry
-import com.atech.expensesync.usecases.UpdateSplitGroup
-import com.atech.expensesync.usecases.UpdateSplitGroupMember
 import com.atech.expensesync.usecases.UpdateTotalAmountUseCase
 import com.atech.expensesync.usecases.UpdateTotalInUseCase
 import com.atech.expensesync.usecases.UpdateTotalOutUseCase
-import com.atech.expensesync.usecases.UpdateTransactionUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -81,24 +59,6 @@ val commonModule = module {
     single { get<SplitSyncDatabase>().updateDao }
     single { get<SplitSyncDatabase>().maintenanceDao }
     single { get<SplitSyncDatabase>().splitDao }
-    single { CreateNewGroupUseCase(get()) }
-    single { UpdateGroupUseCase(get()) }
-    single { GetGroupsUseCase(get()) }
-    single { DeleteGroupUseCase(get()) }
-
-    single { SplitUseCases(get(), get(), get(), get()) }
-
-    single { InsertMember(get()) }
-    single { GetGroupMembers(get()) }
-    single { RemoveMember(get()) }
-    single { SplitGroupMemberUseCases(get(), get(), get()) }
-
-    single { CreateNewTransactionUseCase(get()) }
-    single { GetTransactionsUseCase(get()) }
-    single { UpdateTransactionUseCase(get()) }
-    single { DeleteTransactionUseCase(get()) }
-    single { MapTransactionWithSplitAndThenUser(get()) }
-    single { SplitTransactionUseCases(get(), get(), get(), get(), get()) }
     single { CreateMealBook(get(), get()) }
     single { CreateMealBookEntry(get(), get()) }
     single { GetMealBooks(get()) }
@@ -163,21 +123,10 @@ val commonModule = module {
     single { RestoreMealData(get(), get()) }
     single { RestoreData(get()) }
     single { UploadDataHelper(get(), get(), get(), get()) }
+
+
     single { CreateSplitGroup(get()) }
-    single { UpdateSplitGroup(get()) }
-    single { GetSplitGroups(get()) }
-    single { UpdateSplitGroupMember(get()) }
-    single { GetAllGlobalTransactions(get()) }
-    single { GetSplitTransactions(get()) }
-    single { CreateSplitTransaction(get()) }
-    single { GetSplitGroupMembers(get()) }
-    single { InsertSplitGroupMember(get()) }
-    single {
-        SplitV2UseCases(
-            get(), get(), get(),
-            get(), get(), get(),
-            get(), get(), get()
-        )
-    }
+    single { GetSplitData(get()) }
+    single { SplitUseCases(get(), get()) }
 
 }

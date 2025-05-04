@@ -29,8 +29,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.EditTextEnhance
 import com.atech.expensesync.component.MainContainer
-import com.atech.expensesync.database.room.splitv2.SplitModel
-import com.atech.expensesync.database.room.splitv2.Type
+import com.atech.expensesync.database.models.SplitFirebase
+import com.atech.expensesync.database.models.Type
 import com.atech.expensesync.ui.screens.splitv2.root.SplitV2Events
 import com.atech.expensesync.ui.theme.spacing
 
@@ -69,7 +69,7 @@ fun Type.toTypeWithImage(): TypeWithImage =
 @Composable
 fun AddGroupScreen(
     modifier: Modifier = Modifier,
-    state: SplitModel,
+    state: SplitFirebase,
     onEvent: (SplitV2Events) -> Unit,
     onNavigateBack: () -> Unit
 ) {

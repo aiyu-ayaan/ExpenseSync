@@ -89,6 +89,39 @@ actual class KmpFire(
     }
 
 
+    actual suspend inline fun <reified T : Any> getObservedDataWithArrayContains(
+        collectionName: String,
+        query: Pair<String, String>
+    ): Flow<FirebaseResponse<List<T>>> = callbackFlow {
+        trySend(FirebaseResponse.Loading)
+        try {
+            val collectionRef = firestore.collection(collectionName)
+            val queryRef = collectionRef.whereArrayContains(query.first, query.second)
+
+            val listener = queryRef.addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(FirebaseResponse.Error("Failed to listen for changes: ${error.message}"))
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val data = snapshot.toObjects(T::class.java)
+                    trySend(FirebaseResponse.Success(data))
+                } else {
+                    trySend(FirebaseResponse.Empty)
+                }
+            }
+
+            awaitClose {
+                listener.remove()
+            }
+        } catch (e: Exception) {
+            trySend(FirebaseResponse.Error("Failed to set up listener: ${e.message}"))
+            close()
+        }
+    }
+
+
     actual suspend inline fun <reified T : Any> getObservedCollection(
         collectionName: String,
     ): Flow<FirebaseResponse<List<T>>> = callbackFlow {

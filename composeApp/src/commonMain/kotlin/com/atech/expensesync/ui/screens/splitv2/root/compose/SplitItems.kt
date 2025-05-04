@@ -27,15 +27,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
-import com.atech.expensesync.database.room.splitv2.GroupMembers
-import com.atech.expensesync.database.room.splitv2.SplitModel
+import com.atech.expensesync.database.models.GroupMember
+import com.atech.expensesync.database.models.SplitFirebase
 import com.atech.expensesync.ui.theme.spacing
 
 @Composable
 fun SplitGroupItem(
-    splitModel: SplitModel,
-    members: List<GroupMembers>,
-    onItemClick: (SplitModel) -> Unit
+    splitModel: SplitFirebase,
+    members: List<GroupMember>,
+    onItemClick: (SplitFirebase) -> Unit
 ) {
     OutlinedCard(
         modifier = Modifier
