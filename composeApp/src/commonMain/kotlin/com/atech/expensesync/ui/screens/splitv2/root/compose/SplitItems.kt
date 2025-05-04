@@ -1,12 +1,14 @@
 package com.atech.expensesync.ui.screens.splitv2.root.compose
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,9 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import coil3.compose.SubcomposeAsyncImage
+import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.database.models.GroupMember
 import com.atech.expensesync.database.models.SplitFirebase
+import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.ui.theme.spacing
 
 @Composable
@@ -107,18 +112,26 @@ fun SplitGroupItem(
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
             ) {
-                val displayMembers = if (members.size > 5) members.take(4) else members
+                val uid = LocalDataStore.current.getString(PrefKeys.USER_ID)
+                val sortedList = members.sortedBy { members ->
+                    if (members.uid == uid) 0 else 1
+                }
+                val displayMembers = if (sortedList.size > 5) sortedList.take(4) else sortedList
 
-                displayMembers.forEach { member ->
+
+                displayMembers.forEachIndexed { index, member ->
                     Box(
                         modifier = Modifier.padding(end = 8.dp)
+                            .offset(x = (index * -16).dp) // Adjust overlap amount here
+                            .zIndex(index.toFloat()),   // Ensure proper layering
                     ) {
                         SubcomposeAsyncImage(
                             model = member.pic,
                             contentDescription = "${member.name} avatar",
                             modifier = Modifier
                                 .size(24.dp)
-                                .clip(CircleShape),
+                                .clip(CircleShape)
+                                .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
                             contentScale = ContentScale.Crop,
                             error = {
                                 Icon(Icons.TwoTone.AccountCircle, null)
@@ -127,7 +140,7 @@ fun SplitGroupItem(
                     }
                 }
 
-                if (members.size > 5) {
+                if (sortedList.size > 5) {
                     Surface(
                         modifier = Modifier.size(24.dp),
                         shape = CircleShape,

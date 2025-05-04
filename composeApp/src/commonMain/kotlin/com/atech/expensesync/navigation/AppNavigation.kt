@@ -4,12 +4,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
-import com.atech.expensesync.database.models.Type
 import com.atech.expensesync.ui.screens.app.AppScreen
 import com.atech.expensesync.ui.screens.scan.compose.ScanScreen
+import com.atech.expensesync.ui.screens.splitv2.details.compose.SplitDetailsScreen
 import com.atech.expensesync.ui_utils.animatedComposable
 import com.atech.expensesync.ui_utils.animatedComposableEnh
-import com.atech.expensesync.utils.Currency
 import kotlinx.serialization.Serializable
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -20,14 +19,7 @@ sealed class AppNavigation(val route: String) {
 
 @Serializable
 data class ViewSplitBookArgs(
-    val groupName: String,
-    val createdByUid: String,
-    val defaultCurrency: String = Currency.INR.name,
-    val groupType: String = Type.None.name,
-    val isActive: Boolean = true,
-    val whiteBoard: String? = null,
-    val createdAt: Long,
-    val groupId: String,
+    val id : String
 )
 
 
@@ -55,10 +47,10 @@ fun NavGraphBuilder.appNavigation(
         }
         animatedComposableEnh<ViewSplitBookArgs> {
             val item = it.toRoute<ViewSplitBookArgs>()
-//            SplitDetailsScreen(
-//                state = item,
-//                navHostController = navHostController
-//            )
+            SplitDetailsScreen(
+                args = item,
+                navHostController = navHostController
+            )
         }
     }
 }

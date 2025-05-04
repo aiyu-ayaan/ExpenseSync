@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 data class SplitUseCases(
     val createSplitGroup: CreateSplitGroup,
-    val getSplitData: GetSplitData
+    val getSplitData: GetSplitData,
+    val getSplitById: GetSplitById
 )
 
 data class CreateSplitGroup(
@@ -35,7 +36,17 @@ data class GetSplitData(
         kmpFire.getObservedDataWithArrayContains<SplitFirebase>(
             collectionName = FirebaseCollectionPath.SPLIT.path, query = Pair("groupMembers", uid)
         )
+}
 
-
+data class GetSplitById(
+    private val kmpFire: KmpFire
+){
+    suspend fun invoke(
+        groupId: String
+    ): Flow<FirebaseResponse<SplitFirebase>> =
+        kmpFire.getObservedData<SplitFirebase>(
+            collectionName = FirebaseCollectionPath.SPLIT.path,
+            documentName = groupId
+        )
 }
 

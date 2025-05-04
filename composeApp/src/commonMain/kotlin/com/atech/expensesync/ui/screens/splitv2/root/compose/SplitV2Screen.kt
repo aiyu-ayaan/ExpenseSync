@@ -28,6 +28,7 @@ import com.atech.expensesync.database.models.SplitFirebase
 import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.firebase.util.getOrNull
 import com.atech.expensesync.firebase.util.isSuccess
+import com.atech.expensesync.navigation.ViewSplitBookArgs
 import com.atech.expensesync.ui.screens.splitv2.root.SplitV2Events
 import com.atech.expensesync.ui.screens.splitv2.root.SplitViewModel
 import com.atech.expensesync.ui_utils.backHandlerThreePane
@@ -150,9 +151,9 @@ private fun MainScreen(
                         splitModel = item,
                         members = item.members,
                         onItemClick = {
-//                            navHostController.navigate(
-//                                item.toViewSplitBookArgs()
-//                            )
+                            navHostController.navigate(
+                                ViewSplitBookArgs(item.groupID)
+                            )
                         }
                     )
                 }

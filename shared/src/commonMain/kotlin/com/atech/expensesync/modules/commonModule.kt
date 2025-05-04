@@ -4,6 +4,7 @@ import com.atech.expensesync.database.room.SplitSyncDatabase
 import com.atech.expensesync.firebase.usecase.CreateSplitGroup
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
 import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
+import com.atech.expensesync.firebase.usecase.GetSplitById
 import com.atech.expensesync.firebase.usecase.GetSplitData
 import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
 import com.atech.expensesync.firebase.usecase.SplitUseCases
@@ -121,6 +122,7 @@ val commonModule = module {
 
     single { CreateSplitGroup(get()) }
     single { GetSplitData(get()) }
-    single { SplitUseCases(get(), get()) }
+    single { GetSplitById(get()) }
+    single { SplitUseCases(get(), get(), get()) }
 
 }
