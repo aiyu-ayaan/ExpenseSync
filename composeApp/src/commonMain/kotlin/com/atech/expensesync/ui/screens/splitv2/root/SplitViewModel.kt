@@ -35,13 +35,9 @@ class SplitViewModel(
         mutableStateOf<FirebaseResponse<List<SplitFirebase>>>(FirebaseResponse.Loading)
     val allSplitGroups: State<FirebaseResponse<List<SplitFirebase>>> get() = _allSplitGroups
 
-//    fun getAllMembers(groupId: String) = viewModelScope.async(Dispatchers.IO) {
-//        splitV2UseCases.getSplitGroupMembers(groupId)
-//    }.let {
-//        runBlocking(Dispatchers.IO) {
-//            it.await()
-//        }
-//    }
+    init {
+        onEvent(event = SplitV2Events.LoadSplitGroups)
+    }
 
 
     fun onEvent(event: SplitV2Events) {
@@ -58,30 +54,30 @@ class SplitViewModel(
             }
 
             is SplitV2Events.LoadSplitGroups -> viewModelScope.launch {
-//                val uid = pref.getString(PrefKeys.USER_ID)
-//                splitUseCases.getSplitData.invoke(uid).onEach {
-//                    _allSplitGroups.value = it
-//                }.launchIn(viewModelScope)
+                val uid = pref.getString(PrefKeys.USER_ID)
+                splitUseCases.getSplitData.invoke(uid).onEach {
+                    _allSplitGroups.value = it
+                }.launchIn(viewModelScope)
             }
 
             SplitV2Events.SaveGroup -> viewModelScope.launch {
-//                val userModel = pref.getString(PrefKeys.USER_MODEL).fromJson<User>()
-//                val uid = UUID.randomUUID().toString()
-//                addSplitState.value.let { model ->
-//                    splitUseCases.createSplitGroup.invoke(
-//                        model = model.copy(
-//                            groupID = uid,
-//                            createdByUid = userModel.uid,
-//                            groupMembers = listOf(userModel.uid),
-//                            members = listOf(
-//                                userModel.toGroupMember(
-//                                    groupId = uid
-//                                )
-//                            ),
-//                        )
-//                    )
-//                }
-//                onEvent(SplitV2Events.ResetSplitState)
+                val userModel = pref.getString(PrefKeys.USER_MODEL).fromJson<User>()
+                val uid = UUID.randomUUID().toString()
+                addSplitState.value.let { model ->
+                    splitUseCases.createSplitGroup.invoke(
+                        model = model.copy(
+                            groupID = uid,
+                            createdByUid = userModel.uid,
+                            groupMembers = listOf(userModel.uid),
+                            members = listOf(
+                                userModel.toGroupMember(
+                                    groupId = uid
+                                )
+                            ),
+                        )
+                    )
+                }
+                onEvent(SplitV2Events.ResetSplitState)
             }
         }
     }

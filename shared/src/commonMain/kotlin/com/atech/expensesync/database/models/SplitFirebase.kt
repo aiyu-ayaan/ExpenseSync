@@ -16,8 +16,8 @@ enum class Type(
 
 @Keep
 data class SplitFirebase(
-    val groupName: String,
-    val createdByUid: String,
+    val groupName: String = "",
+    val createdByUid: String = "",
     val defaultCurrency: Currency = Currency.INR,
     val groupType: Type = Type.None,
     val isActive: Boolean = true,
@@ -32,12 +32,12 @@ data class SplitFirebase(
 
 @Keep
 data class GroupMember(
-    val uid: String,
-    val name: String,
-    val email: String,
-    val pic: String,
+    val uid: String = "",
+    val name: String = "",
+    val email: String = "",
+    val pic: String = "",
     val addedAt: Long = System.currentTimeMillis(),
-    val groupId: String,
+    val groupId: String = "",
 )
 
 
