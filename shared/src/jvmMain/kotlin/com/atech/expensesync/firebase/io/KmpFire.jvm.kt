@@ -1,7 +1,9 @@
 package com.atech.expensesync.firebase.io
 
+import com.atech.expensesync.database.models.User
 import com.atech.expensesync.firebase.helper.FirebaseHelper
 import com.atech.expensesync.firebase.util.FirebaseResponse
+import com.atech.expensesync.utils.LoggerType
 import com.atech.expensesync.utils.expenseSyncLogger
 import com.google.cloud.firestore.Firestore
 import kotlinx.coroutines.channels.awaitClose
@@ -51,7 +53,6 @@ actual class KmpFire(
     actual suspend inline fun <reified T : Any> getObservedDataWithQuery(
         vararg firebaseHelper: FirebaseHelper,
     ): Flow<FirebaseResponse<T>> = callbackFlow {
-        trySend(FirebaseResponse.Loading)
         try {
             // Build the collection reference using the provided FirebaseHelper instances
             val collectionRef = buildCollectionRef(
@@ -61,19 +62,20 @@ actual class KmpFire(
             expenseSyncLogger(collectionRef.path)
             val listenerRegistration = collectionRef.addSnapshotListener { snapshot, error ->
                 if (error != null) {
+                    expenseSyncLogger(error.message.toString(), LoggerType.ERROR)
                     trySend(FirebaseResponse.Error("Failed to listen for changes: ${error.message}"))
                     return@addSnapshotListener
                 }
 
                 if (snapshot != null && snapshot.documents.isNotEmpty()) {
-                    val document = snapshot.documents.first()
-                    if (document != null) {
-                        val data = document.toObject(T::class.java)
-                        trySend(FirebaseResponse.Success(data))
-                    } else {
-                        trySend(FirebaseResponse.Error("Failed to convert data"))
+                    snapshot.documents.forEach {
+                        expenseSyncLogger(it.toObject(User::class.java).email)
                     }
+                    val document = snapshot.documents.first()
+                    val data = document.toObject(T::class.java)
+                    trySend(FirebaseResponse.Success(data))
                 } else {
+                    expenseSyncLogger("Empty", LoggerType.ERROR)
                     trySend(FirebaseResponse.Empty)
                 }
             }
@@ -81,6 +83,39 @@ actual class KmpFire(
             // Cancel the listener when the Flow collection is stopped
             awaitClose {
                 listenerRegistration.remove()
+            }
+        } catch (e: Exception) {
+            expenseSyncLogger(e.message.toString(), LoggerType.ERROR)
+            trySend(FirebaseResponse.Error("Failed to set up listener: ${e.message}"))
+            close()
+        }
+    }
+
+    actual suspend inline fun <reified T : Any> getObservedDataWithContainsData(
+        collectionName: String,
+        query: Pair<String, String>,
+    ): Flow<FirebaseResponse<T>> = callbackFlow{
+        trySend(FirebaseResponse.Loading)
+        try {
+            val collectionRef = firestore.collection(collectionName)
+            val queryRef = collectionRef.whereEqualTo(query.first, query.second)
+
+            val listener = queryRef.addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(FirebaseResponse.Error("Failed to listen for changes: ${error.message}"))
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val data = snapshot.toObjects(T::class.java)
+                    trySend(FirebaseResponse.Success(data.first()))
+                } else {
+                    trySend(FirebaseResponse.Empty)
+                }
+            }
+
+            awaitClose {
+                listener.remove()
             }
         } catch (e: Exception) {
             trySend(FirebaseResponse.Error("Failed to set up listener: ${e.message}"))

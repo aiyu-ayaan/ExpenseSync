@@ -5,8 +5,8 @@ actual fun expenseSyncLogger(
     loggerType: LoggerType
 ) {
     when (loggerType) {
-        LoggerType.DEBUG -> println("DEBUG: $message")
-        LoggerType.ERROR -> System.err.print("ERROR: $message")
-        LoggerType.INFO -> println("INFO: $message")
+        LoggerType.DEBUG -> println("Aiyu: DEBUG $message")
+        LoggerType.ERROR -> System.err.print("Aiyu: ERROR $message")
+        LoggerType.INFO -> println("Aiyu: INFO $message")
     }
 }

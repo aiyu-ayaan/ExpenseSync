@@ -208,6 +208,7 @@ fun LogInScreen(
                 )
                 runWithDeviceCompose(
                     onDesktop = {
+                        expenseSyncLogger(userState.toString())
                         if (userState != null && userState.uid.isNotEmpty()
                             && userState.systemUid != null
                             && userState.desktopLogInDetails != null
@@ -227,6 +228,9 @@ fun LogInScreen(
                             }
                             destroyViewModelObject.invoke()
                         }
+                        com.atech.expensesync.utils.expenseSyncLogger(
+                            "${pref.getString(PrefKeys.DESKTOP_USER_UID)}$${com.atech.expensesync.utils.getOsName()}"
+                        )
                         onEvent.invoke(
                             LogInEvents.ObserveLogInData(
                                 pref.getString(PrefKeys.DESKTOP_USER_UID)

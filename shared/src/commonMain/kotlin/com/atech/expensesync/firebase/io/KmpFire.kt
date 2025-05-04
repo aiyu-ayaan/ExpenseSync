@@ -15,6 +15,12 @@ expect class KmpFire {
         vararg firebaseHelper: FirebaseHelper,
     ): Flow<FirebaseResponse<T>>
 
+
+    suspend inline fun <reified T : Any> getObservedDataWithContainsData(
+        collectionName: String,
+        query: Pair<String, String>,
+    ): Flow<FirebaseResponse<T>>
+
     suspend inline fun <reified T : Any> getObservedDataWithArrayContains(
         collectionName: String,
         query: Pair<String, String>,

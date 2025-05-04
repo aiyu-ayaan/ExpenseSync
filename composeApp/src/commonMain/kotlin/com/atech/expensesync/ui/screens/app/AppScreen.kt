@@ -31,10 +31,7 @@ import com.atech.expensesync.LocalUploadDataHelper
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.room.MaintenanceDao
 import com.atech.expensesync.firebase.usecase.ObserveLogInUsingOR
-import com.atech.expensesync.firebase.util.getOrNull
-import com.atech.expensesync.firebase.util.isError
-import com.atech.expensesync.firebase.util.isLoading
-import com.atech.expensesync.firebase.util.isSuccess
+import com.atech.expensesync.firebase.util.isEmpty
 import com.atech.expensesync.ui.screens.expense.root.compose.ExpenseScreen
 import com.atech.expensesync.ui.screens.meal.root.compose.MealScreen
 import com.atech.expensesync.ui.screens.profile.compose.ProfileScreen
@@ -101,14 +98,10 @@ fun AppScreen(
         onDesktop = {
             LaunchedEffect(true) {
                 observeLogInUsingOR.invoke(desktopId).collect {
-                    if (it.isLoading()) return@collect
-                    if (it.isError()) return@collect
-                    if (it.isSuccess()) {
-                        if (it.getOrNull() != null && it.getOrNull()!!.systemUid != desktopId) {
-                            pref.clearAll()
-                            maintenanceDao.deleteAll()
-                            com.atech.expensesync.utils.restartApp()
-                        }
+                    if (it.isEmpty()) {
+                        pref.clearAll()
+                        maintenanceDao.deleteAll()
+                        com.atech.expensesync.utils.restartApp()
                     }
                 }
             }

@@ -2,7 +2,6 @@ package com.atech.expensesync.firebase.usecase
 
 import com.atech.expensesync.database.models.DesktopLogInDetails
 import com.atech.expensesync.database.models.User
-import com.atech.expensesync.firebase.helper.FirebaseHelper
 import com.atech.expensesync.firebase.io.KmpFire
 import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.utils.FirebaseCollectionPath
@@ -66,11 +65,10 @@ data class ObserveLogInUsingOR(
     suspend operator fun invoke(
         desktopId: String,
     ): Flow<FirebaseResponse<User>> =
-        kmpFire.getObservedDataWithQuery<User>(
-            FirebaseHelper(
-                collectionName = FirebaseCollectionPath.USER.path,
-                queries = "systemUid" to desktopId
-            )
+        kmpFire.getObservedDataWithContainsData<User>(
+            collectionName = FirebaseCollectionPath.USER.path,
+            "systemUid" to desktopId
+
         )
 }
 
