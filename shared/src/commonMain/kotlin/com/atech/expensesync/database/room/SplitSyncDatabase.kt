@@ -11,33 +11,20 @@ import com.atech.expensesync.database.room.expense.ExpenseBookEntry
 import com.atech.expensesync.database.room.meal.MealBook
 import com.atech.expensesync.database.room.meal.MealBookEntry
 import com.atech.expensesync.database.room.meal.MealDao
-import com.atech.expensesync.database.room.split.SplitGroup
-import com.atech.expensesync.database.room.split.SplitGroupDao
-import com.atech.expensesync.database.room.split.SplitGroupMemberDao
-import com.atech.expensesync.database.room.split.SplitGroupMembers
-import com.atech.expensesync.database.room.split.SplitTransactionDao
-import com.atech.expensesync.database.room.split.SplitTransactions
-import com.atech.expensesync.database.room.split.TransactionSplit
-import com.atech.expensesync.database.room.split.TransactionSplitDao
-import com.atech.expensesync.database.room.splitv2.GroupMembers
-import com.atech.expensesync.database.room.splitv2.SplitDao
-import com.atech.expensesync.database.room.splitv2.SplitGlobalTransactions
-import com.atech.expensesync.database.room.splitv2.SplitModel
 import com.atech.expensesync.database.room.upload.UploadDao
 import com.atech.expensesync.database.room.upload.UploadModel
 
 
 @Database(
-    entities = [ MealBook::class,
+    entities = [
+        MealBook::class,
         MealBookEntry::class, ExpenseBook::class, ExpenseBookEntry::class,
-        UploadModel::class, GroupMembers::class, SplitGlobalTransactions::class,
-        com.atech.expensesync.database.room.splitv2.SplitTransactions::class,
-        SplitModel::class
+        UploadModel::class,
     ],
     version = 8
 )
 abstract class SplitSyncDatabase : RoomDatabase() {
-//    abstract val splitGroupDao: SplitGroupDao
+    //    abstract val splitGroupDao: SplitGroupDao
 //    abstract val splitGroupMemberDao: SplitGroupMemberDao
 //    abstract val splitTransactionDao: SplitTransactionDao
 //    abstract val transactionSplitDao: TransactionSplitDao
@@ -45,7 +32,6 @@ abstract class SplitSyncDatabase : RoomDatabase() {
     abstract val expenseBookDao: ExpenseBookDao
     abstract val updateDao: UploadDao
     abstract val maintenanceDao: MaintenanceDao
-    abstract val splitDao : SplitDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {

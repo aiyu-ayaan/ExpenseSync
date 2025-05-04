@@ -49,16 +49,10 @@ import kotlinx.coroutines.SupervisorJob
 import org.koin.dsl.module
 
 val commonModule = module {
-    // Dao
-//    single { get<SplitSyncDatabase>().splitGroupDao }
-//    single { get<SplitSyncDatabase>().transactionSplitDao }
-//    single { get<SplitSyncDatabase>().splitGroupMemberDao }
-//    single { get<SplitSyncDatabase>().splitTransactionDao }
     single { get<SplitSyncDatabase>().mealDao }
     single { get<SplitSyncDatabase>().expenseBookDao }
     single { get<SplitSyncDatabase>().updateDao }
     single { get<SplitSyncDatabase>().maintenanceDao }
-    single { get<SplitSyncDatabase>().splitDao }
     single { CreateMealBook(get(), get()) }
     single { CreateMealBookEntry(get(), get()) }
     single { GetMealBooks(get()) }
