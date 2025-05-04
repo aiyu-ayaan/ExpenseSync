@@ -9,7 +9,7 @@ import com.atech.expensesync.ui.screens.scan.ScanViewModel
 import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsViewModel
 import com.atech.expensesync.ui.screens.splitv2.root.SplitViewModel
 import com.atech.expensesync.ui_utils.LinkHelper
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 
 import org.koin.dsl.module
 

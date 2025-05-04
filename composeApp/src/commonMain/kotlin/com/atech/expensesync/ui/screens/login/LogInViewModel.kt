@@ -30,14 +30,7 @@ class LogInViewModel(
                     .observeLogInUsingOR(events.desktopUid)
                     .onEach {
                         if (it.isSuccess()) {
-                            com.atech.expensesync.utils.expenseSyncLogger(
-                                "Success"
-                            )
                             _user.value = it.getOrNull()
-                        } else {
-                            com.atech.expensesync.utils.expenseSyncLogger(
-                                "Login $it"
-                            )
                         }
                     }.launchIn(viewModelScope)
             }
