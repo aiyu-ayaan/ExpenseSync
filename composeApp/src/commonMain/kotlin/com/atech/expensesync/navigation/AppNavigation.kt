@@ -4,11 +4,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
-import com.atech.expensesync.database.room.splitv2.SplitModel
-import com.atech.expensesync.database.room.splitv2.Type
+import com.atech.expensesync.database.models.Type
 import com.atech.expensesync.ui.screens.app.AppScreen
 import com.atech.expensesync.ui.screens.scan.compose.ScanScreen
-import com.atech.expensesync.ui.screens.splitv2.details.compose.SplitDetailsScreen
 import com.atech.expensesync.ui_utils.animatedComposable
 import com.atech.expensesync.ui_utils.animatedComposableEnh
 import com.atech.expensesync.utils.Currency
@@ -30,28 +28,6 @@ data class ViewSplitBookArgs(
     val whiteBoard: String? = null,
     val createdAt: Long,
     val groupId: String,
-)
-
-fun ViewSplitBookArgs.toSplitModel(): SplitModel = SplitModel(
-    groupName = groupName,
-    createdByUid = createdByUid,
-    defaultCurrency = Currency.valueOf(defaultCurrency),
-    groupType = Type.valueOf(groupType),
-    isActive = isActive,
-    whiteBoard = whiteBoard,
-    createdAt = createdAt,
-    groupId = groupId
-)
-
-fun SplitModel.toViewSplitBookArgs(): ViewSplitBookArgs = ViewSplitBookArgs(
-    groupName = groupName,
-    createdByUid = createdByUid,
-    defaultCurrency = defaultCurrency.name,
-    groupType = groupType.name,
-    isActive = isActive,
-    whiteBoard = whiteBoard,
-    createdAt = createdAt,
-    groupId = groupId
 )
 
 
@@ -78,11 +54,11 @@ fun NavGraphBuilder.appNavigation(
             )
         }
         animatedComposableEnh<ViewSplitBookArgs> {
-            val item = it.toRoute<ViewSplitBookArgs>().toSplitModel()
-            SplitDetailsScreen(
-                state = item,
-                navHostController = navHostController
-            )
+            val item = it.toRoute<ViewSplitBookArgs>()
+//            SplitDetailsScreen(
+//                state = item,
+//                navHostController = navHostController
+//            )
         }
     }
 }

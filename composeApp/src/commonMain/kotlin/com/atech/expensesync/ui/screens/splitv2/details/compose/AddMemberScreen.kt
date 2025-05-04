@@ -21,18 +21,16 @@ import androidx.compose.ui.unit.dp
 import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.LoadImageFromUrl
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.models.GroupMember
 import com.atech.expensesync.database.pref.PrefKeys
-import com.atech.expensesync.database.room.splitv2.GroupMembers
 import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsEvents
-import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMemberScreen(
     modifier: Modifier = Modifier,
-    state: List<GroupMembers> = emptyList(),
+    state: List<GroupMember> = emptyList(),
     onEvent: (SplitDetailsEvents) -> Unit = {},
     onNavigationClick: () -> Unit = {},
 ) {
@@ -77,7 +75,7 @@ fun AddMemberScreen(
 @Composable
 fun UserItem(
     modifier: Modifier = Modifier,
-    groupMembers: GroupMembers,
+    groupMembers: GroupMember,
     isOwner: Boolean = false
 ) {
     Column {
@@ -110,14 +108,5 @@ fun UserItem(
             } else null
         )
         HorizontalDivider()
-    }
-}
-
-@Preview
-@Composable
-private fun GroupMemberScreenPreview() {
-    ExpenseSyncTheme {
-        AddMemberScreen(
-        )
     }
 }

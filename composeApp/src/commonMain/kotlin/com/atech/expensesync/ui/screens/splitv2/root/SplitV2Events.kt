@@ -1,7 +1,6 @@
 package com.atech.expensesync.ui.screens.splitv2.root
 
 import com.atech.expensesync.database.models.SplitFirebase
-import com.atech.expensesync.database.room.splitv2.SplitModel
 
 sealed interface SplitV2Events {
     data class OnAddSplitStateChange(
