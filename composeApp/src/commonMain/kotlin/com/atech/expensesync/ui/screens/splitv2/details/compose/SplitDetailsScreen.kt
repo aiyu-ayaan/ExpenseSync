@@ -72,6 +72,7 @@ fun SplitDetailsScreen(
     if (splitDetails.isSuccess()) {
         val groupMembers = splitDetails.getOrNull()?.members ?: return
         val adminUid = splitDetails.getOrNull()?.createdByUid ?: return
+        val groupName = splitDetails.getOrNull()?.groupName ?: return
         ListDetailPaneScaffold(
             modifier = modifier,
             directive = navigator.scaffoldDirective,
@@ -105,16 +106,19 @@ fun SplitDetailsScreen(
                 ExtraPane.AddExpense -> {
                     {
                         AnimatedPane {
-//                        AddExpenseScreen(
-//                            modifier = Modifier.fillMaxWidth(),
-//                            state = viewModel.addOrUpdateSplitTransaction.value,
-//                            splitModel = detailsModel ?: return@AnimatedPane,
-//                            groupMembers = groupMembers,
-//                            onEvent = viewModel::onEvent,
-//                            onNavigationClick = {
-//                                extraPane = ExtraPane.None
-//                                navigator.navigateBack()
-//                            })
+                            AddExpenseScreen(
+                                modifier = Modifier.fillMaxWidth(),
+                                state = viewModel.splitTransaction.value,
+                                name = groupName,
+                                groupMembers = groupMembers,
+                                onEvent = viewModel::onEvent,
+                                onNavigationClick = {
+                                    viewModel.onEvent(
+                                        SplitDetailsEvents.SetSplitTransaction()
+                                    )
+                                    extraPane = ExtraPane.None
+                                    navigator.navigateBack()
+                                })
                         }
                     }
                 }
@@ -125,7 +129,7 @@ fun SplitDetailsScreen(
                             AddMemberScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 state = groupMembers,
-                                adminUid =adminUid,
+                                adminUid = adminUid,
                                 onEvent = viewModel::onEvent,
                                 onNavigationClick = {
                                     extraPane = ExtraPane.None

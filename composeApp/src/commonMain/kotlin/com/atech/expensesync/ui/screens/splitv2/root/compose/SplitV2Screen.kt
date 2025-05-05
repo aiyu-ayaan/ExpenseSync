@@ -52,7 +52,6 @@ fun SplitV2Screen(
     val viewModel = koinViewModel<SplitViewModel>()
     val allGroups by viewModel.allSplitGroups
 
-    com.atech.expensesync.utils.expenseSyncLogger("$allGroups")
     var extraScreenType by remember { mutableStateOf(ExtraScreenType.NONE) }
 
     navigator.backHandlerThreePane({

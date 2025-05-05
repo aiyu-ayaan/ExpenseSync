@@ -54,8 +54,8 @@ fun User.toGroupMember(
 }
 
 @Keep
-enum class SplitType{
-    EQUAL,PERCENTAGE
+enum class SplitType {
+    EQUAL, PERCENTAGE
 }
 
 /**
@@ -64,21 +64,33 @@ enum class SplitType{
 @Keep
 data class TransactionGlobalModel(
     val path: String = "",
-    val totalOwe : Double = 0.0,
-    val totalAmountPaid : Double = 0.0,
+    val totalOwe: Double = 0.0,
+    val totalAmountPaid: Double = 0.0,
 )
 
 @Keep
 data class SplitTransactionElement(
     val groupMember: GroupMember,
-    val amount : Double = 0.0,
-    val created : Long = System.currentTimeMillis()
+    val amount: Double = 0.0,
+    val percentage: Double? = null,
+    val created: Long = System.currentTimeMillis()
 )
+
+
+fun SplitTransaction.toTransactionGlobalModel(): List<TransactionGlobalModel> =
+    this.splitMembers.map { value ->
+        TransactionGlobalModel(
+            path = value.groupMember.uid,
+            totalOwe = value.amount,
+            totalAmountPaid = this.splitAmount
+        )
+    }
+
 
 @Keep
 data class SplitTransaction(
-    val id: String = "",
     val amount: Double = 0.0,
+    val description: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     val createdByUid: String = "",
     val splitType: SplitType = SplitType.EQUAL,
@@ -86,4 +98,5 @@ data class SplitTransaction(
     val splitMembers: List<SplitTransactionElement> = emptyList(),
     val groupId: String = "",
     val isSettled: Boolean = false,
+    val id: String = UUID.randomUUID().toString(),
 )
