@@ -18,11 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.atech.expensesync.LocalDataStore
 import com.atech.expensesync.component.LoadImageFromUrl
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.models.GroupMember
-import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsEvents
 import com.atech.expensesync.ui.theme.spacing
 
@@ -31,10 +29,10 @@ import com.atech.expensesync.ui.theme.spacing
 fun AddMemberScreen(
     modifier: Modifier = Modifier,
     state: List<GroupMember> = emptyList(),
+    adminUid: String = "",
     onEvent: (SplitDetailsEvents) -> Unit = {},
     onNavigationClick: () -> Unit = {},
 ) {
-    val uid = LocalDataStore.current.getString(PrefKeys.USER_ID)
     MainContainer(
         title = "Group Members",
         modifier = modifier,
@@ -64,7 +62,7 @@ fun AddMemberScreen(
             items(state) {
                 UserItem(
                     groupMembers = it,
-                    isOwner = it.uid == uid
+                    isOwner = it.uid == adminUid
                 )
             }
         }

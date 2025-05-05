@@ -71,6 +71,7 @@ fun SplitDetailsScreen(
 
     if (splitDetails.isSuccess()) {
         val groupMembers = splitDetails.getOrNull()?.members ?: return
+        val adminUid = splitDetails.getOrNull()?.createdByUid ?: return
         ListDetailPaneScaffold(
             modifier = modifier,
             directive = navigator.scaffoldDirective,
@@ -124,6 +125,7 @@ fun SplitDetailsScreen(
                             AddMemberScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 state = groupMembers,
+                                adminUid =adminUid,
                                 onEvent = viewModel::onEvent,
                                 onNavigationClick = {
                                     extraPane = ExtraPane.None
