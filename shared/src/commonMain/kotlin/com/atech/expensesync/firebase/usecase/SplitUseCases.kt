@@ -73,19 +73,20 @@ data class CreateTransaction(
         val globalTransactionCollectionName =
             FirebaseCollectionPath.SPLIT.path + "/$groupId/${FirebaseDocumentName.SPLIT_TRANSACTION.path}"
         if (elementInsert.isSuccess()) {
-            splitDetails.toTransactionGlobalModel().forEach {
+            splitDetails.toTransactionGlobalModel().filter {
+                it.path != splitDetails.createdByUid
+            }.forEach {
                 val temp = kmpFire.getData<TransactionGlobalModel>(
                     collectionName = globalTransactionCollectionName, documentName = it.path
                 )
-                val editedGlobalTransaction: TransactionGlobalModel = if (temp.isSuccess()) {
-                    temp.getOrNull()?.let { nonNullableData ->
+                val editedGlobalTransaction: TransactionGlobalModel =
+                    if (temp.isSuccess()) temp.getOrNull()?.let { nonNullableData ->
                         nonNullableData.copy(
                             totalOwe = nonNullableData.totalOwe + it.totalOwe
                         )
                     } ?: it
-                } else {
-                    it
-                }
+                    else it
+
                 val log = kmpFire.insertData(
                     collectionName = globalTransactionCollectionName,
                     documentName = it.path,
