@@ -100,7 +100,6 @@ data class SplitTransaction(
     val splitType: SplitType = SplitType.EQUAL,
     val splitAmount: Double = 0.0,
     val splitMembers: List<SplitTransactionElement> = emptyList(),
-    val groupId: String = "",
     val isSettled: Boolean = false,
     val id: String = UUID.randomUUID().toString(),
 )
