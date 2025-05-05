@@ -110,7 +110,7 @@ data class GetGlobalTransaction(
     suspend operator fun invoke(
         groupId: String
     ) = kmpFire.getObservedCollection<TransactionGlobalModel>(
-        collectionName = FirebaseCollectionPath.SPLIT.path + "$groupId/${FirebaseDocumentName.SPLIT_TRANSACTION.path}"
+        collectionName = FirebaseCollectionPath.SPLIT.path + "/$groupId/${FirebaseDocumentName.SPLIT_TRANSACTION.path}"
     )
 }
 
@@ -120,6 +120,6 @@ data class GetTransaction(
     suspend operator fun invoke(
         groupId: String
     ) = kmpFire.getObservedCollection<SplitTransaction>(
-        collectionName = FirebaseCollectionPath.SPLIT.path + "$groupId/${FirebaseDocumentName.SPLIT_TRANSACTION_ENTRY.path}"
+        collectionName = FirebaseCollectionPath.SPLIT.path + "/$groupId/${FirebaseDocumentName.SPLIT_TRANSACTION_ENTRY.path}"
     )
 }
