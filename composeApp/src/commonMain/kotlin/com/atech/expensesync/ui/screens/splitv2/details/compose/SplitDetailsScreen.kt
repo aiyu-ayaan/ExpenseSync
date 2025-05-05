@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.models.GroupMember
+import com.atech.expensesync.database.models.SplitTransaction
 import com.atech.expensesync.database.models.TransactionGlobalModel
 import com.atech.expensesync.firebase.util.getOrNull
 import com.atech.expensesync.firebase.util.isSuccess
@@ -77,6 +78,7 @@ fun SplitDetailsScreen(
         val adminUid = splitDetails.getOrNull()?.createdByUid ?: return
         val groupName = splitDetails.getOrNull()?.groupName ?: return
         val globalTransaction = viewModel.globalTransactionDetails.value
+        val splitTransactions = viewModel.splitTransactions.value
         ListDetailPaneScaffold(
             modifier = modifier,
             directive = navigator.scaffoldDirective,
@@ -87,6 +89,7 @@ fun SplitDetailsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         groupMembers = groupMembers,
                         globalTransaction = globalTransaction,
+                        splitTransactions = splitTransactions,
                         onNavigateBack = {
                             navHostController.navigateUp()
                         },
@@ -160,6 +163,7 @@ private fun BaseScreen(
     modifier: Modifier = Modifier,
     groupMembers: List<GroupMember>,
     globalTransaction: List<TransactionGlobalModel>,
+    splitTransactions: List<SplitTransaction>,
     onGroupMembersClick: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     navigateToAddExpense: () -> Unit = {},
@@ -205,7 +209,8 @@ private fun BaseScreen(
             when (TabState.entries[state]) {
                 TabState.SettleUp -> SettleUpScreen(
                     globalTransaction = globalTransaction,
-                    groupMembers = groupMembers
+                    groupMembers = groupMembers,
+                    splitTransactions = splitTransactions
                 )
 
                 else -> {

@@ -37,6 +37,9 @@ class SplitDetailsViewModel(
         mutableStateOf<List<TransactionGlobalModel>>(emptyList())
     val globalTransactionDetails: State<List<TransactionGlobalModel>> get() = _globalTransactionDetails
 
+    private val _splitTransactions = mutableStateOf<List<SplitTransaction>>(emptyList())
+    val splitTransactions : State<List<SplitTransaction>> get() = _splitTransactions
+
 
     fun onEvent(event: SplitDetailsEvents) {
         when (event) {
@@ -72,10 +75,17 @@ class SplitDetailsViewModel(
 
                 splitUseCases.getGlobalTransaction(event.id).onEach {
                     if (it.isSuccess()) {
-                        com.atech.expensesync.utils.expenseSyncLogger(it.getOrNull().toString())
                         _globalTransactionDetails.value = it.getOrNull() ?: emptyList()
                     } else {
                         _globalTransactionDetails.value = emptyList()
+                    }
+                }.launchIn(viewModelScope)
+
+                splitUseCases.getTransaction(event.id).onEach {
+                    if (it.isSuccess()) {
+                        _splitTransactions.value = it.getOrNull() ?: emptyList()
+                    } else {
+                        _splitTransactions.value = emptyList()
                     }
                 }.launchIn(viewModelScope)
             }

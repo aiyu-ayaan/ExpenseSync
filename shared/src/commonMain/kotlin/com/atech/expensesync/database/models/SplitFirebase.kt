@@ -71,7 +71,7 @@ data class TransactionGlobalModel(
 
 @Keep
 data class SplitTransactionElement(
-    val groupMember: GroupMember,
+    val groupMember: GroupMember = GroupMember(),
     val amount: Double = 0.0,
     val percentage: Double? = null,
     val created: Long = System.currentTimeMillis()

@@ -211,7 +211,7 @@ private fun calculateNetBalances(transactions: List<TransactionGlobalModel>): Ma
 }
 
 @Composable
-private fun ProfilePicture(
+fun ProfilePicture(
     profilePicUrl: String?,
     name: String,
     isCurrentUser: Boolean,
