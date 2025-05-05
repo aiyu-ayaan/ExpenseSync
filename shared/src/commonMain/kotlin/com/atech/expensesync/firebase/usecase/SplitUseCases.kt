@@ -73,7 +73,7 @@ data class CreateTransaction(
         val globalTransactionCollectionName =
             FirebaseCollectionPath.SPLIT.path + "/$groupId/${FirebaseDocumentName.SPLIT_TRANSACTION.path}"
         if (elementInsert.isSuccess()) {
-            splitDetails.toTransactionGlobalModel().filter {
+            splitDetails.toTransactionGlobalModel(splitDetails.createdByUid).filter {
                 it.path != splitDetails.createdByUid
             }.forEach {
                 val temp = kmpFire.getData<TransactionGlobalModel>(

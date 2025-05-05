@@ -8,8 +8,11 @@ import com.atech.expensesync.database.models.GroupMember
 import com.atech.expensesync.database.models.SplitFirebase
 import com.atech.expensesync.database.models.SplitTransaction
 import com.atech.expensesync.database.models.SplitTransactionElement
+import com.atech.expensesync.database.models.TransactionGlobalModel
 import com.atech.expensesync.firebase.usecase.SplitUseCases
 import com.atech.expensesync.firebase.util.FirebaseResponse
+import com.atech.expensesync.firebase.util.getOrNull
+import com.atech.expensesync.firebase.util.isSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -27,7 +30,12 @@ class SplitDetailsViewModel(
     private val _groupMembers = mutableStateOf<List<GroupMember>>(emptyList())
     val groupMembers: State<List<GroupMember>> get() = _groupMembers
 
-    private val _groupId = mutableStateOf<String>("")
+    private val _groupId = mutableStateOf("")
+
+
+    private val _globalTransactionDetails =
+        mutableStateOf<List<TransactionGlobalModel>>(emptyList())
+    val globalTransactionDetails: State<List<TransactionGlobalModel>> get() = _globalTransactionDetails
 
 
     fun onEvent(event: SplitDetailsEvents) {
@@ -49,8 +57,7 @@ class SplitDetailsViewModel(
                     })
                 event.onDone(
                     splitUseCases.createTransaction(
-                        _groupId.value,
-                        _splitTransaction.value
+                        _groupId.value, _splitTransaction.value
                     )
                 )
             }
@@ -61,6 +68,15 @@ class SplitDetailsViewModel(
                     event.id
                 ).onEach {
                     _splitDetails.value = it
+                }.launchIn(viewModelScope)
+
+                splitUseCases.getGlobalTransaction(event.id).onEach {
+                    if (it.isSuccess()) {
+                        com.atech.expensesync.utils.expenseSyncLogger(it.getOrNull().toString())
+                        _globalTransactionDetails.value = it.getOrNull() ?: emptyList()
+                    } else {
+                        _globalTransactionDetails.value = emptyList()
+                    }
                 }.launchIn(viewModelScope)
             }
 

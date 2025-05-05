@@ -2,6 +2,7 @@ package com.atech.expensesync.ui.screens.splitv2.details.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,11 +33,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
+import com.atech.expensesync.database.models.GroupMember
+import com.atech.expensesync.database.models.TransactionGlobalModel
 import com.atech.expensesync.firebase.util.getOrNull
 import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.navigation.ViewSplitBookArgs
 import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsEvents
 import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsViewModel
+import com.atech.expensesync.ui.screens.splitv2.details.compose.settleUp.SettleUpScreen
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
 import org.koin.compose.viewmodel.koinViewModel
@@ -54,9 +59,7 @@ private enum class TabState {
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, KoinExperimentalAPI::class)
 @Composable
 fun SplitDetailsScreen(
-    modifier: Modifier = Modifier,
-    args: ViewSplitBookArgs,
-    navHostController: NavHostController
+    modifier: Modifier = Modifier, args: ViewSplitBookArgs, navHostController: NavHostController
 ) {
     val viewModel = koinViewModel<SplitDetailsViewModel>()
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
@@ -73,6 +76,7 @@ fun SplitDetailsScreen(
         val groupMembers = splitDetails.getOrNull()?.members ?: return
         val adminUid = splitDetails.getOrNull()?.createdByUid ?: return
         val groupName = splitDetails.getOrNull()?.groupName ?: return
+        val globalTransaction = viewModel.globalTransactionDetails.value
         ListDetailPaneScaffold(
             modifier = modifier,
             directive = navigator.scaffoldDirective,
@@ -81,6 +85,8 @@ fun SplitDetailsScreen(
                 AnimatedPane {
                     BaseScreen(
                         modifier = Modifier.fillMaxWidth(),
+                        groupMembers = groupMembers,
+                        globalTransaction = globalTransaction,
                         onNavigateBack = {
                             navHostController.navigateUp()
                         },
@@ -152,6 +158,8 @@ fun SplitDetailsScreen(
 @Composable
 private fun BaseScreen(
     modifier: Modifier = Modifier,
+    groupMembers: List<GroupMember>,
+    globalTransaction: List<TransactionGlobalModel>,
     onGroupMembersClick: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     navigateToAddExpense: () -> Unit = {},
@@ -182,7 +190,7 @@ private fun BaseScreen(
                 Icon(imageVector = Icons.TwoTone.Groups, contentDescription = "")
             }
         }) { contentPadding ->
-        var state by remember { mutableStateOf(0) }
+        var state by remember { mutableIntStateOf(0) }
         Column(
             modifier = Modifier.padding(contentPadding),
         ) {
@@ -193,6 +201,20 @@ private fun BaseScreen(
                     state = state,
                     stateChange = { state = it },
                     list = TabState.entries.map { it.name })
+            }
+            when (TabState.entries[state]) {
+                TabState.SettleUp -> SettleUpScreen(
+                    globalTransaction = globalTransaction,
+                    groupMembers = groupMembers
+                )
+
+                else -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text("TODO():Implemented")
+                    }
+                }
             }
         }
     }

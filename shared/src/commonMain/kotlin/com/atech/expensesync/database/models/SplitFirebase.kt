@@ -66,6 +66,7 @@ data class TransactionGlobalModel(
     val path: String = "",
     val totalOwe: Double = 0.0,
     val totalAmountPaid: Double = 0.0,
+    val paidByUid: String = ""
 )
 
 @Keep
@@ -77,12 +78,15 @@ data class SplitTransactionElement(
 )
 
 
-fun SplitTransaction.toTransactionGlobalModel(): List<TransactionGlobalModel> =
+fun SplitTransaction.toTransactionGlobalModel(
+    paidByUid: String
+): List<TransactionGlobalModel> =
     this.splitMembers.map { value ->
         TransactionGlobalModel(
             path = value.groupMember.uid,
             totalOwe = value.amount,
-            totalAmountPaid = this.splitAmount
+            totalAmountPaid = this.splitAmount,
+            paidByUid = paidByUid
         )
     }
 
