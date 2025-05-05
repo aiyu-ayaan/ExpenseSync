@@ -2,10 +2,13 @@ package com.atech.expensesync.modules
 
 import com.atech.expensesync.database.room.SplitSyncDatabase
 import com.atech.expensesync.firebase.usecase.CreateSplitGroup
+import com.atech.expensesync.firebase.usecase.CreateTransaction
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
+import com.atech.expensesync.firebase.usecase.GetGlobalTransaction
 import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
 import com.atech.expensesync.firebase.usecase.GetSplitById
 import com.atech.expensesync.firebase.usecase.GetSplitData
+import com.atech.expensesync.firebase.usecase.GetTransaction
 import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
 import com.atech.expensesync.firebase.usecase.SplitUseCases
 import com.atech.expensesync.uploadData.GetAllUnUploadByTypeUseCases
@@ -123,6 +126,9 @@ val commonModule = module {
     single { CreateSplitGroup(get()) }
     single { GetSplitData(get()) }
     single { GetSplitById(get()) }
-    single { SplitUseCases(get(), get(), get()) }
+    single { CreateTransaction(get()) }
+    single { GetTransaction(get()) }
+    single { GetGlobalTransaction(get()) }
+    single { SplitUseCases(get(), get(), get(), get(), get(), get()) }
 
 }

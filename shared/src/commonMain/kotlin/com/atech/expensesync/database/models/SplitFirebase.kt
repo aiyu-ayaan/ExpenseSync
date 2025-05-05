@@ -52,3 +52,38 @@ fun User.toGroupMember(
         groupId = groupId
     )
 }
+
+@Keep
+enum class SplitType{
+    EQUAL,PERCENTAGE
+}
+
+/**
+ * This is for global money list for group members.
+ */
+@Keep
+data class TransactionGlobalModel(
+    val path: String = "",
+    val totalOwe : Double = 0.0,
+    val totalAmountPaid : Double = 0.0,
+)
+
+@Keep
+data class SplitTransactionElement(
+    val groupMember: GroupMember,
+    val amount : Double = 0.0,
+    val created : Long = System.currentTimeMillis()
+)
+
+@Keep
+data class SplitTransaction(
+    val id: String = "",
+    val amount: Double = 0.0,
+    val createdAt: Long = System.currentTimeMillis(),
+    val createdByUid: String = "",
+    val splitType: SplitType = SplitType.EQUAL,
+    val splitAmount: Double = 0.0,
+    val splitMembers: List<SplitTransactionElement> = emptyList(),
+    val groupId: String = "",
+    val isSettled: Boolean = false,
+)

@@ -17,6 +17,8 @@ enum class FirebaseDocumentName(val path: String) {
     MEAL_BOOK("meal_book"),
     MEAL_BOOK_ENTRY("meal_book_entry"),
     SPLIT("split"),
+    SPLIT_TRANSACTION("split_transaction"),
+    SPLIT_TRANSACTION_ENTRY("split_transaction_entry"),
 }
 
 const val API_PATH = "/api/v1"
