@@ -46,6 +46,9 @@ fun GlobalTransactionItem(
     val dataStore = LocalDataStore.current
     val loggedUserUid = dataStore.getString(PrefKeys.USER_ID)
 
+    // Calculate net balances
+    val netBalances = calculateNetBalances(globalTransactions)
+
     OutlinedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -69,28 +72,26 @@ fun GlobalTransactionItem(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            if (globalTransactions.isEmpty()) {
+            if (netBalances.isEmpty()) {
                 Text(
                     text = "No debts to settle",
                     style = MaterialTheme.typography.bodyMedium
                 )
             } else {
-                globalTransactions.forEach { transaction ->
-                    // The path in your model is the UID of the person who owes money
-                    val debtorUid = transaction.path
-                    val creditorUid = transaction.paidByUid
+                netBalances.forEach { (personPair, amount) ->
+                    val (debtorUid, creditorUid) = personPair
 
-                    val debtor = groupMembers.find { it.uid == debtorUid }
-                    val creditor = groupMembers.find { it.uid == creditorUid }
+                    // Only show transactions where there's an actual debt
+                    if (amount > 0) {
+                        val debtor = groupMembers.find { it.uid == debtorUid }
+                        val creditor = groupMembers.find { it.uid == creditorUid }
 
-                    // Personalize the display for the logged-in user
-                    val debtorName = if (debtorUid == loggedUserUid) "You"
-                    else debtor?.name ?: "Unknown"
-                    val creditorName = if (creditorUid == loggedUserUid) "You"
-                    else creditor?.name ?: "Unknown"
+                        // Personalize the display for the logged-in user
+                        val debtorName = if (debtorUid == loggedUserUid) "You"
+                        else debtor?.name ?: "Unknown"
+                        val creditorName = if (creditorUid == loggedUserUid) "You"
+                        else creditor?.name ?: "Unknown"
 
-                    // Skip transactions where the user owes themselves (shouldn't happen but just in case)
-                    if (debtorUid != creditorUid && transaction.totalOwe > 0) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -126,7 +127,7 @@ fun GlobalTransactionItem(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "₹${transaction.totalOwe.toInt()}",
+                                    text = "₹${amount.toInt()}",
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.error
@@ -155,7 +156,11 @@ fun GlobalTransactionItem(
                             }
                         }
 
-                        if (transaction != globalTransactions.last()) {
+                        // Add divider between items
+                        val isLastItem =
+                            netBalances.filterValues { it > 0 }.keys.indexOf(personPair) ==
+                                    netBalances.filterValues { it > 0 }.size - 1
+                        if (!isLastItem) {
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 4.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
@@ -166,6 +171,43 @@ fun GlobalTransactionItem(
             }
         }
     }
+}
+
+/**
+ * Calculates net balances between users based on all transactions
+ * Returns a map of (debtorUid to creditorUid) -> net amount
+ */
+private fun calculateNetBalances(transactions: List<TransactionGlobalModel>): Map<Pair<String, String>, Double> {
+    val balanceMap = mutableMapOf<Pair<String, String>, Double>()
+
+    // First, aggregate all transactions
+    transactions.forEach { transaction ->
+        val debtorUid = transaction.path
+        val creditorUid = transaction.paidByUid
+
+        if (debtorUid != creditorUid && transaction.totalOwe > 0) {
+            // Create a standardized pair with debtor and creditor
+            val key = Pair(debtorUid, creditorUid)
+            balanceMap[key] = (balanceMap[key] ?: 0.0) + transaction.totalOwe
+        }
+    }
+
+    // Now calculate net balances by comparing both directions
+    val netBalances = mutableMapOf<Pair<String, String>, Double>()
+
+    balanceMap.forEach { (personPair, amount) ->
+        val (debtorUid, creditorUid) = personPair
+        val reversePair = Pair(creditorUid, debtorUid)
+        val reverseAmount = balanceMap[reversePair] ?: 0.0
+
+        if (amount > reverseAmount) {
+            // Only store the net debt in one direction
+            netBalances[personPair] = amount - reverseAmount
+        }
+        // The reverse case will be handled when we process the reverse pair
+    }
+
+    return netBalances
 }
 
 @Composable
@@ -214,168 +256,3 @@ private fun ProfilePicture(
         }
     }
 }
-
-
-//@Composable
-//fun GlobalTransactionItem(
-//    modifier: Modifier = Modifier,
-//    groupMembers: List<GroupMember> = emptyList(),
-//    globalTransactions: List<TransactionGlobalModel> = emptyList()
-//) {
-//    val dataStore = LocalDataStore.current
-//    val loggedUserUid = dataStore.getString(PrefKeys.USER_ID)
-//
-//    OutlinedCard(
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .padding(8.dp),
-//        shape = RoundedCornerShape(16.dp),
-//        colors = CardDefaults.cardColors(
-//            containerColor = MaterialTheme.colorScheme.surface,
-//        ),
-//    ) {
-//        Column(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(16.dp)
-//        ) {
-//            Text(
-//                text = "Debts Summary",
-//                style = MaterialTheme.typography.titleMedium,
-//                fontWeight = FontWeight.Bold,
-//                modifier = Modifier.padding(bottom = 12.dp)
-//            )
-//
-//            Spacer(modifier = Modifier.height(4.dp))
-//
-//            if (globalTransactions.isEmpty()) {
-//                Text(
-//                    text = "No debts to settle",
-//                    style = MaterialTheme.typography.bodyMedium
-//                )
-//            } else {
-//                globalTransactions.forEach { transaction ->
-//                    // The path in your model is the UID of the person who owes money
-//                    val debtorUid = transaction.path
-//                    val creditorUid = transaction.paidByUid
-//
-//                    // Personalize the display for the logged-in user
-//                    val debtorName = if (debtorUid == loggedUserUid) "You"
-//                    else groupMembers.find { it.uid == debtorUid }?.name ?: "Unknown"
-//                    val creditorName = if (creditorUid == loggedUserUid) "You"
-//                    else groupMembers.find { it.uid == creditorUid }?.name ?: "Unknown"
-//
-//                    // Skip transactions where the user owes themselves (shouldn't happen but just in case)
-//                    if (debtorUid != creditorUid && transaction.totalOwe > 0) {
-//                        Row(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(vertical = 8.dp),
-//                            horizontalArrangement = Arrangement.SpaceBetween,
-//                            verticalAlignment = Alignment.CenterVertically
-//                        ) {
-//                            Row(
-//                                verticalAlignment = Alignment.CenterVertically
-//                            ) {
-//                                // Avatar for debtor (who owes)
-//                                Box(
-//                                    modifier = Modifier
-//                                        .size(32.dp)
-//                                        .background(
-//                                            if (debtorUid == loggedUserUid)
-//                                                MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
-//                                            else
-//                                                MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-//                                            CircleShape
-//                                        ),
-//                                    contentAlignment = Alignment.Center
-//                                ) {
-//                                    Text(
-//                                        text = if (debtorUid == loggedUserUid) "Y"
-//                                        else (groupMembers.find { it.uid == debtorUid }?.name?.take(
-//                                            1
-//                                        ) ?: "?").uppercase(),
-//                                        color = if (debtorUid == loggedUserUid)
-//                                            MaterialTheme.colorScheme.tertiary
-//                                        else
-//                                            MaterialTheme.colorScheme.primary,
-//                                        style = MaterialTheme.typography.bodySmall
-//                                    )
-//                                }
-//
-//                                Spacer(modifier = Modifier.width(8.dp))
-//
-//                                Text(
-//                                    text = if (debtorUid == loggedUserUid)
-//                                        "You owe"
-//                                    else
-//                                        "$debtorName owes",
-//                                    style = MaterialTheme.typography.bodyMedium.copy(
-//                                        fontWeight = if (debtorUid == loggedUserUid) FontWeight.Bold else FontWeight.Normal
-//                                    )
-//                                )
-//                            }
-//
-//                            Row(
-//                                verticalAlignment = Alignment.CenterVertically
-//                            ) {
-//                                Text(
-//                                    text = "₹${transaction.totalOwe.toInt()}",
-//                                    style = MaterialTheme.typography.bodyMedium.copy(
-//                                        fontWeight = FontWeight.Bold,
-//                                        color = MaterialTheme.colorScheme.error
-//                                    )
-//                                )
-//
-//                                Spacer(modifier = Modifier.width(8.dp))
-//
-//                                // Arrow indicating direction
-//                                Icon(
-//                                    imageVector = Icons.AutoMirrored.Default.ArrowForward,
-//                                    contentDescription = "owes to",
-//                                    modifier = Modifier.size(16.dp),
-//                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-//                                )
-//
-//                                Spacer(modifier = Modifier.width(8.dp))
-//
-//                                // Avatar for creditor (who is owed)
-//                                Box(
-//                                    modifier = Modifier
-//                                        .size(32.dp)
-//                                        .background(
-//                                            if (creditorUid == loggedUserUid)
-//                                                MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
-//                                            else
-//                                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-//                                            CircleShape
-//                                        ),
-//                                    contentAlignment = Alignment.Center
-//                                ) {
-//                                    Text(
-//                                        text = if (creditorUid == loggedUserUid) "Y"
-//                                        else (groupMembers.find { it.uid == creditorUid }?.name?.take(
-//                                            1
-//                                        ) ?: "?").uppercase(),
-//                                        color = if (creditorUid == loggedUserUid)
-//                                            MaterialTheme.colorScheme.tertiary
-//                                        else
-//                                            MaterialTheme.colorScheme.secondary,
-//                                        style = MaterialTheme.typography.bodySmall
-//                                    )
-//                                }
-//                            }
-//                        }
-//
-//                        if (transaction != globalTransactions.last()) {
-//                            HorizontalDivider(
-//                                modifier = Modifier.padding(vertical = 4.dp),
-//                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
