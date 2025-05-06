@@ -19,11 +19,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.Logout
-import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.twotone.AccountTree
 import androidx.compose.material.icons.twotone.CloudSync
 import androidx.compose.material.icons.twotone.Devices
 import androidx.compose.material.icons.twotone.Info
+import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -180,7 +180,7 @@ fun ProfileScreenCompose(
     AnimatedVisibility(isLogOutDialogVisible) {
         AlertDialog(icon = {
             Icon(
-                imageVector = Icons.AutoMirrored.TwoTone.Logout, contentDescription = "Delete Meal"
+                imageVector = Icons.TwoTone.Warning, contentDescription = "Delete Meal"
             )
         }, onDismissRequest = { isLogOutDialogVisible = false }, title = {
             Text("LogOut")
@@ -301,7 +301,7 @@ fun ProfileScreenCompose(
                                 .padding(horizontal = MaterialTheme.spacing.medium)
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Code,
+                                imageVector = Icons.AutoMirrored.TwoTone.Logout,
                                 contentDescription = null,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
