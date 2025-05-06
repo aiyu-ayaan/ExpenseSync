@@ -72,6 +72,7 @@ data class ExpenseBookFirebase(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long? = null,
     val bookId: String = UUID.randomUUID().toString(),
+    val netBalance: Double = 0.0
 )
 
 fun ExpenseBookFirebase.toExpenseBook() =

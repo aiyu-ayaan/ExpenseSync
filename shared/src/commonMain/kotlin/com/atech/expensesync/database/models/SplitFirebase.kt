@@ -20,7 +20,7 @@ data class SplitFirebase(
     val createdByUid: String = "",
     val defaultCurrency: Currency = Currency.INR,
     val groupType: Type = Type.None,
-    val isActive: Boolean = true,
+    val active: Boolean = true,
     val whiteBoard: String? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val groupID: String = UUID.randomUUID().toString(),

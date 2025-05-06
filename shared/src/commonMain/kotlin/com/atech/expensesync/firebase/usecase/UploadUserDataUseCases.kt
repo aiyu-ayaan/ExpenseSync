@@ -112,25 +112,17 @@ class GetExpenseDataUseCases(
     suspend fun getExpenseBookData(
         uid: String
     ): Flow<FirebaseResponse<ExpenseBookFirebaseList>> =
-        kmpFire.getObservedDataWithQuery<ExpenseBookFirebaseList>(
-            FirebaseHelper(
-                collectionName = FirebaseCollectionPath.USER.path + "/$uid/data"
-            ),
-            FirebaseHelper(
-                documentName = FirebaseDocumentName.EXPENSE_BOOK.path
-            )
+        kmpFire.getObservedData<ExpenseBookFirebaseList>(
+            collectionName = FirebaseCollectionPath.USER.path + "/$uid/data",
+            documentName = FirebaseDocumentName.EXPENSE_BOOK.path
         )
 
     suspend fun getExpenseBookEntryData(
         uid: String
     ): Flow<FirebaseResponse<ExpenseBookEntryFirebaseList>> =
-        kmpFire.getObservedDataWithQuery<ExpenseBookEntryFirebaseList>(
-            FirebaseHelper(
-                collectionName = FirebaseCollectionPath.USER.path + "/$uid/data"
-            ),
-            FirebaseHelper(
-                documentName = FirebaseDocumentName.MEAL_BOOK_ENTRY.path
-            )
+        kmpFire.getObservedData<ExpenseBookEntryFirebaseList>(
+            collectionName = FirebaseCollectionPath.USER.path + "/$uid/data",
+            documentName = FirebaseDocumentName.EXPENSE_BOOK_ENTRY.path
         )
 }
 

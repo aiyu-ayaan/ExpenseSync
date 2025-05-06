@@ -5,10 +5,13 @@ import com.atech.expensesync.database.models.toExpenseBookEntry
 import com.atech.expensesync.database.models.toMealBook
 import com.atech.expensesync.database.models.toMealBookEntry
 import com.atech.expensesync.database.room.expense.ExpenseBookDao
+import com.atech.expensesync.database.room.expense.ExpenseBookEntry
 import com.atech.expensesync.database.room.meal.MealDao
 import com.atech.expensesync.firebase.usecase.GetExpenseDataUseCases
 import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
+import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.utils.networkFetchData
+import kotlinx.coroutines.flow.Flow
 
 
 data class MealBookSyncUseCases(
@@ -118,7 +121,7 @@ data class ExpenseBookDataEntrySyncUseCase(
 ) {
     operator fun invoke(
         uid: String
-    ) = networkFetchData(
+    ): Flow<FirebaseResponse<List<ExpenseBookEntry>>> = networkFetchData(
         query = {
             dao.getExpenseBookEntry()
         },

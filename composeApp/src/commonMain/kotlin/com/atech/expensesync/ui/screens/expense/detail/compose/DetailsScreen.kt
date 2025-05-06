@@ -32,11 +32,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.atech.expensesync.component.AppButtonWithIcon
@@ -65,16 +67,18 @@ fun ExpenseDetailsScreen(
     cashInOutClick: (CashType) -> Unit = {},
     onEvent: (ExpenseEvents) -> Unit = {}
 ) {
+    val scrollBarState = TopAppBarDefaults.pinnedScrollBehavior()
+
     onEvent.invoke(ExpenseEvents.LoadExpenseBookEntry)
     MainContainer(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBarState.nestedScrollConnection),
+        scrollBehavior = scrollBarState,
         title = state.bookName,
         onNavigationClick = onNavigateBack,
         bottomBar = {
             BottomAppBar {
                 Row(
-                    modifier = Modifier
-                        .padding(
+                    modifier = Modifier.padding(
                             MaterialTheme.spacing.small
                         ),
                     horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
@@ -83,8 +87,7 @@ fun ExpenseDetailsScreen(
                         modifier = Modifier.weight(1f),
                         text = "Cash In",
                         icon = Icons.TwoTone.Add,
-                        colors = ButtonDefaults.buttonColors()
-                            .copy(
+                        colors = ButtonDefaults.buttonColors().copy(
                                 containerColor = MaterialTheme.colorScheme.appGreen,
                                 contentColor = Color.White
                             ),
@@ -92,14 +95,12 @@ fun ExpenseDetailsScreen(
                         innerPadding = MaterialTheme.spacing.small,
                         onClick = {
                             cashInOutClick(CashType.CASH_IN)
-                        }
-                    )
+                        })
                     AppButtonWithIcon(
                         modifier = Modifier.weight(1f),
                         icon = Icons.TwoTone.Remove,
                         text = "Cash Out",
-                        colors = ButtonDefaults.buttonColors()
-                            .copy(
+                        colors = ButtonDefaults.buttonColors().copy(
                                 containerColor = MaterialTheme.colorScheme.appRed,
                                 contentColor = Color.White
                             ),
@@ -107,17 +108,14 @@ fun ExpenseDetailsScreen(
                         innerPadding = MaterialTheme.spacing.small,
                         onClick = {
                             cashInOutClick(CashType.CASH_OUT)
-                        }
-                    )
+                        })
                 }
             }
-        }
-    ) { paddingValues ->
+        }) { paddingValues ->
         LazyColumn(
             modifier = Modifier.padding(
                 MaterialTheme.spacing.medium
-            ),
-            contentPadding = paddingValues
+            ), contentPadding = paddingValues
         ) {
             item(
                 key = "netBalance"
@@ -136,8 +134,7 @@ fun ExpenseDetailsScreen(
                 ) {
                     Spacer(Modifier.height(MaterialTheme.spacing.medium))
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                             .padding(horizontal = MaterialTheme.spacing.medium),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -171,13 +168,10 @@ fun ExpenseDetailsScreen(
                         Column {
                             Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
+                                modifier = Modifier.fillMaxWidth().padding(
                                         horizontal = MaterialTheme.spacing.medium,
                                         vertical = MaterialTheme.spacing.small
-                                    ),
-                                verticalAlignment = Alignment.CenterVertically
+                                    ), verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
@@ -217,25 +211,17 @@ fun ExpenseDetailsScreen(
 
 @Composable
 fun TopNetBalanceView(
-    modifier: Modifier = Modifier,
-    expenseBook: ExpenseBook
+    modifier: Modifier = Modifier, expenseBook: ExpenseBook
 ) {
     OutlinedCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = MaterialTheme.spacing.medium,
-                vertical = MaterialTheme.spacing.small
-            ),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
+        modifier = modifier.fillMaxWidth().padding(
+                horizontal = MaterialTheme.spacing.medium, vertical = MaterialTheme.spacing.small
+            ), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(MaterialTheme.spacing.medium)
+            modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.medium)
         ) {
             // Header with title and balance
             Row(
@@ -274,8 +260,7 @@ fun TopNetBalanceView(
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
             HorizontalDivider(
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant
+                thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant
             )
 
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
@@ -303,8 +288,7 @@ fun TopNetBalanceView(
                         )
                     }
                     Text(
-                        "Total In (+)",
-                        style = MaterialTheme.typography.bodyLarge
+                        "Total In (+)", style = MaterialTheme.typography.bodyLarge
                     )
                 }
 
@@ -341,8 +325,7 @@ fun TopNetBalanceView(
                         )
                     }
                     Text(
-                        "Total Out (-)",
-                        style = MaterialTheme.typography.bodyLarge
+                        "Total Out (-)", style = MaterialTheme.typography.bodyLarge
                     )
                 }
 
@@ -363,10 +346,7 @@ fun TopNetBalanceView(
                     val ratio = if (total == 0.0) 0.0 else (expenseBook.totalIn / total)
                     ratio.coerceIn(0.0, 1.0).toFloat()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp)),
+                modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
                 color = MaterialTheme.colorScheme.appGreen,
                 trackColor = MaterialTheme.colorScheme.appRed.copy(alpha = 0.7f)
             )
@@ -389,8 +369,7 @@ fun TopNetBalanceView(
                 0
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = "Income ${incomePercentage}%",
@@ -414,10 +393,7 @@ private fun ExpenseDetailsScreenPreview() {
     ExpenseSyncTheme {
         TopNetBalanceView(
             expenseBook = ExpenseBook(
-                bookName = "Budget 2024",
-                totalAmount = 5000.0,
-                totalIn = 300.0,
-                totalOut = 200.0
+                bookName = "Budget 2024", totalAmount = 5000.0, totalIn = 300.0, totalOut = 200.0
             )
         )
     }

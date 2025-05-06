@@ -28,9 +28,15 @@ inline fun <ResultType, ResponseType> networkFetchData(
                         is FirebaseResponse.Success -> {
                             if (isDataDifferent(response.data)) {
                                 saveFetchResult(response.data)
-                                expenseSyncLogger("Network data different from local, saving to database")
+                                expenseSyncLogger(
+                                    "Network data different from local, saving to database",
+                                    LoggerType.INFO
+                                )
                             } else {
-                                expenseSyncLogger("Network data same as local, skipping database insert")
+                                expenseSyncLogger(
+                                    "Network data same as local, skipping database insert",
+                                    LoggerType.INFO
+                                )
                             }
                         }
 

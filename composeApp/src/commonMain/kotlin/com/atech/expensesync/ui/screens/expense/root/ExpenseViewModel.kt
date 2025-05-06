@@ -8,6 +8,7 @@ import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.room.expense.ExpenseBook
 import com.atech.expensesync.database.room.expense.ExpenseBookEntry
+import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.uploadData.ExpenseBookSyncUseCases
 import com.atech.expensesync.usecases.ExpenseUseCases
 import kotlinx.coroutines.launch
@@ -28,6 +29,32 @@ class ExpenseViewModel(
     val expenseBooks = expenseSyncUserCase.expenseBookDataSyncUseCase(
         pref.getString(PrefKeys.USER_ID)
     )
+
+    val expenseBookEntry = expenseSyncUserCase.expenseBookDataEntrySyncUseCase(
+        pref.getString(PrefKeys.USER_ID)
+    )
+
+    init {
+        viewModelScope.launch {
+            expenseBookEntry.collect { it ->
+                when (it) {
+                    is FirebaseResponse.Success<List<ExpenseBookEntry>> -> {
+                        com.atech.expensesync.utils.expenseSyncLogger(
+                            "Data ${it.data}"
+                        )
+                    }
+
+                    is FirebaseResponse.Error -> {
+                        com.atech.expensesync.utils.expenseSyncLogger(
+                            "Expense Sync ${it.error}"
+                        )
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
 
 
     private val _clickedExpenseBook = mutableStateOf<ExpenseBook?>(null)
