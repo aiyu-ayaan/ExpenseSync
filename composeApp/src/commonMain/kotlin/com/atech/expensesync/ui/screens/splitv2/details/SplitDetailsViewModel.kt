@@ -57,7 +57,9 @@ class SplitDetailsViewModel(
                             it,
                             amount = amount,
                         )
-                    })
+                    },
+                    settled = false
+                )
                 event.onDone(
                     splitUseCases.createTransaction(
                         _groupId.value, _splitTransaction.value

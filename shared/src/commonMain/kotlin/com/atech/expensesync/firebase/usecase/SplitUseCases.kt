@@ -81,14 +81,15 @@ data class CreateTransaction(
                 )
                 val editedGlobalTransaction: TransactionGlobalModel =
                     if (temp.isSuccess()) temp.getOrNull()?.let { nonNullableData ->
+
                         nonNullableData.copy(
                             totalOwe = if (!isSettle) nonNullableData.totalOwe + it.totalOwe else nonNullableData.totalOwe - it.totalOwe
                         )
                     } ?: it.copy(
-                        totalOwe = if (!isSettle) it.totalOwe else -it.totalOwe
+                        totalOwe = if (!isSettle) it.totalOwe else - it.totalOwe
                     )
                     else it.copy(
-                        totalOwe = if (!isSettle) it.totalOwe else -it.totalOwe
+                        totalOwe = if (!isSettle) it.totalOwe else - it.totalOwe
                     )
 
                 val log = kmpFire.insertData(
