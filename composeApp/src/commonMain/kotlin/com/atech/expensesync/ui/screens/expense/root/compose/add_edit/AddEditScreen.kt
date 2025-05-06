@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.atech.expensesync.LocalUploadDataHelper
 import com.atech.expensesync.component.AppButton
 import com.atech.expensesync.component.ChooseCurrencyBottomSheet
 import com.atech.expensesync.component.ChooseIconBottomSheet
@@ -49,6 +50,7 @@ fun AddEditScreen(
     var showIconBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+    val uploadDataHelper = LocalUploadDataHelper.current
     MainContainer(
         modifier = modifier, title = if (isEdit) "Edit Expense"
         else "Add Expense", onNavigationClick = onNavigateClick
@@ -106,7 +108,9 @@ fun AddEditScreen(
                 onClick = {
                     onEvent(ExpenseEvents.OnSaveExpense {
                         if (it > 0) {
-                            onNavigateClick()
+                            uploadDataHelper.uploadExpenseData {
+                                onNavigateClick()
+                            }
                             return@OnSaveExpense
                         }
                         com.atech.expensesync.ui_utils.showToast(

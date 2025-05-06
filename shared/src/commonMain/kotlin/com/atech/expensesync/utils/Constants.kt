@@ -16,6 +16,8 @@ enum class FirebaseDocumentName(val path: String) {
     USER("user"),
     MEAL_BOOK("meal_book"),
     MEAL_BOOK_ENTRY("meal_book_entry"),
+    EXPENSE_BOOK("expense_book"),
+    EXPENSE_BOOK_ENTRY("expense_book_entry"),
     SPLIT("split"),
     SPLIT_TRANSACTION("split_transaction"),
     SPLIT_TRANSACTION_ENTRY("split_transaction_entry"),

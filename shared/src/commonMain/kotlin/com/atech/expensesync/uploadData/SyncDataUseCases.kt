@@ -2,6 +2,7 @@ package com.atech.expensesync.uploadData
 
 import com.atech.expensesync.database.models.toMealBook
 import com.atech.expensesync.database.models.toMealBookEntry
+import com.atech.expensesync.database.room.expense.ExpenseBookDao
 import com.atech.expensesync.database.room.meal.MealDao
 import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
 import com.atech.expensesync.utils.networkFetchData
@@ -42,7 +43,8 @@ data class MealBookDataSyncUseCases(
 }
 
 data class MealBookEntryDataSyncUseCases(
-    private val dao: MealDao, private val getMealBookDataUseCases: GetMealBookDataUseCases
+    private val dao: MealDao,
+    private val getMealBookDataUseCases: GetMealBookDataUseCases
 ) {
     operator fun invoke(
         uid: String
@@ -68,6 +70,22 @@ data class MealBookEntryDataSyncUseCases(
         }
     )
 }
+
+data class ExpenseBookDataSyncUseCase(
+    private val dao: ExpenseBookDao,
+    private val getMealBookDataUseCases: GetMealBookDataUseCases
+){
+
+}
+
+
+data class ExpenseBookDataEntrySyncUseCase(
+    private val dao: ExpenseBookDao,
+    private val getMealBookDataUseCases: GetMealBookDataUseCases
+){
+
+}
+
 
 private fun <T> compareCollections(local: List<T>, remote: List<T>): Boolean {
     if (local.size != remote.size) return false

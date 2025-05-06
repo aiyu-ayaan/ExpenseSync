@@ -4,6 +4,7 @@ import com.atech.expensesync.database.room.SplitSyncDatabase
 import com.atech.expensesync.firebase.usecase.CreateSplitGroup
 import com.atech.expensesync.firebase.usecase.CreateTransaction
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
+import com.atech.expensesync.firebase.usecase.GetAllExpenseDataUseCases
 import com.atech.expensesync.firebase.usecase.GetGlobalTransaction
 import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
 import com.atech.expensesync.firebase.usecase.GetSplitById
@@ -11,6 +12,7 @@ import com.atech.expensesync.firebase.usecase.GetSplitData
 import com.atech.expensesync.firebase.usecase.GetTransaction
 import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
 import com.atech.expensesync.firebase.usecase.SplitUseCases
+import com.atech.expensesync.firebase.usecase.UploadExpenseDataUserCase
 import com.atech.expensesync.uploadData.GetAllUnUploadByTypeUseCases
 import com.atech.expensesync.uploadData.GetAllUnUploadUseCases
 import com.atech.expensesync.uploadData.GetAllUseCases
@@ -67,19 +69,19 @@ val commonModule = module {
     single { DeleteMealBookEntry(get(), get()) }
     single { GetTotalPrice(get()) }
     single { MealBookUseCases(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { InsertExpenseUseCase(get()) }
-    single { InsertExpenseEntryUseCase(get()) }
-    single { UpdateExpenseUseCase(get()) }
-    single { UpdateExpenseEntryUseCase(get()) }
-    single { DeleteExpenseUseCase(get()) }
-    single { DeleteExpenseEntryUseCase(get()) }
+    single { InsertExpenseUseCase(get(), get()) }
+    single { InsertExpenseEntryUseCase(get(), get()) }
+    single { UpdateExpenseUseCase(get(), get()) }
+    single { UpdateExpenseEntryUseCase(get(), get()) }
+    single { DeleteExpenseUseCase(get(), get()) }
+    single { DeleteExpenseEntryUseCase(get(), get()) }
     single { GetAllExpensesUseCase(get()) }
     single { GetExpenseByIdUseCase(get()) }
     single { GetExpenseBookEntryUseCase(get()) }
-    single { UpdateTotalAmountUseCase(get()) }
-    single { UpdateTotalInUseCase(get()) }
-    single { UpdateTotalOutUseCase(get()) }
-    single { AddTransactionUseCase(get()) }
+    single { UpdateTotalAmountUseCase(get(), get()) }
+    single { UpdateTotalInUseCase(get(), get()) }
+    single { UpdateTotalOutUseCase(get(), get()) }
+    single { AddTransactionUseCase(get(), get()) }
     single {
         ExpenseUseCases(
             get(),
@@ -111,7 +113,9 @@ val commonModule = module {
     single { GetAllUseCases(get()) }
     single { UploadUseCases(get(), get(), get(), get(), get()) }
     single { MealBookUploadUseCase(get(), get()) }
+    single { UploadExpenseDataUserCase(get(), get()) }
     single { GetMealBookDataUseCases(get()) }
+    single { GetAllExpenseDataUseCases(get()) }
     single { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
 
     single { MealBookDataSyncUseCases(get(), get()) }
@@ -120,7 +124,7 @@ val commonModule = module {
 
     single { RestoreMealData(get(), get()) }
     single { RestoreData(get()) }
-    single { UploadDataHelper(get(), get(), get(), get()) }
+    single { UploadDataHelper(get(), get(), get(), get(), get()) }
 
 
     single { CreateSplitGroup(get()) }

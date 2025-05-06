@@ -3,6 +3,9 @@ package com.atech.expensesync.usecases
 import com.atech.expensesync.database.room.expense.ExpenseBook
 import com.atech.expensesync.database.room.expense.ExpenseBookDao
 import com.atech.expensesync.database.room.expense.ExpenseBookEntry
+import com.atech.expensesync.database.room.upload.UpdateType
+import com.atech.expensesync.database.room.upload.UploadModel
+import com.atech.expensesync.uploadData.InsertUploadUseCases
 
 
 data class ExpenseUseCases(
@@ -22,52 +25,105 @@ data class ExpenseUseCases(
 )
 
 data class InsertExpenseUseCase(
-    private val dao: ExpenseBookDao
+    private val dao: ExpenseBookDao, private val insertUpload: InsertUploadUseCases
 ) {
     suspend operator fun invoke(
         expense: ExpenseBook
-    ) = dao.insertExpense(expense)
+    ): Long {
+        insertUpload.invoke(
+            UploadModel(
+                updatedType = UpdateType.EXPENSE,
+                isUpdated = false,
+            )
+        )
+        return dao.insertExpense(expense)
+    }
 }
 
 data class InsertExpenseEntryUseCase(
-    private val dao: ExpenseBookDao
+    private val dao: ExpenseBookDao, private val insertUpload: InsertUploadUseCases
 ) {
     suspend operator fun invoke(
-        expenses: ExpenseBookEntry
-    ) = dao.insertExpenseEntry(expenses)
+        expenses: ExpenseBookEntry,
+
+        ) {
+        insertUpload.invoke(
+            UploadModel(
+                updatedType = UpdateType.EXPENSE,
+                isUpdated = false,
+            )
+        )
+        dao.insertExpenseEntry(expenses)
+    }
 }
 
 
 data class UpdateExpenseUseCase(
-    private val dao: ExpenseBookDao
+    private val dao: ExpenseBookDao,
+    private val insertUpload: InsertUploadUseCases
 ) {
     suspend operator fun invoke(
         expense: ExpenseBook
-    ) = dao.updateExpense(expense)
+    ) {
+        insertUpload.invoke(
+            UploadModel(
+                updatedType = UpdateType.EXPENSE,
+                isUpdated = false,
+            )
+        )
+        dao.updateExpense(expense)
+    }
 }
 
 data class UpdateExpenseEntryUseCase(
-    private val dao: ExpenseBookDao
+    private val dao: ExpenseBookDao,
+    private val insertUpload: InsertUploadUseCases
 ) {
     suspend operator fun invoke(
         expenses: ExpenseBookEntry
-    ) = dao.updateExpenseEntry(expenses)
+    ) {
+        insertUpload.invoke(
+            UploadModel(
+                updatedType = UpdateType.EXPENSE,
+                isUpdated = false,
+            )
+        )
+        dao.updateExpenseEntry(expenses)
+    }
 }
 
 data class DeleteExpenseUseCase(
-    private val dao: ExpenseBookDao
+    private val dao: ExpenseBookDao,
+    private val insertUpload: InsertUploadUseCases
 ) {
     suspend operator fun invoke(
         expense: ExpenseBook
-    ) = dao.deleteExpense(expense)
+    ) {
+        insertUpload.invoke(
+            UploadModel(
+                updatedType = UpdateType.EXPENSE,
+                isUpdated = false,
+            )
+        )
+        dao.deleteExpense(expense)
+    }
 }
 
 data class DeleteExpenseEntryUseCase(
-    private val dao: ExpenseBookDao
+    private val dao: ExpenseBookDao,
+    private val insertUpload: InsertUploadUseCases
 ) {
     suspend operator fun invoke(
         expenses: ExpenseBookEntry
-    ) = dao.deleteExpenseEntry(expenses)
+    ) {
+        insertUpload.invoke(
+            UploadModel(
+                updatedType = UpdateType.EXPENSE,
+                isUpdated = false,
+            )
+        )
+        dao.deleteExpenseEntry(expenses)
+    }
 }
 
 
@@ -94,36 +150,69 @@ data class GetExpenseBookEntryUseCase(
 }
 
 data class UpdateTotalAmountUseCase(
-    private val dao: ExpenseBookDao
+    private val dao: ExpenseBookDao,
+    private val insertUpload: InsertUploadUseCases
 ) {
     suspend operator fun invoke(
-        bookId: String,
-        amount: Double
-    ) = dao.updateTotalAmount(bookId, amount)
+        bookId: String, amount: Double
+    ) {
+        insertUpload.invoke(
+            UploadModel(
+                updatedType = UpdateType.EXPENSE,
+                isUpdated = false,
+            )
+        )
+        dao.updateTotalAmount(bookId, amount)
+    }
 }
 
 data class UpdateTotalInUseCase(
-    private val dao: ExpenseBookDao
+    private val dao: ExpenseBookDao,
+    private val insertUpload: InsertUploadUseCases
 ) {
     suspend operator fun invoke(
-        bookId: String,
-        amount: Double
-    ) = dao.updateTotalIn(bookId, amount)
+        bookId: String, amount: Double
+    ) {
+        insertUpload.invoke(
+            UploadModel(
+                updatedType = UpdateType.EXPENSE,
+                isUpdated = false,
+            )
+        )
+        dao.updateTotalIn(bookId, amount)
+    }
 }
 
 data class UpdateTotalOutUseCase(
-    private val dao: ExpenseBookDao
+    private val dao: ExpenseBookDao,
+    private val insertUpload: InsertUploadUseCases
 ) {
     suspend operator fun invoke(
-        bookId: String,
-        amount: Double
-    ) = dao.updateTotalOut(bookId, amount)
+        bookId: String, amount: Double
+    ) {
+        insertUpload.invoke(
+            UploadModel(
+                updatedType = UpdateType.EXPENSE,
+                isUpdated = false,
+            )
+        )
+        dao.updateTotalOut(bookId, amount)
+    }
 }
 
 data class AddTransactionUseCase(
-    private val dao: ExpenseBookDao
+    private val dao: ExpenseBookDao,
+    private val insertUpload: InsertUploadUseCases
 ) {
     suspend operator fun invoke(
         expenseBookEntry: ExpenseBookEntry
-    ) = dao.addTransaction(expenseBookEntry)
+    ) {
+        insertUpload.invoke(
+            UploadModel(
+                updatedType = UpdateType.EXPENSE,
+                isUpdated = false,
+            )
+        )
+        dao.addTransaction(expenseBookEntry)
+    }
 }

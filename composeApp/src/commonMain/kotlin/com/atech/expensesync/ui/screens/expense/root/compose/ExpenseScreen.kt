@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.atech.expensesync.LocalUploadDataHelper
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.expense.ExpenseBook
 import com.atech.expensesync.ui.screens.expense.detail.compose.CashInOutScreen
@@ -62,6 +63,7 @@ fun ExpenseScreen(
     val expenseBooks by viewModel.expenseBooks.collectAsState(emptyList())
     var extraScreenType by remember { mutableStateOf(ExtraScreenType.ADD) }
     var cashInOutType by remember { mutableStateOf(CashType.CASH_IN) }
+    val uploadDataHelper = LocalUploadDataHelper.current
 
     navigator.backHandlerThreePane(
         {
@@ -157,7 +159,9 @@ fun ExpenseScreen(
                                             com.atech.expensesync.ui_utils.showToast(
                                                 "Entry saved successfully",
                                             )
-                                            navigator.navigateBack()
+                                            uploadDataHelper.uploadExpenseData {
+                                                navigator.navigateBack()
+                                            }
                                         })
                                 )
                             })
