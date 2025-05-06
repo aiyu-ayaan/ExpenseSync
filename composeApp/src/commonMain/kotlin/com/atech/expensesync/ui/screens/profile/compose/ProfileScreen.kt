@@ -36,6 +36,7 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,10 +79,11 @@ enum class DetailsScreenType {
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    canShowAppBar: (Boolean) -> Unit= {},
+    canShowAppBar: (Boolean) -> Unit = {},
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     val viewModel = koinInject<ProfileViewModel>()
+    val uploadModel = viewModel.uploadModel.collectAsState(emptyList())
     val user by viewModel.user
     var screenType by remember { mutableStateOf(DetailsScreenType.NONE) }
     navigator.backHandlerThreePane()
@@ -91,36 +93,50 @@ fun ProfileScreen(
         value = navigator.scaffoldValue,
         listPane = {
             if (user.isSuccess())
-            AnimatedPane{
-                canShowAppBar.invoke(true)
-                ProfileScreenCompose(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    user = user.getOrNull() ?: return@AnimatedPane,
-                    onLinkedDeviceClicked = {
-                        navHostController.navigate(AppNavigation.ScanScreen.route)
-                    },
-                    onItemClick = {
-                        screenType = it
-                        navigator.navigateTo(
-                            ListDetailPaneScaffoldRole.Detail
-                        )
-                    }
-                )
-            }
+                AnimatedPane {
+                    canShowAppBar.invoke(true)
+                    ProfileScreenCompose(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        user = user.getOrNull() ?: return@AnimatedPane,
+                        onLinkedDeviceClicked = {
+                            navHostController.navigate(AppNavigation.ScanScreen.route)
+                        },
+                        onItemClick = {
+                            screenType = it
+                            navigator.navigateTo(
+                                ListDetailPaneScaffoldRole.Detail
+                            )
+                        }
+                    )
+                }
         },
         detailPane = when (screenType) {
             DetailsScreenType.ACKNOWLEDGEMENTS -> {
                 {
                     canShowAppBar.invoke(false)
-                   AnimatedPane {
-                       AcknowledgementScreen(
-                           onNavigationClick = {
-                               screenType = DetailsScreenType.NONE
-                               navigator.navigateBack()
-                           }
-                       )
-                   }
+                    AnimatedPane {
+                        AcknowledgementScreen(
+                            onNavigationClick = {
+                                screenType = DetailsScreenType.NONE
+                                navigator.navigateBack()
+                            }
+                        )
+                    }
+                }
+            }
+            DetailsScreenType.CLOUD_SYNC -> {
+                {
+                    canShowAppBar.invoke(false)
+                    AnimatedPane {
+                        CloudSyncScreen(
+                            state = uploadModel.value,
+                            onNavigationClick = {
+                                screenType = DetailsScreenType.NONE
+                                navigator.navigateBack()
+                            }
+                        )
+                    }
                 }
             }
 

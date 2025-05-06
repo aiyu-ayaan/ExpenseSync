@@ -61,5 +61,5 @@ data class GetAllUnUploadUseCases(
 data class GetAllUseCases(
     private val dao: UploadDao
 ) {
-    suspend operator fun invoke() = dao.getAll()
+    operator fun invoke() = dao.getAll()
 }

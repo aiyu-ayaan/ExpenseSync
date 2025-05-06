@@ -21,7 +21,7 @@ val androidUIModule = module {
     viewModel { ViewMealViewModel(get()) }
     viewModel { ExpenseViewModel(get(), get(), get()) }
     viewModel { com.atech.expensesync.ui.screens.backup.BackUpViewModel(get(), get()) }
-    viewModel { ProfileViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get(), get(), get()) }
     single { LinkHelper(get()) }
     viewModel { SplitViewModel(get(), get()) }
     viewModel { SplitDetailsViewModel(get()) }
