@@ -18,10 +18,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.twotone.Logout
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.twotone.AccountTree
 import androidx.compose.material.icons.twotone.CloudSync
-import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material.icons.twotone.Devices
 import androidx.compose.material.icons.twotone.Info
 import androidx.compose.material3.AlertDialog
@@ -60,19 +60,18 @@ import com.atech.expensesync.database.models.User
 import com.atech.expensesync.firebase.util.getOrNull
 import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.navigation.AppNavigation
+import com.atech.expensesync.navigation.ExpanseSyncNavigation
 import com.atech.expensesync.ui.screens.profile.ProfileViewModel
 import com.atech.expensesync.ui.theme.ExpenseSyncTheme
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
+import com.atech.expensesync.ui_utils.runWithDeviceCompose
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
 
 enum class DetailsScreenType {
-    NONE,
-    CLOUD_SYNC,
-    ACKNOWLEDGEMENTS,
-    ABOUT_US,
+    NONE, CLOUD_SYNC, ACKNOWLEDGEMENTS, ABOUT_US,
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
@@ -87,40 +86,6 @@ fun ProfileScreen(
     val uploadModel = viewModel.uploadModel.collectAsState(emptyList())
     val user by viewModel.user
     var screenType by remember { mutableStateOf(DetailsScreenType.NONE) }
-    var isLogOutDialogVisible by remember { mutableStateOf(false) }
-
-
-    AnimatedVisibility(isLogOutDialogVisible) {
-        AlertDialog(
-            icon = {
-                Icon(
-                    imageVector = Icons.TwoTone.Delete,
-                    contentDescription = "Delete Meal"
-                )
-            },
-            onDismissRequest = { isLogOutDialogVisible = false },
-            title = {
-                Text("Delete Meal Book")
-            },
-            text = {
-                Text("Are you sure you want to delete this meal book?")
-            },
-            confirmButton = {
-                TextButton(onClick = {
-//                    TODO: Implement logic
-                    isLogOutDialogVisible = false
-                }) {
-                    Text("LogOut!")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { isLogOutDialogVisible = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-
 
     navigator.backHandlerThreePane()
     ListDetailPaneScaffold(
@@ -128,24 +93,30 @@ fun ProfileScreen(
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
         listPane = {
-            if (user.isSuccess())
-                AnimatedPane {
-                    canShowAppBar.invoke(true)
-                    ProfileScreenCompose(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        user = user.getOrNull() ?: return@AnimatedPane,
-                        onLinkedDeviceClicked = {
-                            navHostController.navigate(AppNavigation.ScanScreen.route)
-                        },
-                        onItemClick = {
-                            screenType = it
-                            navigator.navigateTo(
-                                ListDetailPaneScaffoldRole.Detail
-                            )
+            if (user.isSuccess()) AnimatedPane {
+                canShowAppBar.invoke(true)
+                ProfileScreenCompose(
+                    modifier = Modifier.fillMaxWidth(),
+                    user = user.getOrNull() ?: return@AnimatedPane,
+                    onLinkedDeviceClicked = {
+                        navHostController.navigate(AppNavigation.ScanScreen.route)
+                    },
+                    onItemClick = {
+                        screenType = it
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.Detail
+                        )
+                    },
+                    performLogOutClick = {
+                        viewModel.performLogOut {
+                            navHostController.navigate(ExpanseSyncNavigation.LogInScreen.route) {
+                                popUpTo(ExpanseSyncNavigation.AppScreens.route) {
+                                    inclusive = true
+                                }
+                            }
                         }
-                    )
-                }
+                    })
+            }
         },
         detailPane = when (screenType) {
             DetailsScreenType.ACKNOWLEDGEMENTS -> {
@@ -156,8 +127,7 @@ fun ProfileScreen(
                             onNavigationClick = {
                                 screenType = DetailsScreenType.NONE
                                 navigator.navigateBack()
-                            }
-                        )
+                            })
                     }
                 }
             }
@@ -170,8 +140,7 @@ fun ProfileScreen(
                             onNavigationClick = {
                                 screenType = DetailsScreenType.NONE
                                 navigator.navigateBack()
-                            }
-                        )
+                            })
                     }
                 }
             }
@@ -181,12 +150,10 @@ fun ProfileScreen(
                     canShowAppBar.invoke(false)
                     AnimatedPane {
                         CloudSyncScreen(
-                            state = uploadModel.value,
-                            onNavigationClick = {
+                            state = uploadModel.value, onNavigationClick = {
                                 screenType = DetailsScreenType.NONE
                                 navigator.navigateBack()
-                            }
-                        )
+                            })
                     }
                 }
             }
@@ -194,8 +161,7 @@ fun ProfileScreen(
             else -> {
                 {}
             }
-        }
-    )
+        })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -204,9 +170,35 @@ fun ProfileScreenCompose(
     modifier: Modifier = Modifier,
     user: User,
     onLinkedDeviceClicked: () -> Unit = {},
+    performLogOutClick: () -> Unit = {},
     onItemClick: (DetailsScreenType) -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    var isLogOutDialogVisible by remember { mutableStateOf(false) }
+
+
+    AnimatedVisibility(isLogOutDialogVisible) {
+        AlertDialog(icon = {
+            Icon(
+                imageVector = Icons.AutoMirrored.TwoTone.Logout, contentDescription = "Delete Meal"
+            )
+        }, onDismissRequest = { isLogOutDialogVisible = false }, title = {
+            Text("LogOut")
+        }, text = {
+            Text("Are you sure you want to log out?")
+        }, confirmButton = {
+            TextButton(onClick = {
+                performLogOutClick()
+                isLogOutDialogVisible = false
+            }) {
+                Text("LogOut!")
+            }
+        }, dismissButton = {
+            TextButton(onClick = { isLogOutDialogVisible = false }) {
+                Text("Cancel")
+            }
+        })
+    }
     val rainbowColorsBrush = remember {
         Brush.sweepGradient(
             listOf(
@@ -231,29 +223,22 @@ fun ProfileScreenCompose(
         scrollBehavior = scrollBehavior,
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+            modifier = Modifier.padding(paddingValues).verticalScroll(rememberScrollState())
                 .fillMaxSize()
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(MaterialTheme.spacing.medium)
+                modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.medium)
             ) {
                 AsyncImage(
-                    model = user.photoUrl,
-                    contentDescription = null,
-                    modifier = Modifier.size(
+                    model = user.photoUrl, contentDescription = null, modifier = Modifier.size(
                         80.dp
                     ).clip(CircleShape).border(
-                        BorderStroke(borderWidth, rainbowColorsBrush),
-                        CircleShape
+                        BorderStroke(borderWidth, rainbowColorsBrush), CircleShape
                     ).padding(borderWidth)
                 )
 
                 Column(
-                    modifier = Modifier
-                        .padding(start = MaterialTheme.spacing.medium)
+                    modifier = Modifier.padding(start = MaterialTheme.spacing.medium)
                         .align(Alignment.CenterVertically)
                 ) {
                     Text(
@@ -268,9 +253,7 @@ fun ProfileScreenCompose(
             }
             HorizontalDivider()
             Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(MaterialTheme.spacing.medium)
+                modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.medium)
             )
             com.atech.expensesync.ui_utils.runWithDeviceCompose(
                 onAndroid = {
@@ -280,63 +263,60 @@ fun ProfileScreenCompose(
                         description = "Manage your linked devices",
                         onClick = onLinkedDeviceClicked
                     )
-                }
-            )
+                })
             ProfileItems(
                 icon = Icons.TwoTone.CloudSync,
                 title = "Cloud Sync",
                 description = "Manage your cloud sync settings",
                 onClick = {
                     onItemClick(DetailsScreenType.CLOUD_SYNC)
-                }
-            )
+                })
             ProfileItems(
                 icon = Icons.TwoTone.AccountTree,
                 title = "Acknowledgements",
                 description = "Dependencies used in this app",
                 onClick = {
                     onItemClick(DetailsScreenType.ACKNOWLEDGEMENTS)
-                }
-            )
+                })
             ProfileItems(
                 icon = Icons.TwoTone.Info,
                 title = "About Us",
                 description = "Learn more about us",
                 onClick = {
                     onItemClick(DetailsScreenType.ABOUT_US)
-                }
+                })
+            runWithDeviceCompose(
+                onAndroid = {
+                    Column {
+                        HorizontalDivider()
+                        Spacer(
+                            modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.medium)
+                        )
+                        Button(
+                            onClick = {
+                                isLogOutDialogVisible = true
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(horizontal = MaterialTheme.spacing.medium)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Code,
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text("LogOut")
+                        }
+                    }
+                })
+            Spacer(
+                modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.medium)
             )
             HorizontalDivider()
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(MaterialTheme.spacing.medium)
-            )
-            Button(
-                onClick = {
-
-                },
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Code,
-                    contentDescription = null,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-                Text("LogOut")
-            }
-            HorizontalDivider()
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(MaterialTheme.spacing.medium)
-            )
             Text(
                 "Expense Sync",
                 style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier
-                    .padding(MaterialTheme.spacing.large)
+                modifier = Modifier.padding(MaterialTheme.spacing.large)
                     .align(Alignment.CenterHorizontally)
             )
         }
@@ -352,15 +332,11 @@ fun ProfileItems(
     onClick: () -> Unit = {}
 ) {
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .clickable { onClick() }
-            .padding(MaterialTheme.spacing.medium)) {
+        modifier = modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)
+            .clickable { onClick() }.padding(MaterialTheme.spacing.medium)
+    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(MaterialTheme.spacing.medium),
+            modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.medium),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.large)
         ) {
@@ -370,8 +346,7 @@ fun ProfileItems(
                 )
             )
             Column(
-                modifier = Modifier
-                    .padding(start = MaterialTheme.spacing.medium)
+                modifier = Modifier.padding(start = MaterialTheme.spacing.medium)
                     .align(Alignment.CenterVertically)
             ) {
                 Text(

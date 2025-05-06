@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.atech.expensesync.database.models.User
 import com.atech.expensesync.database.pref.PrefKeys
 import com.atech.expensesync.database.pref.PrefManager
+import com.atech.expensesync.database.room.MaintenanceDao
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
 import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.uploadData.UploadUseCases
@@ -18,7 +19,8 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(
     private val useCase: FirebaseUserUseCases,
     private val pref: PrefManager,
-    private val uploadUseCase: UploadUseCases
+    uploadUseCase: UploadUseCases,
+    private val maintenanceDao: MaintenanceDao,
 ) : ViewModel() {
     private val _user = mutableStateOf<FirebaseResponse<User>>(FirebaseResponse.Loading)
     val user: State<FirebaseResponse<User>> get() = _user
@@ -29,6 +31,14 @@ class ProfileViewModel(
     init {
         getUserDetails()
     }
+
+    fun performLogOut(onDone: () -> Unit) =
+        viewModelScope.launch {
+            pref.clearAll()
+            maintenanceDao.deleteAll()
+            onDone.invoke()
+        }
+
 
     private fun getUserDetails() = viewModelScope.launch {
         useCase.getUserDetails(
