@@ -1,10 +1,10 @@
 package com.atech.expensesync.ui.screens.splitv2.details.compose
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Groups
 import androidx.compose.material.icons.twotone.Payment
@@ -17,6 +17,7 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
@@ -29,8 +30,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NavHostController
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.models.GroupMember
@@ -39,6 +40,7 @@ import com.atech.expensesync.database.models.TransactionGlobalModel
 import com.atech.expensesync.firebase.util.getOrNull
 import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.navigation.ViewSplitBookArgs
+import com.atech.expensesync.ui.screens.meal.root.compose.handelFabState
 import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsEvents
 import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsViewModel
 import com.atech.expensesync.ui.screens.splitv2.details.compose.settleUp.SettleUpScreen
@@ -168,8 +170,14 @@ private fun BaseScreen(
     onNavigateBack: () -> Unit = {},
     navigateToAddExpense: () -> Unit = {},
 ) {
+    val listState = LazyListState()
+    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     MainContainer(
-        modifier = modifier,
+        modifier = modifier
+            .nestedScroll(
+                topAppBarScrollBehavior.nestedScrollConnection
+            ),
+        scrollBehavior = topAppBarScrollBehavior,
         title = "Details",
         onNavigationClick = onNavigateBack,
         floatingActionButton = {
@@ -177,17 +185,17 @@ private fun BaseScreen(
                 onClick = {
                     navigateToAddExpense.invoke()
                 },
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(imageVector = Icons.TwoTone.Payment, contentDescription = "Add")
+                expanded = listState.handelFabState(),
+                text = {
                     Text(
                         modifier = Modifier.padding(start = MaterialTheme.spacing.medium),
                         text = "Add Expense"
                     )
+                },
+                icon = {
+                    Icon(imageVector = Icons.TwoTone.Payment, contentDescription = "Add")
                 }
-            }
+            )
         },
         actions = {
             IconButton(onClick = onGroupMembersClick) {
@@ -209,6 +217,7 @@ private fun BaseScreen(
             when (TabState.entries[state]) {
                 TabState.SettleUp -> SettleUpScreen(
                     globalTransaction = globalTransaction,
+                    listState = listState,
                     groupMembers = groupMembers,
                     splitTransactions = splitTransactions
                 )
