@@ -22,9 +22,8 @@ class UploadDataHelper(
 ) {
 
     fun uploadExpenseData(
-        onError: (String) -> Unit = {},
-        onSuccess: () -> Unit = {}
-    ){
+        onError: (String) -> Unit = {}, onSuccess: () -> Unit = {}
+    ) {
         val userUid = prefManager.getString(PrefKeys.USER_ID)
         if (userUid.isBlank()) {
             return
@@ -47,7 +46,7 @@ class UploadDataHelper(
                         item.copy(isUpdated = true)
                     )
                     expenseSyncLogger(
-                        "Data is uploaded successfully!!"
+                        "Expense Data is uploaded successfully!!"
                     )
                     onSuccess()
                 }
@@ -58,8 +57,7 @@ class UploadDataHelper(
     }
 
     fun uploadMealData(
-        onError: (String) -> Unit = {},
-        onSuccess: () -> Unit = {}
+        onError: (String) -> Unit = {}, onSuccess: () -> Unit = {}
     ) {
         val userUid = prefManager.getString(PrefKeys.USER_ID)
         if (userUid.isBlank()) {
@@ -83,7 +81,7 @@ class UploadDataHelper(
                         item.copy(isUpdated = true)
                     )
                     expenseSyncLogger(
-                        "Data is uploaded successfully!!"
+                        "Meal Data is uploaded successfully!!"
                     )
                     onSuccess()
                 }

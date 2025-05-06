@@ -6,7 +6,6 @@ import com.atech.expensesync.database.models.MealBookEntryFirebaseList
 import com.atech.expensesync.database.models.MealBookFirebaseList
 import com.atech.expensesync.database.room.expense.ExpenseBookDao
 import com.atech.expensesync.database.room.meal.MealDao
-import com.atech.expensesync.firebase.helper.FirebaseHelper
 import com.atech.expensesync.firebase.io.KmpFire
 import com.atech.expensesync.firebase.util.FirebaseResponse
 import com.atech.expensesync.utils.FirebaseCollectionPath
@@ -51,15 +50,10 @@ class GetMealBookDataUseCases(
 ) {
     suspend fun getMealBookData(
         uid: String
-    ): Flow<FirebaseResponse<MealBookFirebaseList>> =
-        kmpFire.getObservedDataWithQuery<MealBookFirebaseList>(
-            FirebaseHelper(
-                collectionName = FirebaseCollectionPath.USER.path + "/$uid/data"
-            ),
-            FirebaseHelper(
-                documentName = FirebaseDocumentName.MEAL_BOOK.path
-            )
-        )
+    ): Flow<FirebaseResponse<MealBookFirebaseList>> = kmpFire.getObservedData<MealBookFirebaseList>(
+        collectionName = FirebaseCollectionPath.USER.path + "/$uid/data",
+        documentName = FirebaseDocumentName.MEAL_BOOK.path
+    )
 
     suspend fun getMealBookEntryData(
         uid: String
@@ -72,8 +66,7 @@ class GetMealBookDataUseCases(
 
 
 class UploadExpenseDataUserCase(
-    private val expenseDao: ExpenseBookDao,
-    private val kmpFire: KmpFire
+    private val expenseDao: ExpenseBookDao, private val kmpFire: KmpFire
 ) {
 
     suspend operator fun invoke(
