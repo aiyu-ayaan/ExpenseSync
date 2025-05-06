@@ -142,7 +142,7 @@ fun SplitTransactionItem(
                 Spacer(modifier = Modifier.weight(1f))
 
                 // Settlement status
-                if (transaction.isSettled) {
+                if (transaction.settled) {
                     Icon(
                         imageVector = Icons.Filled.CheckCircle,
                         contentDescription = "Settled",

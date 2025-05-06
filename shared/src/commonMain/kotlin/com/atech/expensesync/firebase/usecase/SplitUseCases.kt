@@ -70,22 +70,26 @@ data class CreateTransaction(
             documentName = splitDetails.id,
             data = splitDetails
         )
+
+        val isSettle = splitDetails.settled
         val globalTransactionCollectionName =
             FirebaseCollectionPath.SPLIT.path + "/$groupId/${FirebaseDocumentName.SPLIT_TRANSACTION.path}"
         if (elementInsert.isSuccess()) {
-            splitDetails.toTransactionGlobalModel(splitDetails.createdByUid).filter {
-                it.path != splitDetails.createdByUid
-            }.forEach {
+            splitDetails.toTransactionGlobalModel(splitDetails.createdByUid).forEach {
                 val temp = kmpFire.getData<TransactionGlobalModel>(
                     collectionName = globalTransactionCollectionName, documentName = it.path
                 )
                 val editedGlobalTransaction: TransactionGlobalModel =
                     if (temp.isSuccess()) temp.getOrNull()?.let { nonNullableData ->
                         nonNullableData.copy(
-                            totalOwe = nonNullableData.totalOwe + it.totalOwe
+                            totalOwe = if (!isSettle) nonNullableData.totalOwe + it.totalOwe else nonNullableData.totalOwe - it.totalOwe
                         )
-                    } ?: it
-                    else it
+                    } ?: it.copy(
+                        totalOwe = if (!isSettle) it.totalOwe else -it.totalOwe
+                    )
+                    else it.copy(
+                        totalOwe = if (!isSettle) it.totalOwe else -it.totalOwe
+                    )
 
                 val log = kmpFire.insertData(
                     collectionName = globalTransactionCollectionName,

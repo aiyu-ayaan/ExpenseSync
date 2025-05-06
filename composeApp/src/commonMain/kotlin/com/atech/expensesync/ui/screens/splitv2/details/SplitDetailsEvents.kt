@@ -14,4 +14,8 @@ sealed interface SplitDetailsEvents {
     data class SaveTransaction(val onDone: (Exception?) -> Unit) : SplitDetailsEvents
 
     data object InsertNewGroupMember : SplitDetailsEvents
+    data class SettleUpClick(
+        val transaction: SplitTransaction,
+        val onDone: (Exception?) -> Unit
+    ) : SplitDetailsEvents
 }

@@ -38,7 +38,7 @@ class SplitDetailsViewModel(
     val globalTransactionDetails: State<List<TransactionGlobalModel>> get() = _globalTransactionDetails
 
     private val _splitTransactions = mutableStateOf<List<SplitTransaction>>(emptyList())
-    val splitTransactions : State<List<SplitTransaction>> get() = _splitTransactions
+    val splitTransactions: State<List<SplitTransaction>> get() = _splitTransactions
 
 
     fun onEvent(event: SplitDetailsEvents) {
@@ -96,6 +96,14 @@ class SplitDetailsViewModel(
 
             is SplitDetailsEvents.SetSplitTransaction -> {
                 _splitTransaction.value = event.splitTransaction ?: SplitTransaction()
+            }
+
+            is SplitDetailsEvents.SettleUpClick -> viewModelScope.launch {
+                event.onDone(
+                    splitUseCases.createTransaction(
+                        _groupId.value, event.transaction
+                    )
+                )
             }
         }
     }

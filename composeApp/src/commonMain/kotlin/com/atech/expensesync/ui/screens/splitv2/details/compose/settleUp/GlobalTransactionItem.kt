@@ -16,7 +16,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +44,8 @@ import com.atech.expensesync.database.pref.PrefKeys
 fun GlobalTransactionItem(
     modifier: Modifier = Modifier,
     groupMembers: List<GroupMember> = emptyList(),
-    globalTransactions: List<TransactionGlobalModel> = emptyList()
+    globalTransactions: List<TransactionGlobalModel> = emptyList(),
+    onSettleUpClick: (debtorUid: String, creditorUid: String, amount: Double) -> Unit = { _, _, _ -> }
 ) {
     val dataStore = LocalDataStore.current
     val loggedUserUid = dataStore.getString(PrefKeys.USER_ID)
@@ -92,67 +96,104 @@ fun GlobalTransactionItem(
                         val creditorName = if (creditorUid == loggedUserUid) "You"
                         else creditor?.name ?: "Unknown"
 
-                        Row(
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Profile picture for debtor (who owes)
-                                ProfilePicture(
-                                    profilePicUrl = debtor?.pic,
-                                    name = debtor?.name ?: "Unknown",
-                                    isCurrentUser = debtorUid == loggedUserUid,
-                                    size = 32.dp
-                                )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Text(
-                                    text = if (debtorUid == loggedUserUid)
-                                        "You owe"
-                                    else
-                                        "$debtorName owes",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = if (debtorUid == loggedUserUid) FontWeight.Bold else FontWeight.Normal
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Profile picture for debtor (who owes)
+                                    ProfilePicture(
+                                        profilePicUrl = debtor?.pic,
+                                        name = debtor?.name ?: "Unknown",
+                                        isCurrentUser = debtorUid == loggedUserUid,
+                                        size = 32.dp
                                     )
-                                )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    Text(
+                                        text = if (debtorUid == loggedUserUid)
+                                            "You owe"
+                                        else
+                                            "$debtorName owes",
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = if (debtorUid == loggedUserUid) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    )
+                                }
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "₹${amount.toInt()}",
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.error
+                                        )
+                                    )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    // Arrow indicating direction
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Default.ArrowForward,
+                                        contentDescription = "owes to",
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    // Profile picture for creditor (who is owed)
+                                    ProfilePicture(
+                                        profilePicUrl = creditor?.pic,
+                                        name = creditor?.name ?: "Unknown",
+                                        isCurrentUser = creditorUid == loggedUserUid,
+                                        size = 32.dp
+                                    )
+                                }
                             }
 
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "₹${amount.toInt()}",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                // Arrow indicating direction
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Default.ArrowForward,
-                                    contentDescription = "owes to",
-                                    modifier = Modifier.size(16.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                // Profile picture for creditor (who is owed)
-                                ProfilePicture(
-                                    profilePicUrl = creditor?.pic,
-                                    name = creditor?.name ?: "Unknown",
-                                    isCurrentUser = creditorUid == loggedUserUid,
-                                    size = 32.dp
-                                )
+                            // Add Settle Up button
+                            // Only show settle up button if the logged-in user is involved
+                            if (debtorUid == loggedUserUid || creditorUid == loggedUserUid) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+                                    ElevatedButton(
+                                        onClick = { onSettleUpClick(debtorUid, creditorUid, amount) },
+                                        colors = ButtonDefaults.elevatedButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary
+                                        ),
+                                        shape = RoundedCornerShape(8.dp),
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = "Settle up",
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = "Settle Up",
+                                            style = MaterialTheme.typography.bodySmall.copy(
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                        )
+                                    }
+                                }
                             }
                         }
 

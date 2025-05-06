@@ -26,7 +26,8 @@ fun SettleUpScreen(
     listState: LazyListState,
     groupMembers: List<GroupMember> = emptyList(),
     globalTransaction: List<TransactionGlobalModel> = emptyList(),
-    splitTransactions: List<SplitTransaction> = emptyList()
+    splitTransactions: List<SplitTransaction> = emptyList(),
+    onSettleUpClick: (debtorUid: String, creditorUid: String, amount: Double) -> Unit = { _, _, _ -> }
 ) {
     LazyColumn(
         modifier = modifier,
@@ -35,7 +36,8 @@ fun SettleUpScreen(
         item(key = "GlobalTransaction") {
             GlobalTransactionItem(
                 groupMembers = groupMembers,
-                globalTransactions = globalTransaction
+                globalTransactions = globalTransaction,
+                onSettleUpClick = onSettleUpClick
             )
         }
         item(
@@ -66,7 +68,13 @@ fun SettleUpScreen(
                 )
             }
         }
-        items(splitTransactions) {
+        items(
+            splitTransactions
+                .sortedByDescending { it.createdAt }
+                .filter {
+                    !it.settled
+                }
+        ) {
             SplitTransactionItem(
                 transaction = it,
             )

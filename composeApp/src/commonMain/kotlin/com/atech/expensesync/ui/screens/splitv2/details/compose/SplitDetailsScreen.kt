@@ -43,7 +43,9 @@ import com.atech.expensesync.firebase.util.isSuccess
 import com.atech.expensesync.navigation.ViewSplitBookArgs
 import com.atech.expensesync.ui.screens.meal.root.compose.handelFabState
 import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsEvents
+import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsEvents.SetSplitTransaction
 import com.atech.expensesync.ui.screens.splitv2.details.SplitDetailsViewModel
+import com.atech.expensesync.ui.screens.splitv2.details.compose.settleUp.SettleMoneyScreen
 import com.atech.expensesync.ui.screens.splitv2.details.compose.settleUp.SettleUpScreen
 import com.atech.expensesync.ui.theme.spacing
 import com.atech.expensesync.ui_utils.backHandlerThreePane
@@ -52,7 +54,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 
 
 private enum class ExtraPane {
-    AddExpense, GroupMembers, None, ShowDetailOfTransaction
+    AddExpense, GroupMembers, None, ShowDetailOfTransaction, SETTLE_UP
 }
 
 private enum class TabState {
@@ -73,8 +75,7 @@ fun SplitDetailsScreen(
         viewModel.onEvent(SplitDetailsEvents.SetId(args.id))
     }
     val splitDetails by viewModel.splitDetails
-//    val detailsModel by viewModel.detailsModel
-//    val groupMembers by viewModel.groupMembers
+    var settleUpScreenState by remember { mutableStateOf(Triple("", "", 0.0)) }
 
     if (splitDetails.isSuccess()) {
         val groupMembers = splitDetails.getOrNull()?.members ?: return
@@ -109,6 +110,13 @@ fun SplitDetailsScreen(
                             navigator.navigateTo(
                                 ListDetailPaneScaffoldRole.Extra
                             )
+                        },
+                        onSettleUpClick = { debtorUid, creditorUid, amount ->
+                            settleUpScreenState = Triple(debtorUid, creditorUid, amount)
+                            extraPane = ExtraPane.SETTLE_UP
+                            navigator.navigateTo(
+                                ListDetailPaneScaffoldRole.Extra
+                            )
                         }
                     )
                 }
@@ -128,7 +136,7 @@ fun SplitDetailsScreen(
                                 onEvent = viewModel::onEvent,
                                 onNavigationClick = {
                                     viewModel.onEvent(
-                                        SplitDetailsEvents.SetSplitTransaction()
+                                        SetSplitTransaction()
                                     )
                                     extraPane = ExtraPane.None
                                     navigator.navigateBack()
@@ -157,7 +165,22 @@ fun SplitDetailsScreen(
                 ExtraPane.ShowDetailOfTransaction -> {
                     {}
                 }
-            })
+
+                ExtraPane.SETTLE_UP -> {
+                    {
+                        SettleMoneyScreen(
+                            members = groupMembers,
+                            triple = settleUpScreenState,
+                            onNavigateBack = {
+                                extraPane = ExtraPane.None
+                                navigator.navigateBack()
+                            },
+                            onEvent = viewModel::onEvent
+                        )
+                    }
+                }
+            }
+        )
     }
 }
 
@@ -169,6 +192,7 @@ private fun BaseScreen(
     groupMembers: List<GroupMember>,
     globalTransaction: List<TransactionGlobalModel>,
     splitTransactions: List<SplitTransaction>,
+    onSettleUpClick: (debtorUid: String, creditorUid: String, amount: Double) -> Unit = { _, _, _ -> },
     onGroupMembersClick: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     navigateToAddExpense: () -> Unit = {},
@@ -222,7 +246,8 @@ private fun BaseScreen(
                     globalTransaction = globalTransaction,
                     listState = listState,
                     groupMembers = groupMembers,
-                    splitTransactions = splitTransactions
+                    splitTransactions = splitTransactions,
+                    onSettleUpClick = onSettleUpClick
                 )
 
                 else -> {
