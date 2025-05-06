@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.screens.profile.compose
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,21 +15,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.twotone.AccountTree
-import androidx.compose.material.icons.twotone.BugReport
 import androidx.compose.material.icons.twotone.CloudSync
+import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material.icons.twotone.Devices
 import androidx.compose.material.icons.twotone.Info
-import androidx.compose.material.icons.twotone.Key
-import androidx.compose.material.icons.twotone.Share
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
@@ -67,11 +71,8 @@ import org.koin.compose.koinInject
 enum class DetailsScreenType {
     NONE,
     CLOUD_SYNC,
-    ACCOUNT,
     ACKNOWLEDGEMENTS,
     ABOUT_US,
-    REPORT_BUG,
-    SHARE
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
@@ -86,6 +87,41 @@ fun ProfileScreen(
     val uploadModel = viewModel.uploadModel.collectAsState(emptyList())
     val user by viewModel.user
     var screenType by remember { mutableStateOf(DetailsScreenType.NONE) }
+    var isLogOutDialogVisible by remember { mutableStateOf(false) }
+
+
+    AnimatedVisibility(isLogOutDialogVisible) {
+        AlertDialog(
+            icon = {
+                Icon(
+                    imageVector = Icons.TwoTone.Delete,
+                    contentDescription = "Delete Meal"
+                )
+            },
+            onDismissRequest = { isLogOutDialogVisible = false },
+            title = {
+                Text("Delete Meal Book")
+            },
+            text = {
+                Text("Are you sure you want to delete this meal book?")
+            },
+            confirmButton = {
+                TextButton(onClick = {
+//                    TODO: Implement logic
+                    isLogOutDialogVisible = false
+                }) {
+                    Text("LogOut!")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { isLogOutDialogVisible = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+
     navigator.backHandlerThreePane()
     ListDetailPaneScaffold(
         modifier = modifier,
@@ -125,6 +161,21 @@ fun ProfileScreen(
                     }
                 }
             }
+
+            DetailsScreenType.ABOUT_US -> {
+                {
+                    canShowAppBar.invoke(false)
+                    AnimatedPane {
+                        AboutUsScreen(
+                            onNavigationClick = {
+                                screenType = DetailsScreenType.NONE
+                                navigator.navigateBack()
+                            }
+                        )
+                    }
+                }
+            }
+
             DetailsScreenType.CLOUD_SYNC -> {
                 {
                     canShowAppBar.invoke(false)
@@ -221,14 +272,6 @@ fun ProfileScreenCompose(
                     .fillMaxWidth()
                     .padding(MaterialTheme.spacing.medium)
             )
-            ProfileItems(
-                icon = Icons.TwoTone.Key,
-                title = "Account",
-                description = "Manage your account settings",
-                onClick = {
-                    onItemClick(DetailsScreenType.ACCOUNT)
-                }
-            )
             com.atech.expensesync.ui_utils.runWithDeviceCompose(
                 onAndroid = {
                     ProfileItems(
@@ -263,21 +306,32 @@ fun ProfileScreenCompose(
                     onItemClick(DetailsScreenType.ABOUT_US)
                 }
             )
-            ProfileItems(
-                icon = Icons.TwoTone.BugReport,
-                title = "Report Bug",
-                onClick = {
-                    onItemClick(DetailsScreenType.REPORT_BUG)
-                }
+            HorizontalDivider()
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(MaterialTheme.spacing.medium)
             )
-            ProfileItems(
-                icon = Icons.TwoTone.Share,
-                title = "Share",
+            Button(
                 onClick = {
-                    onItemClick(DetailsScreenType.SHARE)
-                }
-            )
 
+                },
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Code,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text("LogOut")
+            }
+            HorizontalDivider()
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(MaterialTheme.spacing.medium)
+            )
             Text(
                 "Expense Sync",
                 style = MaterialTheme.typography.labelSmall,

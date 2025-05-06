@@ -55,8 +55,7 @@ fun CloudSyncScreen(
         title = "Cloud Sync",
     ) { paddingValues ->
         LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-                .padding(MaterialTheme.spacing.medium),
+            modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.medium),
             contentPadding = paddingValues,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -69,8 +68,7 @@ fun CloudSyncScreen(
 
 @Composable
 fun UploadItem(
-    upload: UploadModel,
-    modifier: Modifier = Modifier
+    upload: UploadModel, modifier: Modifier = Modifier
 ) {
     OutlinedCard(
         modifier = modifier.fillMaxWidth(),
@@ -80,9 +78,7 @@ fun UploadItem(
         )
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
             // Header row with type and status
             Row(
@@ -97,21 +93,15 @@ fun UploadItem(
                 ) {
                     val (icon, color, label) = when (upload.updatedType) {
                         UpdateType.MEAL -> Triple(
-                            Icons.Default.Restaurant,
-                            MaterialTheme.colorScheme.primary,
-                            "Meal"
+                            Icons.Default.Restaurant, MaterialTheme.colorScheme.primary, "Meal"
                         )
 
                         UpdateType.EXPENSE -> Triple(
-                            Icons.Default.Receipt,
-                            MaterialTheme.colorScheme.secondary,
-                            "Expense"
+                            Icons.Default.Receipt, MaterialTheme.colorScheme.secondary, "Expense"
                         )
 
                         UpdateType.SPLIT -> Triple(
-                            Icons.Default.People,
-                            MaterialTheme.colorScheme.tertiary,
-                            "Split"
+                            Icons.Default.People, MaterialTheme.colorScheme.tertiary, "Split"
                         )
                     }
 
@@ -137,14 +127,11 @@ fun UploadItem(
                 ) {
                     val (statusIcon, statusColor, statusText) = if (upload.isUpdated) {
                         Triple(
-                            Icons.Default.Check,
-                            MaterialTheme.colorScheme.appGreen,
-                            "Uploaded"
+                            Icons.Default.Check, MaterialTheme.colorScheme.appGreen, "Uploaded"
                         )
                     } else {
                         Triple(
-                            Icons.Default.Pending,
-                            Color(0xFFFFA000), // Amber
+                            Icons.Default.Pending, Color(0xFFFFA000), // Amber
                             "Pending"
                         )
                     }
@@ -173,13 +160,7 @@ fun UploadItem(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 TimestampRow(
-                    label = "Created",
-                    timestamp = upload.createdAtFormat
-                )
-
-                TimestampRow(
-                    label = "Updated",
-                    timestamp = upload.updateTimeFormat
+                    label = "Uploaded at", timestamp = upload.updateTimeFormat
                 )
             }
         }
@@ -188,13 +169,10 @@ fun UploadItem(
 
 @Composable
 fun TimestampRow(
-    label: String,
-    timestamp: String,
-    modifier: Modifier = Modifier
+    label: String, timestamp: String, modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = label,
