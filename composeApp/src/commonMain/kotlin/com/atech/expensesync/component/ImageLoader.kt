@@ -1,35 +1,28 @@
 package com.atech.expensesync.component
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.AccountCircle
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
-import com.skydoves.landscapist.coil3.CoilImage
-import expensesync.composeapp.generated.resources.Res
-import expensesync.composeapp.generated.resources.profile
-import org.jetbrains.compose.resources.painterResource
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.SubcomposeAsyncImage
 
 @Composable
 fun LoadImageFromUrl(
     modifier: Modifier = Modifier,
     url: String
 ) {
-    CoilImage(
+    SubcomposeAsyncImage(
+        model = url,
+        contentDescription = "profile",
         modifier = modifier
-            .clip(RoundedCornerShape(size = 50.dp)),
-        imageModel = { url },
-        previewPlaceholder = painterResource(Res.drawable.profile),
-        loading = {
-            CircularProgressIndicator()
-        },
-        failure = {
-            Image(
-                painter = painterResource(Res.drawable.profile),
-                contentDescription = null
-            )
+            .clip(CircleShape),
+        contentScale = ContentScale.Crop,
+        error = {
+            Icon(Icons.TwoTone.AccountCircle, null)
         }
     )
 }

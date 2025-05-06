@@ -1,5 +1,6 @@
 package com.atech.expensesync.ui.screens.splitv2.details.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -82,7 +83,9 @@ fun SplitDetailsScreen(
         val globalTransaction = viewModel.globalTransactionDetails.value
         val splitTransactions = viewModel.splitTransactions.value
         ListDetailPaneScaffold(
-            modifier = modifier,
+            modifier = modifier.background(
+                MaterialTheme.colorScheme.surface
+            ),
             directive = navigator.scaffoldDirective,
             value = navigator.scaffoldValue,
             listPane = {
