@@ -16,7 +16,7 @@ val jvmUIModule = module {
     single { LogInViewModel(get()) }
     single { MealViewModel(get(), get(), get()) }
     single { ViewMealViewModel(get()) }
-    single { ExpenseViewModel(get()) }
+    single { ExpenseViewModel(get(), get(), get()) }
     single { BackUpViewModel(get(), get()) }
     single { ProfileViewModel(get(), get()) }
     single { SplitViewModel(get(), get()) }

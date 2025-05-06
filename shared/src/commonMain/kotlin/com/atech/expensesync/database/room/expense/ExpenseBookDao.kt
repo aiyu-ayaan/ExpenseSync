@@ -23,7 +23,7 @@ interface ExpenseBookDao {
     suspend fun insertExpenseEntry(expenses: ExpenseBookEntry): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertExpenseEntry(expenses: List<ExpenseBookEntry>): Long
+    suspend fun insertExpenseEntry(expenses: List<ExpenseBookEntry>)
 
     @Update
     suspend fun updateExpense(expense: ExpenseBook): Int
@@ -55,7 +55,7 @@ interface ExpenseBookDao {
     suspend fun getExpenseBookEntryUpload(): List<ExpenseBookEntry>
 
     @Query("SELECT * FROM expense_book_entry")
-    suspend fun getExpenseBookEntry(): Flow<List<ExpenseBookEntry>>
+    fun getExpenseBookEntry(): Flow<List<ExpenseBookEntry>>
 
     @Query("UPDATE expense_book SET totalAmount = totalAmount + :amount where bookId = :bookId")
     suspend fun updateTotalAmount(bookId: String, amount: Double)

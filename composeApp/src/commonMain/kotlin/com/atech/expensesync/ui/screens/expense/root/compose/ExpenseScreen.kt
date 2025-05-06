@@ -30,6 +30,8 @@ import androidx.navigation.NavHostController
 import com.atech.expensesync.LocalUploadDataHelper
 import com.atech.expensesync.component.MainContainer
 import com.atech.expensesync.database.room.expense.ExpenseBook
+import com.atech.expensesync.firebase.util.FirebaseResponse
+import com.atech.expensesync.firebase.util.getOrNull
 import com.atech.expensesync.ui.screens.expense.detail.compose.CashInOutScreen
 import com.atech.expensesync.ui.screens.expense.detail.compose.CashType
 import com.atech.expensesync.ui.screens.expense.detail.compose.ExpenseDetailsScreen
@@ -60,7 +62,7 @@ fun ExpenseScreen(
     val lazyListState = rememberLazyListState()
     val viewModel = koinViewModel<ExpenseViewModel>()
 
-    val expenseBooks by viewModel.expenseBooks.collectAsState(emptyList())
+    val expenseBooks by viewModel.expenseBooks.collectAsState(FirebaseResponse.Loading)
     var extraScreenType by remember { mutableStateOf(ExtraScreenType.ADD) }
     var cashInOutType by remember { mutableStateOf(CashType.CASH_IN) }
     val uploadDataHelper = LocalUploadDataHelper.current
@@ -78,21 +80,26 @@ fun ExpenseScreen(
         listPane = {
             AnimatedPane {
                 canShowAppBar.invoke(true)
-                MainScreen(listState = lazyListState, onAddMealBookClick = {
-                    extraScreenType = ExtraScreenType.ADD
-                    navigator.navigateTo(
-                        ListDetailPaneScaffoldRole.Extra
-                    )
-                }, expenseBook = expenseBooks, onMealBookItemClick = {
-                    viewModel.onEvent(
-                        ExpenseEvents.OnExpenseBookClick(
-                            it
+                MainScreen(
+                    listState = lazyListState,
+                    onAddMealBookClick = {
+                        extraScreenType = ExtraScreenType.ADD
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.Extra
                         )
-                    )
-                    navigator.navigateTo(
-                        ListDetailPaneScaffoldRole.Detail
-                    )
-                })
+                    },
+                    expenseBook = expenseBooks.getOrNull() ?: emptyList(),
+                    onMealBookItemClick = {
+                        viewModel.onEvent(
+                            ExpenseEvents.OnExpenseBookClick(
+                                it
+                            )
+                        )
+                        navigator.navigateTo(
+                            ListDetailPaneScaffoldRole.Detail
+                        )
+                    }
+                )
             }
         },
         detailPane = if (viewModel.clickedExpenseBook.value != null) {

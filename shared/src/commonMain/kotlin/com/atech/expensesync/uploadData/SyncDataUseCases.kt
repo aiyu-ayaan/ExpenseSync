@@ -76,8 +76,8 @@ data class MealBookEntryDataSyncUseCases(
 
 
 data class ExpenseBookSyncUseCases(
-    private val expenseBookDataSyncUseCase: ExpenseBookDataSyncUseCase,
-    private val expenseBookDataEntrySyncUseCase: ExpenseBookDataEntrySyncUseCase
+    val expenseBookDataSyncUseCase: ExpenseBookDataSyncUseCase,
+    val expenseBookDataEntrySyncUseCase: ExpenseBookDataEntrySyncUseCase
 )
 
 data class ExpenseBookDataSyncUseCase(

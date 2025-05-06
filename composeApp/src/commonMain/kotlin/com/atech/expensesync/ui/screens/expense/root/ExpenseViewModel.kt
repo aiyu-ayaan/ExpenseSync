@@ -4,14 +4,19 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.atech.expensesync.database.pref.PrefKeys
+import com.atech.expensesync.database.pref.PrefManager
 import com.atech.expensesync.database.room.expense.ExpenseBook
 import com.atech.expensesync.database.room.expense.ExpenseBookEntry
+import com.atech.expensesync.uploadData.ExpenseBookSyncUseCases
 import com.atech.expensesync.usecases.ExpenseUseCases
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class ExpenseViewModel(
-    private val useCase: ExpenseUseCases
+    private val useCase: ExpenseUseCases,
+    private val expenseSyncUserCase: ExpenseBookSyncUseCases,
+    private val pref: PrefManager
 ) : ViewModel() {
     private val _expenseBook = mutableStateOf(
         ExpenseBook(
@@ -20,7 +25,9 @@ class ExpenseViewModel(
     )
     val expenseBook: State<ExpenseBook> get() = _expenseBook
 
-    val expenseBooks = useCase.getAllExpenses()
+    val expenseBooks = expenseSyncUserCase.expenseBookDataSyncUseCase(
+        pref.getString(PrefKeys.USER_ID)
+    )
 
 
     private val _clickedExpenseBook = mutableStateOf<ExpenseBook?>(null)
