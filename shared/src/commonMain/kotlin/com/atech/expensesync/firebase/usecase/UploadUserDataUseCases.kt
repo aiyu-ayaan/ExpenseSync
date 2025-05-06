@@ -106,7 +106,7 @@ class UploadExpenseDataUserCase(
 }
 
 
-class GetAllExpenseDataUseCases(
+class GetExpenseDataUseCases(
     private val kmpFire: KmpFire
 ) {
     suspend fun getExpenseBookData(

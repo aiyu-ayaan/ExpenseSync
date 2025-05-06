@@ -12,12 +12,18 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ExpenseBookDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExpense(expense: ExpenseBook): Long
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertExpense(expense: List<ExpenseBook>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExpenseEntry(expenses: ExpenseBookEntry): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertExpenseEntry(expenses: List<ExpenseBookEntry>): Long
 
     @Update
     suspend fun updateExpense(expense: ExpenseBook): Int
@@ -48,6 +54,9 @@ interface ExpenseBookDao {
     @Query("SELECT * FROM expense_book_entry")
     suspend fun getExpenseBookEntryUpload(): List<ExpenseBookEntry>
 
+    @Query("SELECT * FROM expense_book_entry")
+    suspend fun getExpenseBookEntry(): Flow<List<ExpenseBookEntry>>
+
     @Query("UPDATE expense_book SET totalAmount = totalAmount + :amount where bookId = :bookId")
     suspend fun updateTotalAmount(bookId: String, amount: Double)
 
@@ -58,15 +67,22 @@ interface ExpenseBookDao {
     suspend fun updateTotalOut(bookId: String, amount: Double)
 
 
+    @Query("DELETE FROM expense_book WHERE bookId NOT IN (:ids)")
+    suspend fun deleteExpenseBookOtherThanIds(ids: List<String>)
+
+    @Query("DELETE FROM expense_book_entry WHERE createdAt NOT IN (:ids)")
+    suspend fun deleteExpenseBookEntryOtherThanIds(ids: List<Long>)
+
     @Transaction
     suspend fun addTransaction(
         expenseBookEntry: ExpenseBookEntry
     ) {
         insertExpenseEntry(expenseBookEntry)
-        if (expenseBookEntry.transactionType == TransactionType.IN)
-            updateTotalIn(expenseBookEntry.bookId, expenseBookEntry.amount)
-        else
-            updateTotalOut(expenseBookEntry.bookId, expenseBookEntry.amount)
+        if (expenseBookEntry.transactionType == TransactionType.IN) updateTotalIn(
+            expenseBookEntry.bookId,
+            expenseBookEntry.amount
+        )
+        else updateTotalOut(expenseBookEntry.bookId, expenseBookEntry.amount)
         updateTotalAmount(expenseBookEntry.bookId, expenseBookEntry.amount)
     }
 

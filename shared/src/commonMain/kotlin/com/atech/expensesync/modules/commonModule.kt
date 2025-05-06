@@ -4,7 +4,7 @@ import com.atech.expensesync.database.room.SplitSyncDatabase
 import com.atech.expensesync.firebase.usecase.CreateSplitGroup
 import com.atech.expensesync.firebase.usecase.CreateTransaction
 import com.atech.expensesync.firebase.usecase.FirebaseUserUseCases
-import com.atech.expensesync.firebase.usecase.GetAllExpenseDataUseCases
+import com.atech.expensesync.firebase.usecase.GetExpenseDataUseCases
 import com.atech.expensesync.firebase.usecase.GetGlobalTransaction
 import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
 import com.atech.expensesync.firebase.usecase.GetSplitById
@@ -13,6 +13,9 @@ import com.atech.expensesync.firebase.usecase.GetTransaction
 import com.atech.expensesync.firebase.usecase.MealBookUploadUseCase
 import com.atech.expensesync.firebase.usecase.SplitUseCases
 import com.atech.expensesync.firebase.usecase.UploadExpenseDataUserCase
+import com.atech.expensesync.uploadData.ExpenseBookDataEntrySyncUseCase
+import com.atech.expensesync.uploadData.ExpenseBookDataSyncUseCase
+import com.atech.expensesync.uploadData.ExpenseBookSyncUseCases
 import com.atech.expensesync.uploadData.GetAllUnUploadByTypeUseCases
 import com.atech.expensesync.uploadData.GetAllUnUploadUseCases
 import com.atech.expensesync.uploadData.GetAllUseCases
@@ -115,7 +118,7 @@ val commonModule = module {
     single { MealBookUploadUseCase(get(), get()) }
     single { UploadExpenseDataUserCase(get(), get()) }
     single { GetMealBookDataUseCases(get()) }
-    single { GetAllExpenseDataUseCases(get()) }
+    single { GetExpenseDataUseCases(get()) }
     single { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
 
     single { MealBookDataSyncUseCases(get(), get()) }
@@ -134,5 +137,11 @@ val commonModule = module {
     single { GetTransaction(get()) }
     single { GetGlobalTransaction(get()) }
     single { SplitUseCases(get(), get(), get(), get(), get(), get()) }
+
+
+    single { ExpenseBookDataSyncUseCase(get(), get()) }
+    single { ExpenseBookDataEntrySyncUseCase(get(), get()) }
+    single { ExpenseBookSyncUseCases(get(), get()) }
+
 
 }

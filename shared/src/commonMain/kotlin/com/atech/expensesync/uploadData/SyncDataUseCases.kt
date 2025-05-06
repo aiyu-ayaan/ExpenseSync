@@ -1,9 +1,12 @@
 package com.atech.expensesync.uploadData
 
+import com.atech.expensesync.database.models.toExpenseBook
+import com.atech.expensesync.database.models.toExpenseBookEntry
 import com.atech.expensesync.database.models.toMealBook
 import com.atech.expensesync.database.models.toMealBookEntry
 import com.atech.expensesync.database.room.expense.ExpenseBookDao
 import com.atech.expensesync.database.room.meal.MealDao
+import com.atech.expensesync.firebase.usecase.GetExpenseDataUseCases
 import com.atech.expensesync.firebase.usecase.GetMealBookDataUseCases
 import com.atech.expensesync.utils.networkFetchData
 
@@ -71,19 +74,73 @@ data class MealBookEntryDataSyncUseCases(
     )
 }
 
+
+data class ExpenseBookSyncUseCases(
+    private val expenseBookDataSyncUseCase: ExpenseBookDataSyncUseCase,
+    private val expenseBookDataEntrySyncUseCase: ExpenseBookDataEntrySyncUseCase
+)
+
 data class ExpenseBookDataSyncUseCase(
     private val dao: ExpenseBookDao,
-    private val getMealBookDataUseCases: GetMealBookDataUseCases
-){
+    private val getExpenseDataUseCases: GetExpenseDataUseCases
+) {
+    operator fun invoke(
+        uid: String
+    ) = networkFetchData(
+        query = {
+            dao.getAllExpenses()
+        },
+        fetch = {
+            getExpenseDataUseCases.getExpenseBookData(uid)
+        },
+        saveFetchResult = { expenseBook ->
+            val remoteIds = expenseBook.expense_book.map { it.bookId }
+            val remoteExpenseBooks = expenseBook.expense_book.map { it.toExpenseBook() }
+            dao.insertExpense(remoteExpenseBooks)
+            dao.deleteExpenseBookOtherThanIds(remoteIds)
+        },
+        isDataDifferent = { expensesData ->
+            val localExpenseBooks =
+                dao.getAllExpensesUpload() // Need to add this method to your DAO
+            val remoteExpenseBooks = expensesData.expense_book
+                .map { it.toExpenseBook() }
 
+            val isDifferent = !compareCollections(localExpenseBooks, remoteExpenseBooks)
+            isDifferent
+        }
+    )
 }
 
 
 data class ExpenseBookDataEntrySyncUseCase(
     private val dao: ExpenseBookDao,
-    private val getMealBookDataUseCases: GetMealBookDataUseCases
-){
+    private val getExpenseDataUseCases: GetExpenseDataUseCases
+) {
+    operator fun invoke(
+        uid: String
+    ) = networkFetchData(
+        query = {
+            dao.getExpenseBookEntry()
+        },
+        fetch = {
+            getExpenseDataUseCases.getExpenseBookEntryData(uid)
+        },
+        saveFetchResult = { expenseBook ->
+            val remoteEntries = expenseBook.expense_book_entry.map { it.toExpenseBookEntry() }
+            val mealBookIds = remoteEntries.map { it.createdAt }.distinct()
+            dao.insertExpenseEntry(remoteEntries)
+            dao.deleteExpenseBookEntryOtherThanIds(mealBookIds)
+        },
+        isDataDifferent = { expensesData ->
+            val localEntries =
+                dao.getAllExpensesUpload() // Need to add this method to your DAO
+            val remoteEntries = expensesData.expense_book_entry
+                .map { it.toExpenseBookEntry() }
 
+            val isDifferent = !compareCollections(localEntries, remoteEntries)
+            isDifferent
+        }
+    )
 }
 
 
